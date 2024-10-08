@@ -1,27 +1,24 @@
-﻿# Proiect-Metode-de-Dezvoltare-Software-MDS
+﻿# Proiect-Inginerie-Software-IS
 
-&emsp; Proiect Metode de Dezvoltare Software (MDS) Anul 2, Semestrul 2, Facultatea de Matematica si Informatica, Universitatea din Bucuresti <br/>
+&emsp; Proiect Inginerie Software (IS) Anul 3, Semestrul 1, Facultatea de Matematica si Informatica, Universitatea din Bucuresti <br/>
 
 ### &emsp; Membrii Echipa: <br/>
-Capatina Razvan Nicolae ($252$) <br/> 
-Mihalache Sebastian Stefan ($252$) <br/>
-Luculescu Teodor ($251$) <br/>
-
-## Documentatie
-[Link](https://github.com/Razvan48/Proiect-Metode-de-Dezvoltare-Software-MDS/wiki)
-
-## Demo
-[Link](https://www.youtube.com/watch?v=Z8xyivNPW1I) 
+Capatina Razvan Nicolae ($352$) <br/> 
+Mihalache Sebastian Stefan ($352$) <br/>
+Buca Mihnea Vicentiu ($352$) <br/>
+Luculescu Teodor ($351$) <br/>
+Petrovici Ricardo ($351$) <br/>
+Ciobanu Dragos ($351$) <br/>
 
 ## Setup
 1. Clone the repository
 ```sh
-git clone --recursive https://github.com/Razvan48/Proiect-Metode-de-Dezvoltare-Software-MDS
+git clone --recursive https://github.com/Razvan48/Proiect-Inginerie-Software-IS
 ```
 
 2. Change the current working directory
 ```sh
-cd Proiect-Metode-de-Dezvoltare-Software-MDS
+cd Proiect-Inginerie-Software-IS
 ```
 
 3. Generate the project
