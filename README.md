@@ -18,7 +18,7 @@ git clone --recursive https://github.com/unibuc-cs/software-engineering-product-
 
 2. Change the current working directory
 ```sh
-cd Proiect-Inginerie-Software-IS
+cd software-engineering-product-deadzone
 ```
 
 3. Generate the project
