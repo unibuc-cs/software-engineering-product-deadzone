@@ -13,7 +13,7 @@ Ciobanu Dragos ($351$) <br/>
 ## Setup
 1. Clone the repository
 ```sh
-git clone --recursive https://github.com/Razvan48/Proiect-Inginerie-Software-IS
+git clone --recursive https://github.com/unibuc-cs/software-engineering-product-deadzone
 ```
 
 2. Change the current working directory
