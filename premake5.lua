@@ -20,6 +20,7 @@ workspace "Apocalypse"
     IncludeDir["freetype"] = "vendor/freetype/include"
     IncludeDir["json"] = "vendor/json/include"
     IncludeDir["fmod"] = "vendor/fmod/include"
+    IncludeDir["enet"] = "vendor/enet/include"
 
 
 
@@ -196,6 +197,51 @@ workspace "Apocalypse"
 
 
 
+    project "enet"
+        location "bin-int/project-files"
+        kind "StaticLib"
+        language "C"
+
+        targetdir("bin/" .. outputdir .. "/%{prj.name}")
+        objdir("bin-int/" .. outputdir .. "/%{prj.name}")
+
+        files
+        {
+            "vendor/enet/**.c"
+        }
+
+        includedirs
+        {
+            "%{IncludeDir.enet}"
+        }
+
+        filter "system:windows"
+            links
+            {
+                "ws2_32",
+                "winmm"
+            }
+            
+        filter "configurations:Debug"
+            targetsuffix "64d"
+            symbols "On"
+            
+            defines
+            {
+                "DEBUG"
+            }
+        
+        filter "configurations:Release"
+            targetsuffix "64"
+            optimize "On"
+            
+            defines
+            {
+                "NDEBUG"
+            }
+
+
+
     project "Apocalypse"
         location "Apocalypse"
         kind "ConsoleApp"
@@ -224,6 +270,7 @@ workspace "Apocalypse"
             "%{IncludeDir.glm}",
             "%{IncludeDir.stb}",
             "%{IncludeDir.freetype}",
+            "%{IncludeDir.enet}",
             "%{IncludeDir.json}",
             "%{IncludeDir.fmod}"
         }
@@ -238,6 +285,7 @@ workspace "Apocalypse"
             "glfw",
             "glad",
             "freetype",
+            "enet",
             "fmod_vc.lib",
             "fmodL_vc.lib"
         }
@@ -295,6 +343,7 @@ workspace "Apocalypse"
             "%{IncludeDir.glm}",
             "%{IncludeDir.stb}",
             "%{IncludeDir.freetype}",
+            "%{IncludeDir.enet}",
             "%{IncludeDir.json}",
             "%{IncludeDir.fmod}"
         }
@@ -310,6 +359,7 @@ workspace "Apocalypse"
             "glfw",
             "glad",
             "freetype",
+            "enet",
             "fmod_vc.lib",
             "fmodL_vc.lib"
         }

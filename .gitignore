@@ -407,14 +407,6 @@ bin/
 bin-int/
 [Bb][Uu][Ii][Ll][Dd]/
 
-# Ignore vendor folder, but include subfolder premake5
-vendor/*
-!vendor/premake5/
-!vendor/glad/
-!vendor/stb/
-!vendor/fmod/
-!vendor/fmod/**/
-
 # Ignore TestResults folder
 TestResults/*
 

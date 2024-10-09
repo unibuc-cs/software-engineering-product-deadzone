@@ -30,7 +30,7 @@ jobs:
     - name: Clone Git Repository
       uses: actions/checkout@v4
       with: 
-        repository: 'Razvan48/Proiect-Metode-de-Dezvoltare-Software-MDS'
+        repository: 'unibuc-cs/software-engineering-product-deadzone'
         submodules: true
     
     - name: Add MSBuild to PATH
