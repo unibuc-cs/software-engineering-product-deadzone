@@ -8,7 +8,7 @@
 #include "../Entity/Bullet/ThrownGrenade.h"
 #include "../Entity/Explosion/Explosion.h"
 
-#include <iostream> // TODO: debug
+#include <iostream>
 #include <memory>
 
 CollisionManager::CollisionManager()

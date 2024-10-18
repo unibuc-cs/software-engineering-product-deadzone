@@ -6,8 +6,6 @@
 
 class Door : public virtual CollidableEntity, public virtual AnimatedEntity, public virtual InteractiveEntity
 {
-private:
-
 protected:
 	int openCost;
 

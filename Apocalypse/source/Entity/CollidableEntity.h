@@ -7,7 +7,6 @@
 class CollidableEntity : public virtual Entity
 {
 protected:
-
 	double collideWidth;
 	double collideHeight;
 

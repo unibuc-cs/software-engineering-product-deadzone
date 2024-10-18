@@ -20,7 +20,7 @@ Door::Door(double x, double y, double drawWidth, double drawHeight, double rotat
 
 void Door::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
-	// NIMIC
+	// O usa nu face nimic daca e in coliziune.
 }
 
 bool Door::isInInteraction()
@@ -63,7 +63,11 @@ void Door::draw()
 	if (this->getStatus() == EntityStatus::IDLE)
 	{
 		std::string openCost = std::to_string(this->getOpenCost());
-		TextRenderer::get().draw(ResourceManager::getShader("text"), ResourceManager::getFont("Antonio"), openCost, static_cast<float>(Camera::get().screenPositionText(this->getX(), this->getY()).x), static_cast<float>(Camera::get().screenPositionText(this->getX(), this->getY()).y), 0.75f, glm::vec3(0.0f, 0.5f, 0.5f));
+		TextRenderer::get().draw(ResourceManager::getShader("text"),
+			ResourceManager::getFont("Antonio"), openCost,
+			static_cast<float>(Camera::get().screenPositionText(this->getX(), this->getY()).x),
+			static_cast<float>(Camera::get().screenPositionText(this->getX(), this->getY()).y),
+			0.75f, glm::vec3(0.0f, 0.5f, 0.5f));
 	}
 }
 

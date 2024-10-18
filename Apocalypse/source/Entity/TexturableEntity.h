@@ -7,7 +7,6 @@
 class TexturableEntity : public virtual Entity
 {
 protected:
-
 	std::string textureName2D;
 
 public:
@@ -17,5 +16,5 @@ public:
 	virtual ~TexturableEntity();
 
 	std::string getTextureName2D() const { return textureName2D; }
-	void setTextureName2D(const std::string& textureName2D_) { textureName2D = textureName2D_; }
+	void setTextureName2D(const std::string& textureName2D) { this->textureName2D = textureName2D; }
 };

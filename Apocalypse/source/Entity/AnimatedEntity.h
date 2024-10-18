@@ -11,14 +11,11 @@
 class AnimatedEntity : public virtual Entity
 {
 private:
-
 	friend class MainMenu;
 
 public:
-
 	static enum class EntityStatus
 	{
-		DEFAULT, //asta doar debug, NU FOLOSIM DEFAULT, FOLOSIM IDLE PENTRU STATUS DE INCEPUT
 		IDLE,
 		WALKING,
 		RUNNING,
@@ -27,17 +24,6 @@ public:
 		OPENED,
 		HOVERED,
 		CLICKED,
-
-		/*
-		BODY_IDLE,
-		ARMS_IDLE,
-		LEGS_IDLE,
-		ARMS_WALKING,
-		ARMS_RUNNING,
-		HEAD_IDLE,
-		HEAD_TIRED,
-		LEGS_RUNNING,
-		*/
 
 		ARMS_HOLDING_GRENADE,
 		ARMS_HOLDING_KNIFE,

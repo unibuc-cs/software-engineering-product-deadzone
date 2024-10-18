@@ -17,8 +17,6 @@ Bullet::Bullet(double x, double y, double drawWidth, double drawHeight, double r
 
 void Bullet::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
-	setDeleteEntity(true);
-
 	std::map<AnimatedEntity::EntityStatus, std::string> blastAnimationsName2D;
 	blastAnimationsName2D[AnimatedEntity::EntityStatus::IDLE] = "bulletBlast";
 	std::vector<AnimatedEntity::EntityStatus> blastStatuses = { AnimatedEntity::EntityStatus::IDLE };
@@ -31,6 +29,8 @@ void Bullet::onCollide(CollidableEntity& other, glm::vec2 overlap)
 		blastAnimationsName2D,
 		blastStatuses
 	));
+
+	setDeleteEntity(true);
 }
 
 void Bullet::update()

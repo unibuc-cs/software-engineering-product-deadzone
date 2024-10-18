@@ -55,10 +55,8 @@ void ThrownGrenade::update()
 
 	if (GlobalClock::get().getCurrentTime() - timeThrown > timeUntilExplosion)
 	{
-		this->setDeleteEntity(true);
-
 		// detonate sound effect
-		int random_number = std::rand() % 3;
+		int random_number = Random::randomInt(0, 2);
 		switch (random_number)
 		{
 		case 0:
@@ -83,8 +81,12 @@ void ThrownGrenade::update()
 		std::map<AnimatedEntity::EntityStatus, std::string> m = { { AnimatedEntity::EntityStatus::IDLE, "grenadeExplosion" } };
 		std::vector<AnimatedEntity::EntityStatus> v = { AnimatedEntity::EntityStatus::IDLE };
 
-		Game::get().addEntity(std::make_shared<Explosion>(this->x, this->y, this->originalDrawWidth * this->explosionScale, this->originalDrawHeight * this->explosionScale, randomExplosionAngle, 0.0, this->originalCollideWidth * this->explosionScale, this->originalCollideHeight * this->explosionScale,
+		Game::get().addEntity(std::make_shared<Explosion>(this->x, this->y,
+			this->originalDrawWidth * this->explosionScale, this->originalDrawHeight * this->explosionScale,
+			randomExplosionAngle, 0.0, this->originalCollideWidth * this->explosionScale, this->originalCollideHeight * this->explosionScale,
 			m, v, this->explosionDuration, this->explosionDamage));
+
+		this->setDeleteEntity(true);
 	}
 }
 

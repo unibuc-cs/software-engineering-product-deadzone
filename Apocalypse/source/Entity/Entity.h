@@ -1,4 +1,4 @@
-	#pragma once
+#pragma once
 
 #include <string>
 
@@ -18,7 +18,7 @@ public:
 	virtual ~Entity();
 
 	virtual void draw() = 0;
-	virtual void update(); // virtual, dar nu pur virtual
+	virtual void update();
 
 	inline double getX() const { return this->x; }
 	inline double getY() const { return this->y; }

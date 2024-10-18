@@ -15,12 +15,7 @@ Human::Human(double x, double y, double drawWidth, double drawHeight, double rot
 
 void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
-	// TODO: nu e totul implementat
-
-	if (dynamic_cast<Explosion*>(&other))
-		return;
-
-	if (dynamic_cast<Wall*>(&other) != nullptr)
+	if (dynamic_cast<Wall*>(&other) != nullptr || dynamic_cast<Door*>(&other) != nullptr)
 	{
 		if (overlap.x < overlap.y)
 		{
@@ -37,23 +32,6 @@ void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 				this->y += (overlap.y + CollidableEntity::EPS);
 		}
 	}
-	else if (dynamic_cast<Door*>(&other) != nullptr)
-	{
-		if (overlap.x < overlap.y)
-		{
-			if (this->x < other.getX())
-				this->x -= (overlap.x + CollidableEntity::EPS);
-			else
-				this->x += (overlap.x + CollidableEntity::EPS);
-		}
-		else
-		{
-			if (this->y < other.getY())
-				this->y -= (overlap.y + CollidableEntity::EPS);
-			else
-				this->y += (overlap.y + CollidableEntity::EPS);
-		}
-	} // doar bullets
 	else if (dynamic_cast<Bullet*>(&other) != nullptr)
 	{
 		if (overlap.x < overlap.y)
@@ -71,7 +49,7 @@ void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 				this->y += (overlap.y + CollidableEntity::EPS) / 2.0;
 		}
 
-		this->health -= dynamic_cast<Bullet*>(&other)->getDamage(); // e ok pt ca human e considerat ca nu are armor si player-ul(human) oricum da override la onCollide
+		this->health -= dynamic_cast<Bullet*>(&other)->getDamage(); // TODO: de modificat
 		this->health = std::max(0.0, this->health);
 	}
 	else if (dynamic_cast<Human*>(&other) != nullptr)
@@ -91,25 +69,6 @@ void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 				this->y += (overlap.y + CollidableEntity::EPS) / 2.0;
 		}
 	}
-	/*
-	else if (dynamic_cast<CollidableEntity*>(&other) != nullptr)
-	{
-		if (overlap.x < overlap.y)
-		{
-			if (this->x < other.getX())
-				this->x -= (overlap.x + CollidableEntity::EPS) / 2.0;
-			else
-				this->x += (overlap.x + CollidableEntity::EPS) / 2.0;
-		}
-		else
-		{
-			if (this->y < other.getY())
-				this->y -= (overlap.y + CollidableEntity::EPS) / 2.0;
-			else
-				this->y += (overlap.y + CollidableEntity::EPS) / 2.0;
-		}
-	}
-	*/
 }
 
 Human::~Human()

@@ -6,7 +6,6 @@
 class Explosion : public virtual CollidableEntity, public virtual AnimatedEntity
 {
 protected:
-
 	double explosionStarted;
 	double explosionDuration;
 	double explosionDamage;

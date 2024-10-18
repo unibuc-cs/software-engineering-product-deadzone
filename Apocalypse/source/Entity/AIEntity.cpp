@@ -7,7 +7,7 @@ const std::vector<std::pair<int, int>> AIEntity::extendedNeighbors = { {-1, -1},
 
 AIEntity::AIEntity(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed)
 	: Entity(x, y, drawWidth, drawHeight, rotateAngle, speed)
-	, nearTargetRadius(0.0) // TODO: schimbam valoarea
+	, nearTargetRadius(0.0)
 {
 
 }

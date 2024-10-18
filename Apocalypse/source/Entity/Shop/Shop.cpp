@@ -14,7 +14,7 @@ Shop::Shop(double x, double y, double drawWidth, double drawHeight, double rotat
 
 void Shop::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
-	// NIMIC
+	// Laptop-ul de magazin nu se misca din loc in caz de coliziune.
 }
 
 bool Shop::isInInteraction()

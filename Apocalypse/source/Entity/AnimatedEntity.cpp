@@ -22,7 +22,11 @@ void AnimatedEntity::draw()
 {
 	for (int i = 0; i < this->statuses.size(); ++i)
 	{
-		SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getFlipbook(this->animationsName2D[this->statuses[i]]).getTextureAtTime(GlobalClock::get().getCurrentTime() - this->timesSinceStatuses[i]), Camera::get().screenPosition(this->x, this->y), Camera::get().screenSize(this->drawWidth, this->drawHeight), this->rotateAngle);
+		SpriteRenderer::get().draw(ResourceManager::getShader("sprite"),
+			ResourceManager::getFlipbook(this->animationsName2D[this->statuses[i]]).getTextureAtTime(GlobalClock::get().getCurrentTime() - this->timesSinceStatuses[i]),
+			Camera::get().screenPosition(this->x, this->y),
+			Camera::get().screenSize(this->drawWidth, this->drawHeight),
+			this->rotateAngle);
 	}
 }
 

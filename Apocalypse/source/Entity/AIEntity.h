@@ -8,7 +8,6 @@
 class AIEntity : public virtual Entity
 {
 protected:
-
 	static const double EPSILON_ANGLE;
 	static const double EPSILON_MOVEMENT;
 	static const std::vector<std::pair<int, int>> neighbors;
@@ -16,7 +15,7 @@ protected:
 	static const std::vector<double> neighborsAngles;
 	static const std::vector<double> extendedNeighborsAngles;
 
-	double nearTargetRadius; // TODO: In Enemy E FOLOSITA DREPT UN INT!!
+	double nearTargetRadius;
 
 public:
 

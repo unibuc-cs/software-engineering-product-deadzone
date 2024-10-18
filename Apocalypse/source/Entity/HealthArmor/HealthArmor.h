@@ -5,7 +5,6 @@
 class HealthArmor : public virtual PickUp
 {
 protected:
-
 	double addedArmor;
 
 public:

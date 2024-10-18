@@ -23,6 +23,7 @@ GlobalClock& GlobalClock::get()
 void GlobalClock::updateTime()
 {
 	this->currentTime = glfwGetTime();
+
 	this->deltaTime = this->currentTime - this->previousTime;
 	this->previousTime = this->currentTime;
 }
