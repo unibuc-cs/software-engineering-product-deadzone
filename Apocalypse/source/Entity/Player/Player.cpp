@@ -52,8 +52,8 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 	hasWeapon({ {Weapon::WeaponType::FIST, true},
 		{Weapon::WeaponType::KNIFE, true},
 		{Weapon::WeaponType::REVOLVER, true},
-		{Weapon::WeaponType::SHOTGUN, false},
-		{Weapon::WeaponType::AK47, false},
+		{Weapon::WeaponType::SHOTGUN, true},
+		{Weapon::WeaponType::AK47, true},
 		{Weapon::WeaponType::M4, false},
 		// {Weapon::WeaponType::MINIGUN, false},
 		{Weapon::WeaponType::GRENADE, true} }),
@@ -665,102 +665,53 @@ void Player::pauseGame()
 	InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 }
 
-void Player::weaponSlot1()
+void Player::setCurrentWeaponIndex(int currentWeaponIndex)
 {
-	if (this->hasWeapon[this->weapons[0]->getWeaponType()])
+	if (this->hasWeapon[this->weapons[currentWeaponIndex]->getWeaponType()])
 	{
 		this->isShooting = false;
 
-		if (this->weapons[0] != nullptr && this->currentWeaponIndex != 0)
+		if (this->weapons[currentWeaponIndex] != nullptr && this->currentWeaponIndex != currentWeaponIndex)
 		{
-			weapons[0]->drawWeapon();
-			this->currentWeaponIndex = 0;
+			weapons[currentWeaponIndex]->drawWeapon();
+			this->currentWeaponIndex = currentWeaponIndex;
 		}
 	}
+}
+
+void Player::weaponSlot1()
+{
+	this->setCurrentWeaponIndex(0);
 }
 
 void Player::weaponSlot2()
 {
-	if (this->hasWeapon[this->weapons[1]->getWeaponType()])
-	{
-		this->isShooting = false;
-
-		if (this->weapons[1] != nullptr && this->currentWeaponIndex != 1)
-		{
-			weapons[1]->drawWeapon();
-			this->currentWeaponIndex = 1;
-		}
-	}
+	this->setCurrentWeaponIndex(1);
 }
 
 void Player::weaponSlot3()
 {
-	if (this->hasWeapon[this->weapons[2]->getWeaponType()])
-	{
-		this->isShooting = false;
-
-		if (this->weapons[2] != nullptr && this->currentWeaponIndex != 2)
-		{
-			weapons[2]->drawWeapon();
-			this->currentWeaponIndex = 2;
-		}
-	}
+	this->setCurrentWeaponIndex(2);
 }
 
 void Player::weaponSlot4()
 {
-	if (this->hasWeapon[this->weapons[3]->getWeaponType()])
-	{
-		this->isShooting = false;
-
-		if (this->weapons[3] != nullptr && this->currentWeaponIndex != 3)
-		{
-			weapons[3]->drawWeapon();
-			this->currentWeaponIndex = 3;
-		}
-	}
+	this->setCurrentWeaponIndex(3);
 }
 
 void Player::weaponSlot5()
 {
-	if (this->hasWeapon[this->weapons[4]->getWeaponType()])
-	{
-		this->isShooting = false;
-
-		if (this->weapons[4] != nullptr && this->currentWeaponIndex != 4)
-		{
-			weapons[4]->drawWeapon();
-			this->currentWeaponIndex = 4;
-		}
-	}
+	this->setCurrentWeaponIndex(4);
 }
 
 void Player::weaponSlot6()
 {
-	if (this->hasWeapon[this->weapons[5]->getWeaponType()])
-	{
-		this->isShooting = false;
-
-		if (this->weapons[5] != nullptr && this->currentWeaponIndex != 5)
-		{
-			weapons[5]->drawWeapon();
-			this->currentWeaponIndex = 5;
-		}
-	}
+	this->setCurrentWeaponIndex(5);
 }
 
 void Player::weaponSlot7()
 {
-	if (this->hasWeapon[this->weapons[6]->getWeaponType()])
-	{
-		this->isShooting = false;
-
-		if (this->weapons[6] != nullptr && this->currentWeaponIndex != 6)
-		{
-			weapons[6]->drawWeapon();
-			this->currentWeaponIndex = 6;
-		}
-	}
+	this->setCurrentWeaponIndex(6);
 }
 
 void Player::draw()

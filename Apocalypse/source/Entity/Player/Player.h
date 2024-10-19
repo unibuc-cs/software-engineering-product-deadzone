@@ -160,5 +160,8 @@ public:
 
 	inline bool hasMaxHealth() const { return health == Human::healthCap; }
 	inline bool hasMaxArmor() const { return armor == Player::armorCap; }
+
+	void setCurrentWeaponIndex(int currentWeaponIndex);
+	inline void deleteWeaponFromInventory(Weapon::WeaponType weaponType) { this->hasWeapon[weaponType] = false; }
 };
 

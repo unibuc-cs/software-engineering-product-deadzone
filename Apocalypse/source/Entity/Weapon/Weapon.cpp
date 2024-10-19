@@ -3,6 +3,7 @@
 #include "../../Game/Game.h"
 #include "../../Camera/Camera.h"
 #include "../../SoundManager/SoundManager.h"
+#include "../../Random/Random.h"
 
 #include "../Player/Player.h"
 #include "../../GlobalClock/GlobalClock.h"
@@ -122,7 +123,7 @@ void Weapon::onClick()
 				}
 			}
 
-			int random_number = std::rand() % 4;
+			int random_number = Random::randomInt(0, 3);
 			switch (random_number)
 			{
 			case 0:
@@ -215,7 +216,7 @@ void Weapon::onClick()
 
 		case WeaponType::GRENADE:
 		{
-			int random_number = std::rand() % 2;
+			int random_number = Random::randomInt(0, 1);
 			switch (random_number)
 			{
 			case 0:
@@ -231,6 +232,20 @@ void Weapon::onClick()
 			}
 
 			Game::get().addEntity(std::make_shared<ThrownGrenade>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 3.0, 0.3, 0.3, "grenade0", 0.0, 1.0, this->damage, 15.0, 1.0)); // durata aruncare grenada, damage, scale explozie si durata explozie (ultimii 4 parametrii)
+
+			if (this->numBullets == 0)
+			{
+				if (Player::get().getTotalBulletsCurrentWeapon() >= 1)
+				{
+					this->numBullets = 1;
+					Player::get().modifyBullets(weaponType, -1);
+				}
+				else
+				{
+					Player::get().deleteWeaponFromInventory(this->weaponType);
+					Player::get().setCurrentWeaponIndex(0);
+				}
+			}
 		}
 			break;
 		}
@@ -279,9 +294,14 @@ void Weapon::reload()
 		return;
 	}
 
+	if (Player::get().getTotalBulletsCurrentWeapon() == 0)
+	{
+		return;
+	}
+
 	this->isReloading = true;
 
-	if (this->reloadSound.size() != 0)
+	if (!this->reloadSound.empty())
 	{
 		SoundManager::get().play(reloadSound, false);
 	}
@@ -289,12 +309,6 @@ void Weapon::reload()
 
 bool Weapon::recentlyShot() const
 {
-	// TODO: nu inteleg
-	if (weaponType == WeaponType::AK47 || weaponType == WeaponType::M4 || weaponType == WeaponType::MINIGUN)
-	{
-		return GlobalClock::get().getCurrentTime() - this->timeSinceLastShot < 0.1;
-	}
-
 	return GlobalClock::get().getCurrentTime() - this->timeSinceLastShot < this->fireRate;
 }
 
