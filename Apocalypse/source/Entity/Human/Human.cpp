@@ -3,6 +3,9 @@
 #include "../Door/Door.h"
 #include "../Bullet/Bullet.h"
 #include "../Explosion/Explosion.h"
+#include "../Bullet/ThrownGrenade.h"
+
+#include <iostream>
 
 Human::Human(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double health, double armor = 0.0) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
@@ -15,6 +18,9 @@ Human::Human(double x, double y, double drawWidth, double drawHeight, double rot
 
 void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
+	if (dynamic_cast<ThrownGrenade*>(&other) != nullptr); // ignoram grenazile in aer
+		return;
+
 	if (dynamic_cast<Wall*>(&other) != nullptr || dynamic_cast<Door*>(&other) != nullptr)
 	{
 		if (overlap.x < overlap.y)

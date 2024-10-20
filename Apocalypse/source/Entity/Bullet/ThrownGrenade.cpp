@@ -6,6 +6,10 @@
 #include "../../Random/Random.h"
 #include "../../SoundManager/SoundManager.h"
 
+#include "../Wall/Wall.h"
+#include "../Door/Door.h"
+#include "../Shop/Shop.h"
+
 #include <vector>
 #include <map>
 
@@ -92,6 +96,12 @@ void ThrownGrenade::update()
 
 void ThrownGrenade::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
+	// Facem coliziune doar cu Wall/Door/Shop, atat
+	if (dynamic_cast<Wall*>(&other) != nullptr
+		&& dynamic_cast<Door*>(&other) != nullptr
+		&& dynamic_cast<Shop*>(&other) != nullptr)
+		return;
+
 	double normalizedX = glm::cos(glm::radians(this->getRotateAngle()));
 	double normalizedY = glm::sin(glm::radians(this->getRotateAngle()));
 
