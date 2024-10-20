@@ -22,7 +22,7 @@ void Bullet::onCollide(CollidableEntity& other, glm::vec2 overlap)
 	std::vector<AnimatedEntity::EntityStatus> blastStatuses = { AnimatedEntity::EntityStatus::IDLE };
 
 	// spawn bullet blast
-	Game::get().addEntity(std::make_shared<BulletBlast>(
+	Game::get().addEntityForNextFrame(std::make_shared<BulletBlast>(
 		this->x, this->y,
 		1.0, 1.0,
 		this->rotateAngle,

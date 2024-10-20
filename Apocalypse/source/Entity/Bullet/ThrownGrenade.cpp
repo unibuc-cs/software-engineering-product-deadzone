@@ -85,7 +85,7 @@ void ThrownGrenade::update()
 		std::map<AnimatedEntity::EntityStatus, std::string> m = { { AnimatedEntity::EntityStatus::IDLE, "grenadeExplosion" } };
 		std::vector<AnimatedEntity::EntityStatus> v = { AnimatedEntity::EntityStatus::IDLE };
 
-		Game::get().addEntity(std::make_shared<Explosion>(this->x, this->y,
+		Game::get().addEntityForNextFrame(std::make_shared<Explosion>(this->x, this->y,
 			this->originalDrawWidth * this->explosionScale, this->originalDrawHeight * this->explosionScale,
 			randomExplosionAngle, 0.0, this->originalCollideWidth * this->explosionScale, this->originalCollideHeight * this->explosionScale,
 			m, v, this->explosionDuration, this->explosionDamage));

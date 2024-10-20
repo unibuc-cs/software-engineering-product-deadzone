@@ -271,6 +271,10 @@ void Game::run()
 
 void Game::updateEntities()
 {
+	for (int i = 0; i < this->entitiesForNextFrame.size(); ++i)
+		this->entities.emplace_back(this->entitiesForNextFrame[i]);
+    this->entitiesForNextFrame.clear();
+
     for (int i = 0; i < this->entities.size(); ++i)
     {
         if (entities[i]->getDeleteEntity())
@@ -283,38 +287,6 @@ void Game::updateEntities()
 
     for (int i = 0; i < this->entities.size(); ++i)
         this->entities[i]->update();
-
-    for (int i = 0; i < this->entities.size(); ++i)
-    {
-        if (std::dynamic_pointer_cast<Enemy>(entities[i]) &&
-            (entities[i]->getX() - Player::get().getX()) * (entities[i]->getX() - Player::get().getX()) +
-            (entities[i]->getY() - Player::get().getY()) * (entities[i]->getY() - Player::get().getY())
-            <=
-            std::dynamic_pointer_cast<Enemy>(entities[i])->getAttackRadius() * std::dynamic_pointer_cast<Enemy>(entities[i])->getAttackRadius())
-        {
-            double appliedDamage = std::dynamic_pointer_cast<Enemy>(entities[i])->getAttackDamage();
-            if (Player::get().getArmor() >= appliedDamage)
-            {
-                Player::get().setArmor(Player::get().getArmor() - appliedDamage);
-                appliedDamage = 0.0;
-            }
-            else
-            {
-                appliedDamage -= Player::get().getArmor();
-                Player::get().setArmor(0.0);
-            }
-            if (Player::get().getHealth() >= appliedDamage)
-            {
-                Player::get().setHealth(Player::get().getHealth() - appliedDamage);
-                appliedDamage = 0.0;
-            }
-            else
-            {
-                appliedDamage -= Player::get().getHealth();
-                Player::get().setHealth(0.0);
-            }
-        }
-    }
 
     while (this->deadBodies.size() > this->MAX_NUM_DEAD_BODIES)
     {
@@ -354,9 +326,9 @@ void Game::drawEntities() // grenazile si exploziile la urma (sunt mai la inalti
             this->entities[i]->draw();
 }
 
-void Game::addEntity(std::shared_ptr<Entity> const entity)
+void Game::addEntityForNextFrame(std::shared_ptr<Entity> const entity)
 {
-    this->entities.emplace_back(entity);
+    this->entitiesForNextFrame.emplace_back(entity);
 }
 
 void Game::addDeadBody(std::shared_ptr<DeadBody> const deadBody)

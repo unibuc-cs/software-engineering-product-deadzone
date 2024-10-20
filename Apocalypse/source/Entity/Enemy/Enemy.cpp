@@ -273,6 +273,36 @@ void Enemy::update()
 				this->rotateAngle -= 360.0;
 		}
 	}
+
+
+	// Atac Player
+	if ((this->x - Player::get().getX()) * (this->x - Player::get().getX()) +
+		(this->y - Player::get().getY()) * (this->y - Player::get().getY())
+		<=
+		this->attackRadius * this->attackRadius)
+	{
+		double appliedDamage = this->attackDamage;
+		if (Player::get().getArmor() >= appliedDamage)
+		{
+			Player::get().setArmor(Player::get().getArmor() - appliedDamage);
+			appliedDamage = 0.0;
+		}
+		else
+		{
+			appliedDamage -= Player::get().getArmor();
+			Player::get().setArmor(0.0);
+		}
+		if (Player::get().getHealth() >= appliedDamage)
+		{
+			Player::get().setHealth(Player::get().getHealth() - appliedDamage);
+			appliedDamage = 0.0;
+		}
+		else
+		{
+			appliedDamage -= Player::get().getHealth();
+			Player::get().setHealth(0.0);
+		}
+	}
 }
 
 Enemy::~Enemy()

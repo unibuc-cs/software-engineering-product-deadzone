@@ -25,7 +25,9 @@ private:
 
 private:
 	std::vector<std::shared_ptr<DeadBody>> deadBodies;
+
 	std::vector<std::shared_ptr<Entity>> entities;
+	std::vector<std::shared_ptr<Entity>> entitiesForNextFrame;
 
 	const int MAX_NUM_DEAD_BODIES;
 
@@ -34,7 +36,7 @@ public:
 
 	void run();
 
-	void addEntity(std::shared_ptr<Entity> const entity);
+	void addEntityForNextFrame(std::shared_ptr<Entity> const entity);
 	void addDeadBody(std::shared_ptr<DeadBody> const deadBody);
 
 	inline std::vector<std::shared_ptr<Entity>>& getEntities() { return this->entities; }

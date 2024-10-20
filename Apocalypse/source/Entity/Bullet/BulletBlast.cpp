@@ -13,8 +13,6 @@ BulletBlast::BulletBlast(double x, double y, double drawWidth, double drawHeight
 void BulletBlast::update()
 {
 	if (ResourceManager::getFlipbook(animationsName2D[this->getStatus()]).getIsFinished(GlobalClock::get().getCurrentTime() - this->getTimeSinceStatus()))
-	{
 		setDeleteEntity(true);
-	}
 }
 

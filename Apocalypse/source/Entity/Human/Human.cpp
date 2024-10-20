@@ -18,7 +18,7 @@ Human::Human(double x, double y, double drawWidth, double drawHeight, double rot
 
 void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 {
-	if (dynamic_cast<ThrownGrenade*>(&other) != nullptr); // ignoram grenazile in aer
+	if (dynamic_cast<ThrownGrenade*>(&other) != nullptr) // ignoram grenazile in aer
 		return;
 
 	if (dynamic_cast<Wall*>(&other) != nullptr || dynamic_cast<Door*>(&other) != nullptr)
