@@ -718,7 +718,7 @@ void Player::draw()
 {
 	if (this->isDead())
 	{
-		int deadTextureIndex = (int)(Random::random01() > 0.5);
+		int deadTextureIndex = Random::randomInt(0, 1);
 		double deadRotateAngle = (Random::random01() * 360.0 - Random::EPSILON);
 		double deadResize = 1.25;
 
