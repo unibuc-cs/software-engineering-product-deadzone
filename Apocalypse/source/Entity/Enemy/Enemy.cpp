@@ -13,11 +13,11 @@
 #include "../../Renderer/SpriteRenderer.h"
 #include "../../Random/Random.h"
 
-Enemy::Enemy(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double health, double rotateSpeed, double attackDamage, double attackRadius)
+Enemy::Enemy(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double health, double rotateSpeed, double attackDamage, double attackRadius, double armor)
 	: Entity(x, y, drawWidth, drawHeight, rotateAngle, speed)
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
 	, AnimatedEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, animationsName2D, statuses)
-	, Human(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, animationsName2D, statuses, health)
+	, Human(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, animationsName2D, statuses, health, armor)
 	, AIEntity(x, y, drawWidth, drawHeight, rotateAngle, speed)
 	, rotateSpeed(rotateSpeed), probToChangeDir(1.0 / 250.0)
 	, currentTarget(std::make_pair(x, y)), nextTarget(std::make_pair(x, y))

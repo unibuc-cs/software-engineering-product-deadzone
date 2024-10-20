@@ -54,9 +54,6 @@ private:
 
 	double runningSpeed;
 
-	double armor;
-	double armorCap;
-
 	double stamina;
 	double staminaChangeSpeed;
 	double staminaCap;
@@ -105,16 +102,12 @@ public:
 
 	static Player& get();
 
-	void onCollide(CollidableEntity& other, glm::vec2 overlap) override;
-
 	void update() override;
 
 	void setupPlayerInputComponent();
 
 	inline double getStamina() const { return this->stamina; }
 	inline double getStaminaCap() const { return this->staminaCap; }
-	inline double getArmor() const { return this->armor; }
-	inline double getArmorCap() const { return this->armorCap; }
 	inline int getGold() const { return this->gold; }
 	inline int getGoldCap() const { return this->goldCap; }
 
@@ -153,13 +146,6 @@ public:
 	inline bool getEnterShopUsed() const { return this->enterShopUsed; }
 
 	void enterShop();
-
-	inline void setArmor(double armor) { this->armor = armor; }
-	inline void fillHealth() { health = Human::healthCap; }
-	inline void fillArmor() { armor = Player::armorCap; }
-
-	inline bool hasMaxHealth() const { return health == Human::healthCap; }
-	inline bool hasMaxArmor() const { return armor == Player::armorCap; }
 
 	void setCurrentWeaponIndex(int currentWeaponIndex);
 	inline void deleteWeaponFromInventory(Weapon::WeaponType weaponType) { this->hasWeapon[weaponType] = false; }
