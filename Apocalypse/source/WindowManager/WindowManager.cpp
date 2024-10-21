@@ -5,7 +5,7 @@
 #include "../Input/InputHandler.h"
 
 WindowManager::WindowManager() 
-	: WINDOW_WIDTH(1024), WINDOW_HEIGHT(896), WINDOW_TITLE("Apocalypse")
+	: WINDOW_WIDTH(1024), WINDOW_HEIGHT(896), WINDOW_TITLE("DeadZone")
 {
 	// Init GLFW
 	glfwInit();
@@ -17,7 +17,7 @@ WindowManager::WindowManager()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	window = glfwCreateWindow(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, "Apocalypse", NULL, NULL);
+	window = glfwCreateWindow(this->WINDOW_WIDTH, this->WINDOW_HEIGHT, this->WINDOW_TITLE.c_str(), NULL, NULL);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
