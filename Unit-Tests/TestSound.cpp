@@ -5,7 +5,7 @@
 #include <locale>
 #include <stdexcept>
 
-#include "../Apocalypse/source/ResourceManager/ResourceManager.h"
+#include "../DeadZone/source/ResourceManager/ResourceManager.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -17,217 +17,217 @@ namespace TestSound
         TEST_METHOD(walking)
         {
             Logger::WriteMessage("walking");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/walking.mp3", FMOD_LOOP_NORMAL, "running", 59977u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/walking.mp3", FMOD_LOOP_NORMAL, "running", 59977u);
         }
 
         TEST_METHOD(running)
         {
             Logger::WriteMessage("running");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/running.mp3", FMOD_LOOP_NORMAL, "running", 5952u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/running.mp3", FMOD_LOOP_NORMAL, "running", 5952u);
         }
 
         TEST_METHOD(fist)
         {
             Logger::WriteMessage("fist");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/fist.mp3", FMOD_LOOP_NORMAL, "fist", 809u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/fist.mp3", FMOD_LOOP_NORMAL, "fist", 809u);
         }
 
         TEST_METHOD(revolver_01)
         {
             Logger::WriteMessage("revolver_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/revolver_01.wav", FMOD_LOOP_NORMAL, "revolver_01", 3500u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/revolver_01.wav", FMOD_LOOP_NORMAL, "revolver_01", 3500u);
         }
 
         TEST_METHOD(revolverEmpty)
         {
             Logger::WriteMessage("revolverEmpty");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/revolverEmpty.wav", FMOD_LOOP_NORMAL, "revolverEmpty", 506u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/revolverEmpty.wav", FMOD_LOOP_NORMAL, "revolverEmpty", 506u);
         }
 
         TEST_METHOD(revolverDraw)
         {
             Logger::WriteMessage("revolverDraw");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/revolverDraw.wav", FMOD_LOOP_NORMAL, "revolverDraw", 580u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/revolverDraw.wav", FMOD_LOOP_NORMAL, "revolverDraw", 580u);
         }
 
         TEST_METHOD(revolverReload)
         {
             Logger::WriteMessage("revolverReload");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/revolverReload.wav", FMOD_LOOP_NORMAL, "revolverReload", 2061u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/revolverReload.wav", FMOD_LOOP_NORMAL, "revolverReload", 2061u);
         }
 
         TEST_METHOD(ak47_01)
         {
             Logger::WriteMessage("ak47_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/ak47_01.wav", FMOD_LOOP_NORMAL, "ak47_01", 2848u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/ak47_01.wav", FMOD_LOOP_NORMAL, "ak47_01", 2848u);
         }
 
         TEST_METHOD(ak47Draw)
         {
             Logger::WriteMessage("ak47Draw");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/ak47Draw.wav", FMOD_LOOP_NORMAL, "ak47Draw", 451u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/ak47Draw.wav", FMOD_LOOP_NORMAL, "ak47Draw", 451u);
         }
 
         TEST_METHOD(ak47Reload)
         {
             Logger::WriteMessage("ak47Reload");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/ak47Reload.wav", FMOD_LOOP_NORMAL, "ak47Reload", 1200u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/ak47Reload.wav", FMOD_LOOP_NORMAL, "ak47Reload", 1200u);
         }
 
         TEST_METHOD(m4a1_01)
         {
             Logger::WriteMessage("m4a1_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1_01.wav", FMOD_LOOP_NORMAL, "m4a1_01", 3191u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1_01.wav", FMOD_LOOP_NORMAL, "m4a1_01", 3191u);
         }
 
         TEST_METHOD(m4a1_02)
         {
             Logger::WriteMessage("m4a1_02");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1_02.wav", FMOD_LOOP_NORMAL, "m4a1_02", 1859u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1_02.wav", FMOD_LOOP_NORMAL, "m4a1_02", 1859u);
         }
 
         TEST_METHOD(m4a1_03)
         {
             Logger::WriteMessage("m4a1_03");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1_03.wav", FMOD_LOOP_NORMAL, "m4a1_03", 2479u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1_03.wav", FMOD_LOOP_NORMAL, "m4a1_03", 2479u);
         }
 
         TEST_METHOD(m4a1_04)
         {
             Logger::WriteMessage("m4a1_04");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1_04.wav", FMOD_LOOP_NORMAL, "m4a1_04", 2815u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1_04.wav", FMOD_LOOP_NORMAL, "m4a1_04", 2815u);
         }
 
         TEST_METHOD(m4a1Empty)
         {
             Logger::WriteMessage("m4a1Empty");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1Empty.wav", FMOD_LOOP_NORMAL, "m4a1Empty", 206u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1Empty.wav", FMOD_LOOP_NORMAL, "m4a1Empty", 206u);
         }
 
         TEST_METHOD(m4a1Draw)
         {
             Logger::WriteMessage("m4a1Draw");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1Draw.wav", FMOD_LOOP_NORMAL, "m4a1Draw", 1023u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1Draw.wav", FMOD_LOOP_NORMAL, "m4a1Draw", 1023u);
         }
 
         TEST_METHOD(m4a1Reload)
         {
             Logger::WriteMessage("m4a1Reload");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/m4a1Reload.wav", FMOD_LOOP_NORMAL, "m4a1Reload", 1541u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/m4a1Reload.wav", FMOD_LOOP_NORMAL, "m4a1Reload", 1541u);
         }
 
         TEST_METHOD(knifeDraw)
         {
             Logger::WriteMessage("knifeDraw");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/knifeDraw.wav", FMOD_LOOP_NORMAL, "knifeDraw", 937u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/knifeDraw.wav", FMOD_LOOP_NORMAL, "knifeDraw", 937u);
         }
 
         TEST_METHOD(knifeLook)
         {
             Logger::WriteMessage("knifeLook");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/knifeLook.wav", FMOD_LOOP_NORMAL, "knifeLook", 902u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/knifeLook.wav", FMOD_LOOP_NORMAL, "knifeLook", 902u);
         }
 
         TEST_METHOD(knife_01)
         {
             Logger::WriteMessage("knife_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/knife_01.wav", FMOD_LOOP_NORMAL, "knife_01", 1031u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/knife_01.wav", FMOD_LOOP_NORMAL, "knife_01", 1031u);
         }
 
         TEST_METHOD(knife_02)
         {
             Logger::WriteMessage("knife_02");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/knife_02.wav", FMOD_LOOP_NORMAL, "knife_02", 1031u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/knife_02.wav", FMOD_LOOP_NORMAL, "knife_02", 1031u);
         }
 
         TEST_METHOD(knife_03)
         {
             Logger::WriteMessage("knife_03");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/knife_03.wav", FMOD_LOOP_NORMAL, "knife_03", 1070u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/knife_03.wav", FMOD_LOOP_NORMAL, "knife_03", 1070u);
         }
 
         TEST_METHOD(knife_04)
         {
             Logger::WriteMessage("knife_04");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/knife_04.wav", FMOD_LOOP_NORMAL, "knife_04", 1828u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/knife_04.wav", FMOD_LOOP_NORMAL, "knife_04", 1828u);
         }
 
         TEST_METHOD(shotgun_01)
         {
             Logger::WriteMessage("shotgun_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/shotgun_01.wav", FMOD_LOOP_NORMAL, "shotgun_01", 1046u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/shotgun_01.wav", FMOD_LOOP_NORMAL, "shotgun_01", 1046u);
         }
 
         TEST_METHOD(shotgunDraw)
         {
             Logger::WriteMessage("shotgunDraw");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/shotgunDraw.wav", FMOD_LOOP_NORMAL, "shotgunDraw", 736u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/shotgunDraw.wav", FMOD_LOOP_NORMAL, "shotgunDraw", 736u);
         }
 
         TEST_METHOD(shotgunReload)
         {
             Logger::WriteMessage("shotgunReload");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/shotgunReload.wav", FMOD_LOOP_NORMAL, "shotgunReload", 2195u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/shotgunReload.wav", FMOD_LOOP_NORMAL, "shotgunReload", 2195u);
         }
 
         TEST_METHOD(shotgunEmpty)
         {
             Logger::WriteMessage("shotgunEmpty");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/shotgunEmpty.wav", FMOD_LOOP_NORMAL, "shotgunEmpty", 462u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/shotgunEmpty.wav", FMOD_LOOP_NORMAL, "shotgunEmpty", 462u);
         }
 
         TEST_METHOD(grenadeDetonate_01)
         {
             Logger::WriteMessage("grenadeDetonate_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/grenadeDetonate_01.wav", FMOD_LOOP_NORMAL, "grenadeDetonate_01", 4743u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/grenadeDetonate_01.wav", FMOD_LOOP_NORMAL, "grenadeDetonate_01", 4743u);
         }
 
         TEST_METHOD(grenadeDetonate_02)
         {
             Logger::WriteMessage("grenadeDetonate_02");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/grenadeDetonate_02.wav", FMOD_LOOP_NORMAL, "grenadeDetonate_02", 4863u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/grenadeDetonate_02.wav", FMOD_LOOP_NORMAL, "grenadeDetonate_02", 4863u);
         }
 
         TEST_METHOD(grenadeDetonate_03)
         {
             Logger::WriteMessage("grenadeDetonate_03");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/grenadeDetonate_03.wav", FMOD_LOOP_NORMAL, "grenadeDetonate_03", 4627u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/grenadeDetonate_03.wav", FMOD_LOOP_NORMAL, "grenadeDetonate_03", 4627u);
         }
 
         TEST_METHOD(grenadeDraw)
         {
             Logger::WriteMessage("grenadeDraw");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/grenadeDraw.wav", FMOD_LOOP_NORMAL, "grenadeDraw", 437u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/grenadeDraw.wav", FMOD_LOOP_NORMAL, "grenadeDraw", 437u);
         }
 
         TEST_METHOD(grenadeThrow_01)
         {
             Logger::WriteMessage("grenadeThrow_01");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/grenadeThrow_01.wav", FMOD_LOOP_NORMAL, "grenadeThrow_01", 184u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/grenadeThrow_01.wav", FMOD_LOOP_NORMAL, "grenadeThrow_01", 184u);
         }
 
         TEST_METHOD(grenadeThrow_02)
         {
             Logger::WriteMessage("grenadeThrow_02");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/grenadeThrow_02.wav", FMOD_LOOP_NORMAL, "grenadeThrow_02", 166u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/grenadeThrow_02.wav", FMOD_LOOP_NORMAL, "grenadeThrow_02", 166u);
         }
 
         TEST_METHOD(newWave)
         {
             Logger::WriteMessage("grenadeThrow_02");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/newWave.mp3", FMOD_LOOP_NORMAL, "newWave", 11592u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/newWave.mp3", FMOD_LOOP_NORMAL, "newWave", 11592u);
         }
 
         TEST_METHOD(soundtrack)
         {
             Logger::WriteMessage("soundtrack");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/soundtrack.mp3", FMOD_LOOP_NORMAL, "soundtrack", 185887u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/soundtrack.mp3", FMOD_LOOP_NORMAL, "soundtrack", 185887u);
         }
 
         TEST_METHOD(door)
         {
             Logger::WriteMessage("door");
-            TestSoundFunc("../../../Apocalypse/resources/sounds/door.mp3", FMOD_LOOP_NORMAL, "door", 2115u);
+            TestSoundFunc("../../../DeadZone/resources/sounds/door.mp3", FMOD_LOOP_NORMAL, "door", 2115u);
         }
 
     private:

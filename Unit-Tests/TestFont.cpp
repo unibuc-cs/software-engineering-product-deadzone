@@ -5,7 +5,7 @@
 #include <locale>
 #include <stdexcept>
 
-#include "../Apocalypse/source/ResourceManager/ResourceManager.h"
+#include "../DeadZone/source/ResourceManager/ResourceManager.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -20,7 +20,7 @@ namespace TestFont
 
             try
             {
-                ResourceManager::loadFont("../../../Apocalypse/resources/fonts/Antonio-Bold.ttf", 24, "Antonio");
+                ResourceManager::loadFont("../../../DeadZone/resources/fonts/Antonio-Bold.ttf", 24, "Antonio");
 
                 Assert::AreEqual(static_cast<size_t>(128), ResourceManager::getFont("Antonio").Characters.size()); // 128
             }
