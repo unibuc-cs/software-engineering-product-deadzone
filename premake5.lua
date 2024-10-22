@@ -1,6 +1,6 @@
-workspace "Deadzone"
+workspace "DeadZone"
     architecture "x64"
-    startproject "Deadzone"
+    startproject "DeadZone"
 
     configurations
     {
@@ -242,8 +242,8 @@ workspace "Deadzone"
 
 
 
-    project "Deadzone"
-        location "Deadzone"
+    project "DeadZone"
+        location "DeadZone"
         kind "ConsoleApp"
         language "C++"
         cppdialect "C++17"
@@ -330,9 +330,9 @@ workspace "Deadzone"
         files
         {
             "%{prj.name}/**.cpp",
-            "Deadzone/source/**.h",
-            "Deadzone/source/**.cpp",
-            "Deadzone/source/**.hpp"
+            "DeadZone/source/**.h",
+            "DeadZone/source/**.cpp",
+            "DeadZone/source/**.hpp"
         }
 
         includedirs

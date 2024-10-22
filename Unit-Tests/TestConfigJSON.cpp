@@ -19,7 +19,7 @@ namespace TestConfigJSON
         {
             Logger::WriteMessage("input.json");
 
-            std::ifstream file("../../../Deadzone/config/input.json");
+            std::ifstream file("../../../DeadZone/config/input.json");
             if (!file.is_open())
             {
                 Assert::Fail(L"Failed to open: input.json");
@@ -46,7 +46,7 @@ namespace TestConfigJSON
         {
             Logger::WriteMessage("game.json");
 
-            std::ifstream file("../../../Deadzone/config/game.json");
+            std::ifstream file("../../../DeadZone/config/game.json");
             if (!file.is_open())
             {
                 Assert::Fail(L"Failed to open: game.json");
