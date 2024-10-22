@@ -5,7 +5,7 @@
 #include <locale>
 #include <stdexcept>
 
-#include "../Apocalypse/source/ResourceManager/ResourceManager.h"
+#include "../Deadzone/source/ResourceManager/ResourceManager.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -20,7 +20,7 @@ namespace TestShader
 
             try
             {
-                ResourceManager::loadShader("../../../Apocalypse/shaders/sprite.vert", "../../../Apocalypse/shaders/sprite.frag", nullptr, "sprite");
+                ResourceManager::loadShader("../../../Deadzone/shaders/sprite.vert", "../../../Deadzone/shaders/sprite.frag", nullptr, "sprite");
             }
             catch (const std::runtime_error& err)
             {
@@ -38,7 +38,7 @@ namespace TestShader
 
             try
             {
-                ResourceManager::loadShader("../../../Apocalypse/shaders/text.vert", "../../../Apocalypse/shaders/text.frag", nullptr, "text");
+                ResourceManager::loadShader("../../../Deadzone/shaders/text.vert", "../../../Deadzone/shaders/text.frag", nullptr, "text");
             }
             catch (const std::runtime_error& err)
             {
@@ -56,7 +56,7 @@ namespace TestShader
 
             try
             {
-                ResourceManager::loadShader("../../../Apocalypse/shaders/player.vert", "../../../Apocalypse/shaders/player.frag", nullptr, "player");
+                ResourceManager::loadShader("../../../Deadzone/shaders/player.vert", "../../../Deadzone/shaders/player.frag", nullptr, "player");
             }
             catch (const std::runtime_error& err)
             {

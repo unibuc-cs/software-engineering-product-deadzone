@@ -13,7 +13,7 @@ permissions:
   pull-requests: write
 
 env:
-  SOLUTION_FILE_PATH: 'Apocalypse.sln'
+  SOLUTION_FILE_PATH: 'Deadzone.sln'
   ZIP_NAME: 'windows-x64'
 
 jobs:
@@ -77,20 +77,20 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/') && matrix.build-configuration == 'Release'
       run: |
         mkdir ${{ env.ZIP_NAME }}
-        copy bin/Release-windows-x86_64/Apocalypse/*.exe ${{ env.ZIP_NAME }}
-        copy bin/Release-windows-x86_64/Apocalypse/*.dll ${{ env.ZIP_NAME }}
+        copy bin/Release-windows-x86_64/Deadzone/*.exe ${{ env.ZIP_NAME }}
+        copy bin/Release-windows-x86_64/Deadzone/*.dll ${{ env.ZIP_NAME }}
 
         mkdir -p "${{ env.ZIP_NAME }}\resources"
-        xcopy Apocalypse\resources "${{ env.ZIP_NAME }}\resources" /E /H
+        xcopy Deadzone\resources "${{ env.ZIP_NAME }}\resources" /E /H
 
         mkdir -p "${{ env.ZIP_NAME }}\shaders"
-        xcopy Apocalypse\shaders "${{ env.ZIP_NAME }}\shaders" /E /H
+        xcopy Deadzone\shaders "${{ env.ZIP_NAME }}\shaders" /E /H
 
         mkdir -p "${{ env.ZIP_NAME }}\maps"
-        xcopy Apocalypse\maps "${{ env.ZIP_NAME }}\maps" /E /H
+        xcopy Deadzone\maps "${{ env.ZIP_NAME }}\maps" /E /H
 
         mkdir -p "${{ env.ZIP_NAME }}\config"
-        xcopy Apocalypse\config "${{ env.ZIP_NAME }}\config" /E /H
+        xcopy Deadzone\config "${{ env.ZIP_NAME }}\config" /E /H
 
         dir /a ${{ env.ZIP_NAME }}
     

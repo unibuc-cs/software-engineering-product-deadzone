@@ -1,6 +1,6 @@
-workspace "Apocalypse"
+workspace "Deadzone"
     architecture "x64"
-    startproject "Apocalypse"
+    startproject "Deadzone"
 
     configurations
     {
@@ -242,8 +242,8 @@ workspace "Apocalypse"
 
 
 
-    project "Apocalypse"
-        location "Apocalypse"
+    project "Deadzone"
+        location "Deadzone"
         kind "ConsoleApp"
         language "C++"
         cppdialect "C++17"
@@ -330,9 +330,9 @@ workspace "Apocalypse"
         files
         {
             "%{prj.name}/**.cpp",
-            "Apocalypse/source/**.h",
-            "Apocalypse/source/**.cpp",
-            "Apocalypse/source/**.hpp"
+            "Deadzone/source/**.h",
+            "Deadzone/source/**.cpp",
+            "Deadzone/source/**.hpp"
         }
 
         includedirs
