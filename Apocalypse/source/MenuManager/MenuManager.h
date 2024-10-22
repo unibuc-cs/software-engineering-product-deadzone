@@ -27,6 +27,8 @@ public:
 
 	void push(MenuBase& m);
 
+	void replaceTop(MenuBase& m);
+
 	void clear();
 
 	inline size_t size() const { return menuStack.size(); };

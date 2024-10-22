@@ -129,4 +129,5 @@ void PauseMenu::quit(Button&)
 	MenuManager::get().clear();
 
 	MenuManager::get().push(MainMenu::get());
+	InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 }

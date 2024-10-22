@@ -1,5 +1,6 @@
 #include "MenuManager.h"
 #include "../Input/InputHandler.h"
+#include "../Game/Game.h"
 
 
 MenuManager& MenuManager::get()
@@ -21,6 +22,13 @@ void MenuManager::pop() {
 		menuStack[menuStack.size() - 1]->setIsInMenu(true);
 		menuStack[menuStack.size() - 1]->setupInputComponent();
 	}
+
+	if (menuStack.empty())
+	{
+		Game::get().setGameStatus(Game::GameStatus::InGame);
+		InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
+		return;
+	}
 }
 
 void MenuManager::push(MenuBase& m) { 
@@ -32,6 +40,8 @@ void MenuManager::push(MenuBase& m) {
 	menuStack.push_back(&m); 
 	menuStack[menuStack.size() - 1]->setIsInMenu(true);
 	menuStack[menuStack.size() - 1]->setupInputComponent();
+
+	Game::get().setGameStatus(Game::GameStatus::InMenu);
 }
 
 MenuBase& MenuManager::top() const
@@ -39,12 +49,30 @@ MenuBase& MenuManager::top() const
 	// std::cout << this->size() << "\n";
 	if (menuStack.empty())
 	{
+		Game::get().setGameStatus(Game::GameStatus::InGame);
 		InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
 
 		throw noMenuOpened();
 	}
 
 	return *menuStack[menuStack.size() - 1];
+}
+
+void MenuManager::replaceTop(MenuBase& m)
+{
+	if (menuStack.empty())
+	{
+		Game::get().setGameStatus(Game::GameStatus::InGame);
+		InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
+
+		throw noMenuOpened();
+	}
+
+	menuStack[menuStack.size() - 1]->setIsInMenu(false);
+	menuStack.pop_back();
+	menuStack.push_back(&m);
+	menuStack[menuStack.size() - 1]->setIsInMenu(true);
+	menuStack[menuStack.size() - 1]->setupInputComponent();
 }
 
 void MenuManager::clear()
@@ -61,9 +89,20 @@ void MenuManager::draw() const
 
 void MenuManager::play()
 {
-	while (MenuManager::size())
-		if (MenuManager::top().getIsInMenu() == true)
-			MenuManager::top().playMenu();
-		else
-			std::cout << "getIsInMenu == false\n";
+	//while (MenuManager::size())
+	//	if (MenuManager::top().getIsInMenu() == true)
+	//		// MenuManager::top().playMenu();
+	//		MenuManager::draw();
+	//	else
+	//		std::cout << "getIsInMenu == false\n";
+
+	if (menuStack.empty())
+	{
+		Game::get().setGameStatus(Game::GameStatus::InGame);
+		InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
+
+		throw noMenuOpened();
+	}
+
+	MenuManager::draw();
 }

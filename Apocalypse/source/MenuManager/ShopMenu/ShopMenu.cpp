@@ -117,15 +117,17 @@ ShopMenuWeapons::ShopMenuWeapons(double x, double y, double drawWidth, double dr
 		{
 			"Bullets", [](Button&) {
 				// ShopMenuWeapons::get().setIsInMenu(false);
-				MenuManager::get().pop();
-				MenuManager::get().push(ShopMenuBullets::get());
+				MenuManager::get().replaceTop(ShopMenuBullets::get());
+				// MenuManager::get().pop();
+				// MenuManager::get().push(ShopMenuBullets::get());
 			}
 		},
 		{
 			"Health/Armor", [](Button&) {
 			// ShopMenuWeapons::get().setIsInMenu(false);
-			MenuManager::get().pop();
-			MenuManager::get().push(ShopMenuHealthArmor::get());
+			MenuManager::get().replaceTop(ShopMenuHealthArmor::get());
+			// MenuManager::get().pop();
+			// MenuManager::get().push(ShopMenuHealthArmor::get());
 }
 		}
 	};
@@ -270,15 +272,17 @@ ShopMenuBullets::ShopMenuBullets(double x, double y, double drawWidth, double dr
 		{
 			"Weapons", [](Button&) {
 				// ShopMenuWeapons::get().setIsInMenu(false);
-				MenuManager::get().pop();
-				MenuManager::get().push(ShopMenuWeapons::get());
+				MenuManager::get().replaceTop(ShopMenuWeapons::get());
+				// MenuManager::get().pop();
+				// MenuManager::get().push(ShopMenuWeapons::get());
 				}
 		},
 		{
 			"Health/Armor", [](Button&) {
 			// ShopMenuWeapons::get().setIsInMenu(false);
-			MenuManager::get().pop();
-			MenuManager::get().push(ShopMenuHealthArmor::get());
+			MenuManager::get().replaceTop(ShopMenuHealthArmor::get());
+			// MenuManager::get().pop();
+			// MenuManager::get().push(ShopMenuHealthArmor::get());
 			}
 		}
 	};
@@ -463,15 +467,17 @@ ShopMenuHealthArmor::ShopMenuHealthArmor(double x, double y, double drawWidth, d
 		{
 			"Weapons", [](Button&) {
 				// ShopMenuWeapons::get().setIsInMenu(false);
-				MenuManager::get().pop();
-				MenuManager::get().push(ShopMenuWeapons::get());
+				MenuManager::get().replaceTop(ShopMenuWeapons::get());
+				// MenuManager::get().pop();
+				// MenuManager::get().push(ShopMenuWeapons::get());
 }
 		},
 		{
 			"Bullets", [](Button&) {
 				// ShopMenuWeapons::get().setIsInMenu(false);
-				MenuManager::get().pop();
-				MenuManager::get().push(ShopMenuBullets::get());
+				MenuManager::get().replaceTop(ShopMenuBullets::get());
+				// MenuManager::get().pop();
+				// MenuManager::get().push(ShopMenuBullets::get());
 }
 		}
 	}

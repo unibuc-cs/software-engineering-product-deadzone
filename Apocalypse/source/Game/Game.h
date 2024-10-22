@@ -32,6 +32,16 @@ private:
 	const int MAX_NUM_DEAD_BODIES;
 
 public:
+	enum class GameStatus
+	{
+		InGame,
+		InMenu
+	};
+
+private:
+	GameStatus gameStatus = GameStatus::InMenu;
+
+public:
 	static Game& get();
 
 	void run();
@@ -43,5 +53,8 @@ public:
 	inline std::vector<std::shared_ptr<DeadBody>>& getDeadBodies() { return this->deadBodies; }
 
 	inline void clear() { deadBodies.clear(); entities.clear(); };
+
+	inline GameStatus getGameStatus() const { return gameStatus; }
+	inline void setGameStatus(const GameStatus& gameStatus) { this->gameStatus = gameStatus; }
 };
 

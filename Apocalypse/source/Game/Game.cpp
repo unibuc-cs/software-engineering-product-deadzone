@@ -209,20 +209,20 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
-        if (MenuManager::get().size() == 0) {
+        if (gameStatus == GameStatus::InGame) {
             // Update
             Map::get().update();
             Camera::get().update();
             Player::get().update();
             this->updateEntities();
+
+
+            // Collision System
+            CollisionManager::get().handleCollisions(this->entities);
+
+            // Interactions System
+            InteractionManager::get().handleInteractions(this->entities);
         }
-
-        // Collision System
-        CollisionManager::get().handleCollisions(this->entities);
-
-        // Interactions System
-        InteractionManager::get().handleInteractions(this->entities);
-
         // Render
         glClearColor(0.08f, 0.08f, 0.08f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -243,13 +243,15 @@ void Game::run()
         // HUD
         HUDManager::get().draw();
 
-        // Main Menu
-        try
+        if (gameStatus == GameStatus::InMenu)
         {
-            // MenuManager::get().play();
-            MenuManager::get().top().playMenu();
+            // Main Menu
+            try
+            {
+                MenuManager::get().play();
+            }
+            catch (noMenuOpened& err) {}
         }
-        catch (noMenuOpened& err) {   }
 
         // Wave Manager
         if (MenuManager::get().size() == 0)
