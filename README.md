@@ -29,3 +29,11 @@ generate_project.bat
 ```sh
 ./generate_project.bat
 ```
+
+4. Compile and run the generated solution
+```sh
+DeadZone.sln
+```
+
+## Adding new files to the project
+Add new files directly to the 'DeadZone' folder and run `generate_project.bat`
