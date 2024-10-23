@@ -39,8 +39,10 @@ public:
 
 	void setupInputComponent();
 
+	virtual void setIsInMenu(bool isInMenu_) override;
 
 	void playMenu() override;
+
 
 };
 

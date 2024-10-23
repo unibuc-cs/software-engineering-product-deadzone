@@ -34,7 +34,7 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 			"quit", [](Button&){glfwSetWindowShouldClose(WindowManager::get().getWindow(), true);}
 		},
 		{ "play", [](Button&) {
-			MainMenu::get().isInMenu = false;
+			// MainMenu::get().isInMenu = false;
 			MenuManager::get().pop();
 			InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
 
@@ -112,6 +112,17 @@ double MainMenu::getButtonPosY(int index) {
 void MainMenu::setupInputComponent()
 {
 	buttons.activate();
+}
+
+void MainMenu::setIsInMenu(bool _isInMenu)
+{
+	bool temp_isInMenu = isInMenu;
+	MenuBase::setIsInMenu(_isInMenu);
+	if (temp_isInMenu == false && isInMenu == true)
+		SoundManager::get().resume("soundtrack");
+	else
+		if(temp_isInMenu == true && isInMenu == false)
+			SoundManager::get().pause("soundtrack");
 }
 
 void MainMenu::playMenu()

@@ -195,17 +195,17 @@ void Game::run()
 
     Camera::get().setFollowsPlayer(true);
 
-    // MainMenu::get().setupMainMenuInputComponent();
-    MenuManager::get().push(MainMenu::get());
-
-    // Setup Input
-    InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
-
     // Setup Sound System
     SoundManager::get().play("walking", true);
     SoundManager::get().play("running", true);
     SoundManager::get().play("tired", true);
     SoundManager::get().play("soundtrack", true);
+
+    // MainMenu::get().setupMainMenuInputComponent();
+    MenuManager::get().push(MainMenu::get());
+
+    // Setup Input
+    InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {

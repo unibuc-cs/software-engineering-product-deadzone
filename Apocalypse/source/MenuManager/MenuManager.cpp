@@ -34,7 +34,7 @@ void MenuManager::pop() {
 void MenuManager::push(MenuBase& m) { 
 	if (!menuStack.empty())
 	{
-		m.setIsInMenu(true);
+		// m.setIsInMenu(true);
 		menuStack[menuStack.size() - 1]->setIsInMenu(false);
 	}
 	menuStack.push_back(&m); 
