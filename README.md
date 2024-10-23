@@ -10,7 +10,7 @@ Luculescu Teodor ($351$) <br/>
 Petrovici Ricardo ($351$) <br/>
 Ciobanu Dragos ($351$) <br/>
 
-## Setup
+## Setup  
 1. Clone the repository
 ```sh
 git clone --recursive https://github.com/unibuc-cs/software-engineering-product-deadzone
@@ -29,3 +29,14 @@ generate_project.bat
 ```sh
 ./generate_project.bat
 ```
+
+4. Compile and run the generated solution
+```sh
+DeadZone.sln
+```
+
+## Requirements
+- Visual Studio including the *"Desktop development with C++"* workload
+
+## Adding new files to the project
+Add new files directly to the 'DeadZone' folder and run `generate_project.bat`

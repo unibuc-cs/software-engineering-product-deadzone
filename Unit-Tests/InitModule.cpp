@@ -82,7 +82,7 @@ TEST_MODULE_INITIALIZE(ModuleInit)
     }
 
     // Create a GLFWwindow object that we can use for GLFW's functions
-    window = glfwCreateWindow(1200, 900, "Apocalypse", NULL, NULL);
+    window = glfwCreateWindow(1200, 900, "DeadZone", NULL, NULL);
     if (window == nullptr)
     {
         glfwTerminate();
