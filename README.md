@@ -18,6 +18,7 @@ Ciobanu Dragos ($351$) <br/>
   - Requirements
   - Features
   - User Stories
+  - Diagrams
 
 <br/>
 
