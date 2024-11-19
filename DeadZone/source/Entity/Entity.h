@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <stdexcept>
+
 
 class Entity
 {
@@ -33,5 +35,8 @@ public:
 	inline void setRotateAngle(double rotateAngle) { this->rotateAngle = rotateAngle; }
 	inline void setSpeed(double speed) { this->speed = speed; }
 	inline void setDeleteEntity(bool value) { this->deleteEntity = value; }
+	std::string convertToJson(int identation = 0);
+	void setFieldValue(const std::string field, const std::string value);
+	void modifyFromJson(const std::string& str, int startAt = 0);
 };
 

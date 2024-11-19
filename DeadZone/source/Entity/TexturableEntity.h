@@ -17,4 +17,8 @@ public:
 
 	std::string getTextureName2D() const { return textureName2D; }
 	void setTextureName2D(const std::string& textureName2D) { this->textureName2D = textureName2D; }
+
+	std::string convertToJson(int identation = 0, bool showSuper = true);
+	void setFieldValue(const std::string field, const std::string value);
+	void modifyFromJson(const std::string& str, int startAt = 0);
 };
