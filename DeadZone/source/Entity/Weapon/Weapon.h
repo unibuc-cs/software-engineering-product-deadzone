@@ -63,5 +63,11 @@ public:
 	inline double getDamage() const { return this->damage; }
 	inline double getFireRate() const { return this->fireRate; }
 	inline double getPrice() const { return this->price; }
+
+	std::string weaponTypeToString();
+	std::string convertToJson(int identation = 0);
+	static WeaponType stringToWeaponType(const std::string& str);
+	void setFieldValue(const std::string field, const std::string value);
+	void modifyWeaponFromJson(std::string& str, int startAt = 0);
 };
 

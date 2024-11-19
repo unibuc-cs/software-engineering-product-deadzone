@@ -312,3 +312,96 @@ bool Weapon::recentlyShot() const
 	return GlobalClock::get().getCurrentTime() - this->timeSinceLastShot < this->fireRate;
 }
 
+
+std::string Weapon::weaponTypeToString() {
+	switch (this->weaponType) {
+		case WeaponType::FIST: return "FIST";
+		case WeaponType::KNIFE: return "KNIFE";
+		case WeaponType::REVOLVER: return "REVOLVER";
+		case WeaponType::SHOTGUN: return "SHOTGUN";
+		case WeaponType::AK47: return "AK47";
+		case WeaponType::M4: return "M4";
+		case WeaponType::MINIGUN: return "MINIGUN";
+		case WeaponType::GRENADE: return "GRENADE";
+		default: return "UNKNOWN";
+	}
+}
+
+std::string Weapon::convertToJson(int indetention)
+{
+	std::string res, depth;
+	while (indetention--) depth += "\t";
+	res = depth + "[\n";
+	res += depth + "\t\"weaponType\" : " + this->weaponTypeToString() + ",\n";
+	res += depth + "\t\"fireRate\" : " + std::to_string(this->fireRate) + ",\n";
+	res += depth + "\t\"numBullets\" : " + std::to_string(this->numBullets) + ",\n";
+	res += depth + "\t\"damage\" : " + std::to_string(this->damage) + ",\n";
+	res += depth + "\t\"shortRangeAttackRadius\" : " + std::to_string(this->shortRangeAttackRadius) + ",\n";
+	res += depth + "\t\"reloadSound\" : " + this->reloadSound + ",\n";
+	res += depth + "\t\"drawSound\" : " + this->drawSound + ",\n";
+	res += depth + "\t\"emptySound\" : " + this->emptySound + ",\n";
+	res += depth + "\t\"price\" : " + std::to_string(this->price) + ",\n";
+	res += depth + "\t\"isReloading\" : " + std::to_string(this->isReloading) + ",\n";
+	res += depth + "\t\"timeSinceLastShot\" : " + std::to_string(this->timeSinceLastShot) + "\n";
+	res += depth + "]\n";
+
+	return res;
+}
+
+Weapon::WeaponType Weapon::stringToWeaponType(const std::string& str) {
+	if (str == "FIST") return WeaponType::FIST;
+	if (str == "KNIFE") return WeaponType::KNIFE;
+	if (str == "REVOLVER") return WeaponType::REVOLVER;
+	if (str == "SHOTGUN") return WeaponType::SHOTGUN;
+	if (str == "AK47") return WeaponType::AK47;
+	if (str == "M4") return WeaponType::M4;
+	if (str == "MINIGUN") return WeaponType::MINIGUN;
+	if (str == "GRENADE") return WeaponType::GRENADE;
+}
+
+void Weapon::setFieldValue(const std::string field, const std::string value) 
+{
+	if (field == "fireRate") this->fireRate = std::stod(value);
+	if (field == "numBullets") this->numBullets = std::stoi(value);
+	if (field == "maxBullets") this->maxBullets = std::stoi(value);
+	if (field == "damage") this->damage = std::stod(value);
+	if (field == "weaponType") this->weaponType = Weapon::stringToWeaponType(value);
+	if (field == "shortRangeAttackRadius") this->shortRangeAttackRadius = std::stod(value);
+	if (field == "reloadSound") this->reloadSound = value;
+	if (field == "drawSound") this->drawSound = value;
+	if (field == "emptySound") this->emptySound = value;
+	if (field == "price") this->price = std::stod(value);
+	if (field == "isReloading") this->isReloading = std::stoi(value);
+	if (field == "timeSinceLastShot") this->timeSinceLastShot = std::stod(value);
+
+}
+
+//Assumes that it is always an valid format
+void Weapon::modifyWeaponFromJson(std::string& str, int startAt)
+{
+	while (true) {
+		if(startAt >= str.length()) throw std::invalid_argument("Bad json format: " + str);
+		if (str[startAt] == ']') break;
+
+		if (str[startAt] == '\"') {
+			//Assumes that it always has the form "field" : value,
+			std::string field;
+			startAt++;
+			while (startAt < str.length() && str[startAt] != '\"') {
+				field += str[startAt];
+				startAt++;
+			}
+
+			std::string value;
+			startAt += 3;
+			while (startAt < str.length() &&  str[startAt] != ',' && str[startAt] != ']') {
+				value += str[startAt];
+				startAt++;
+			}
+
+			this->setFieldValue(field, value);
+		}
+		else startAt++;
+	}
+}
+
