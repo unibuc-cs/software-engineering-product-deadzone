@@ -14,5 +14,9 @@ public:
 
 	virtual bool isInInteraction() = 0;
 	virtual void onInteraction() = 0;
+
+	std::string convertToJson(int identation = 0, bool showSuper = true);
+	void setFieldValue(const std::string field, const std::string value);
+	void modifyFromJson(const std::string& str, int startAt = 0);
 };
 

@@ -327,7 +327,7 @@ std::string Weapon::weaponTypeToString() {
 	}
 }
 
-std::string Weapon::convertToJson(int indetention)
+std::string Weapon::convertToJson(int indetention, bool showSuper)
 {
 	std::string res, depth;
 	while (indetention--) depth += "\t";
@@ -342,7 +342,13 @@ std::string Weapon::convertToJson(int indetention)
 	res += depth + "\t\"emptySound\" : " + this->emptySound + ",\n";
 	res += depth + "\t\"price\" : " + std::to_string(this->price) + ",\n";
 	res += depth + "\t\"isReloading\" : " + std::to_string(this->isReloading) + ",\n";
-	res += depth + "\t\"timeSinceLastShot\" : " + std::to_string(this->timeSinceLastShot) + "\n";
+	res += depth + "\t\"timeSinceLastShot\" : " + std::to_string(this->timeSinceLastShot);
+	if (showSuper) {
+		PickUp* aux = this;
+		res += ",\n";
+		res += depth + "\t\"PickUp\" : " + aux->convertToJson(depth.length() + 1, true) + "\n";
+	}
+	else res += "\n";
 	res += depth + "]\n";
 
 	return res;
@@ -365,7 +371,7 @@ void Weapon::setFieldValue(const std::string field, const std::string value)
 	if (field == "numBullets") this->numBullets = std::stoi(value);
 	if (field == "maxBullets") this->maxBullets = std::stoi(value);
 	if (field == "damage") this->damage = std::stod(value);
-	if (field == "weaponType") this->weaponType = Weapon::stringToWeaponType(value);
+	if (field == "weaponType") this->weaponType = stringToWeaponType(value);
 	if (field == "shortRangeAttackRadius") this->shortRangeAttackRadius = std::stod(value);
 	if (field == "reloadSound") this->reloadSound = value;
 	if (field == "drawSound") this->drawSound = value;
@@ -373,11 +379,15 @@ void Weapon::setFieldValue(const std::string field, const std::string value)
 	if (field == "price") this->price = std::stod(value);
 	if (field == "isReloading") this->isReloading = std::stoi(value);
 	if (field == "timeSinceLastShot") this->timeSinceLastShot = std::stod(value);
+	if (field == "PickUp") {
+		PickUp* aux = this;
+		aux->modifyFromJson(value, 0);
+	}
 
 }
 
 //Assumes that it is always an valid format
-void Weapon::modifyWeaponFromJson(std::string& str, int startAt)
+void Weapon::modifyFromJson(std::string& str, int startAt)
 {
 	while (true) {
 		if(startAt >= str.length()) throw std::invalid_argument("Bad json format: " + str);
@@ -393,10 +403,20 @@ void Weapon::modifyWeaponFromJson(std::string& str, int startAt)
 			}
 
 			std::string value;
-			startAt += 3;
-			while (startAt < str.length() &&  str[startAt] != ',' && str[startAt] != ']') {
-				value += str[startAt];
-				startAt++;
+			startAt += 4;
+
+			if (field == "PickUp") {
+				while (startAt < str.length() && str[startAt] != ']') {
+					value += str[startAt];
+					startAt++;
+				}
+				value += "]";
+			}
+			else {
+				while (startAt < str.length() && str[startAt] != ',' && str[startAt] != ']') {
+					value += str[startAt];
+					startAt++;
+				}
 			}
 
 			this->setFieldValue(field, value);

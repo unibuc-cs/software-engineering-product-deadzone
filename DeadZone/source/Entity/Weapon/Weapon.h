@@ -65,9 +65,9 @@ public:
 	inline double getPrice() const { return this->price; }
 
 	std::string weaponTypeToString();
-	std::string convertToJson(int identation = 0);
+	std::string convertToJson(int identation = 0, bool showSuper = true);
 	static WeaponType stringToWeaponType(const std::string& str);
 	void setFieldValue(const std::string field, const std::string value);
-	void modifyWeaponFromJson(std::string& str, int startAt = 0);
+	void modifyFromJson(std::string& str, int startAt = 0);
 };
 

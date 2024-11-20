@@ -17,7 +17,7 @@ Entity::~Entity()
 
 }
 
-std::string Entity::convertToJson(int indetention)
+std::string Entity::convertToJson(int indetention, bool showSuper)
 {
 	std::string res, depth;
 	while (indetention--) depth += "\t";
@@ -65,7 +65,7 @@ void Entity::modifyFromJson(const std::string& str, int startAt)
 			}
 
 			std::string value;
-			startAt += 3;
+			startAt += 4;
 			while (startAt < str.length() && str[startAt] != ',' && str[startAt] != ']') {
 				value += str[startAt];
 				startAt++;

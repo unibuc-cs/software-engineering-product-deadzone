@@ -1,5 +1,4 @@
 #include "TexturableEntity.h"
-
 #include "../Renderer/SpriteRenderer.h"
 #include "../ResourceManager/ResourceManager.h"
 #include "../Camera/Camera.h"
@@ -68,7 +67,7 @@ void TexturableEntity::modifyFromJson(const std::string& str, int startAt)
 			}
 
 			std::string value;
-			startAt += 3;
+			startAt += 4;
 			if (field == "Entity") {
 				while (startAt < str.length() && str[startAt] != ']') {
 					value += str[startAt];

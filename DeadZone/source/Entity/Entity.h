@@ -35,7 +35,7 @@ public:
 	inline void setRotateAngle(double rotateAngle) { this->rotateAngle = rotateAngle; }
 	inline void setSpeed(double speed) { this->speed = speed; }
 	inline void setDeleteEntity(bool value) { this->deleteEntity = value; }
-	std::string convertToJson(int identation = 0);
+	std::string convertToJson(int identation = 0, bool showSuper = true);
 	void setFieldValue(const std::string field, const std::string value);
 	void modifyFromJson(const std::string& str, int startAt = 0);
 };
