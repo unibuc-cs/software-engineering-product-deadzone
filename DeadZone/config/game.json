@@ -1,4 +1,9 @@
 {
+  "playerType": "server",
+  "clientName": "client0",
+  "serverAddress": "localhost",
+  "serverPort": "7777",
+
   "shaders": {
     "sprite": {
       "vertex": "shaders/sprite.vert",

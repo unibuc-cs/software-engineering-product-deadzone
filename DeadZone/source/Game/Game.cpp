@@ -27,15 +27,29 @@
 #include "../Entity/Bullet/ThrownGrenade.h"
 #include "../Entity/Explosion/Explosion.h"
 
+#include "../Client/Client.h"
+#include "../Server/Server.h"
+
 Game::Game() :
     MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
 {
     WindowManager::get();
+
+    if (enet_initialize() != 0)
+    {
+        std::cout << "Error: An error occurred while initializing ENet" << std::endl;
+    }
+    atexit(enet_deinitialize);
 }
 
 Game::~Game()
 {
     // default
+
+	// Cleanup
+	if (playerType == PlayerType::Server)
+        Server::get().stop();
+    Client::get().stop();
 }
 
 Game& Game::get()
@@ -51,6 +65,17 @@ void Game::loadResources()
     nlohmann::json gameJSON;
     gameFile >> gameJSON;
     gameFile.close();
+
+    // Load Player Type // TODO: doar test @Teodor
+
+	gameJSON["playerType"].get<std::string>() == "server" ? playerType = PlayerType::Server : playerType = PlayerType::Client;
+
+	std::cout << "Player Type: " << gameJSON["playerType"].get<std::string>() << std::endl;
+
+	if (playerType == PlayerType::Server)
+		Server::get().start(gameJSON["serverPort"].get<std::string>());
+	Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
+
 
     // Load Shaders
     try
@@ -223,6 +248,14 @@ void Game::run()
             // Interactions System
             InteractionManager::get().handleInteractions(this->entities);
         }
+
+		// Server // TODO: doar test @Teodor
+		if (playerType == PlayerType::Server)
+			Server::get().update();
+
+		// Client // TODO: doar test @Teodor
+		Client::get().update();
+
         // Render
         glClearColor(0.08f, 0.08f, 0.08f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -255,10 +288,7 @@ void Game::run()
 
         // Wave Manager
         if (MenuManager::get().size() == 0)
-        {
-            // std::cout << "ok\n";
             WaveManager::get().update();
-        }
 
         // Update/Tick
         GlobalClock::get().updateTime();
