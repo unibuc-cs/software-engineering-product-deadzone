@@ -1,5 +1,5 @@
 {
-  "playerType": "server",
+  "clientHasServer": true,
   "clientName": "client0",
   "serverAddress": "localhost",
   "serverPort": "7777",

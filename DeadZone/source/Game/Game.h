@@ -23,13 +23,6 @@ private:
 	void drawDeadBodies();
 	void drawEntities();
 
-public:
-	enum class PlayerType
-	{
-		Server,
-		Client
-	};
-
 private:
 	std::vector<std::shared_ptr<DeadBody>> deadBodies;
 
@@ -38,7 +31,7 @@ private:
 
 	const int MAX_NUM_DEAD_BODIES;
 
-	PlayerType playerType;
+	bool clientHasServer;
 
 public:
 	enum class GameStatus
@@ -66,6 +59,6 @@ public:
 	inline GameStatus getGameStatus() const { return gameStatus; }
 	inline void setGameStatus(const GameStatus& gameStatus) { this->gameStatus = gameStatus; }
 
-	inline PlayerType getPlayerType() const { return playerType; }
+	inline bool getClientHasServer() const { return this->clientHasServer; }
 };
 

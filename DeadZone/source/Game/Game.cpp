@@ -30,11 +30,14 @@
 #include "../Client/Client.h"
 #include "../Server/Server.h"
 
-Game::Game() :
-    MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+Game::Game()
+    : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+	, clientHasServer(false)
 {
     WindowManager::get();
 
+
+	// Initialize ENet
     if (enet_initialize() != 0)
     {
         std::cout << "Error: An error occurred while initializing ENet" << std::endl;
@@ -46,8 +49,8 @@ Game::~Game()
 {
     // default
 
-	// Cleanup
-	if (playerType == PlayerType::Server)
+	// cleanup
+	if (this->clientHasServer)
         Server::get().stop();
     Client::get().stop();
 }
@@ -68,11 +71,12 @@ void Game::loadResources()
 
     // Load Player Type // TODO: doar test @Teodor
 
-	gameJSON["playerType"].get<std::string>() == "server" ? playerType = PlayerType::Server : playerType = PlayerType::Client;
+	if (gameJSON["clientHasServer"].get<bool>())
+		this->clientHasServer = true;
+	else
+		this->clientHasServer = false;
 
-	std::cout << "Player Type: " << gameJSON["playerType"].get<std::string>() << std::endl;
-
-	if (playerType == PlayerType::Server)
+	if (this->clientHasServer)
 		Server::get().start(gameJSON["serverPort"].get<std::string>());
 	Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
 
@@ -249,12 +253,15 @@ void Game::run()
             InteractionManager::get().handleInteractions(this->entities);
         }
 
-		// Server // TODO: doar test @Teodor
-		if (playerType == PlayerType::Server)
-			Server::get().update();
 
+
+		// Server // TODO: doar test @Teodor
+		if (this->clientHasServer)
+			Server::get().update();
 		// Client // TODO: doar test @Teodor
 		Client::get().update();
+
+
 
         // Render
         glClearColor(0.08f, 0.08f, 0.08f, 1.0f);
