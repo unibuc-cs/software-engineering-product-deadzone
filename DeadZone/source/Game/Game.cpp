@@ -255,12 +255,11 @@ void Game::run()
         }
 
 
-
-		// Server // TODO: doar test @Teodor
-		if (this->clientHasServer)
-			Server::get().update();
-		// Client // TODO: doar test @Teodor
-		Client::get().update();
+        // Server // TODO: doar test @Teodor
+        if (this->clientHasServer)
+            Server::get().update();
+        // Client // TODO: doar test @Teodor
+        Client::get().update();
 
 
 
