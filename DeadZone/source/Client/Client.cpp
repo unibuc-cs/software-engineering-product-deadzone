@@ -187,8 +187,8 @@ void Client::update()
 
 		jsonData["clientName"] = this->clientName;
 		// TODO: outfitColor
-		jsonData["position"]["x"] = lastRemotePlayerData.getX();
-		jsonData["position"]["y"] = lastRemotePlayerData.getY();
+		jsonData["position"]["x"] = Player::get().getX();
+		jsonData["position"]["y"] = Player::get().getY();
 		// TODO: statuses
 
 		sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
