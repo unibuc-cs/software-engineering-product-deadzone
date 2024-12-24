@@ -50,7 +50,7 @@ Game::~Game()
     // default
 
 	// cleanup
-	if (this->clientHasServer)
+    if (this->clientHasServer)
         Server::get().stop();
     Client::get().stop();
 }
