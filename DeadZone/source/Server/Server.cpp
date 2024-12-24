@@ -8,9 +8,6 @@
 #include <iostream>
 #include <set>
 
-#include "../Game/Game.h"
-#include "../Entity/Player/Player.h"
-
 Server::Server()
 	: MAX_NUM_CLIENTS(2), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
 	, server(nullptr), address(), MINIMUM_PORT(10000), MAXIMUM_PORT(20000)
@@ -50,7 +47,7 @@ void Server::start(const std::string& serverPort)
 
 void Server::ClientData::sendMessage(const std::string& messageToSend, bool& failedToSendMessage)
 {
-	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_UNSEQUENCED);
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->peer, 0, packet) == 0)
@@ -67,7 +64,7 @@ void Server::ClientData::sendMessage(const std::string& messageToSend, bool& fai
 
 void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
 {
-	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_UNSEQUENCED);
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->peer, 0, packet) == 0)

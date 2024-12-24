@@ -223,7 +223,8 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
-        if (gameStatus == GameStatus::InGame) {
+        if (gameStatus == GameStatus::InGame)
+        {
             // Update
             Map::get().update();
             Camera::get().update();

@@ -63,7 +63,7 @@ void Client::sendMessage(const std::string& messageToSend, bool& failedToSendMes
 		return;
 	}
 
-	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_UNSEQUENCED);
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->serverPeer, 0, packet) == 0)
@@ -89,7 +89,7 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 		return;
 	}
 
-	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_UNSEQUENCED);
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->serverPeer, 0, packet) == 0)
