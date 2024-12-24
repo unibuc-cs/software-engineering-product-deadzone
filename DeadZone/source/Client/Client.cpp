@@ -9,7 +9,7 @@
 #include "../Entity/Player/Player.h"
 
 Client::Client()
-	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
+	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(1) // TODO: test ca sa proceseze mai rpd
 	, serverPeer(nullptr), client(NULL), serverAddress(), eNetEvent()
 	, succesfullyConnected(false)
 	, lastTimeTriedConnection(0.0f)
@@ -63,7 +63,7 @@ void Client::sendMessage(const std::string& messageToSend, bool& failedToSendMes
 		return;
 	}
 
-	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_UNSEQUENCED);
+	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_RELIABLE);
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->serverPeer, 0, packet) == 0)
@@ -89,7 +89,7 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 		return;
 	}
 
-	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_UNSEQUENCED);
+	ENetPacket* packet = enet_packet_create(messageToSend.c_str(), messageToSend.size() + 1, ENET_PACKET_FLAG_RELIABLE);
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->serverPeer, 0, packet) == 0)
