@@ -101,8 +101,11 @@ void Server::handleReceivedPacket()
 			});
 		this->connectedClients.find(clientKey)->second.peer = this->eNetEvent.peer;
 
-		// TODO: adauga o un nou RemotePlayer in entities
-		Game::get().addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
+		// adauga o un nou RemotePlayer in entities
+		if (!Game::get().getClientHasServer())
+		{
+			Game::get().addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
+		}
 	}
 	this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
@@ -112,23 +115,24 @@ void Server::handleReceivedPacket()
 
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
+	if (jsonData.contains("ping"))
+	{
+		this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
+	}
+
 	if (jsonData.contains("clientName"))
 	{
 		this->connectedClients.find(clientKey)->second.clientName = jsonData["clientName"].get<std::string>();
 	}
-	if (jsonData.contains("ping"))
+	if (jsonData.contains("outfitColor"))
 	{
-		this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
+		// TODO
 	}
 	if (jsonData.contains("position"))
 	{
 		Game::get().updateRemotePlayerPosition(clientKey, jsonData["position"]["x"].get<double>(), jsonData["position"]["y"].get<double>());
 	}
-	if (jsonData.contains("status"))
-	{
-		// TODO
-	}
-	if (jsonData.contains("outfitColor"))
+	if (jsonData.contains("statuses"))
 	{
 		// TODO
 	}

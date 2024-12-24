@@ -71,7 +71,6 @@ void Game::loadResources()
 
 
     // Load Player Type // TODO: doar test @Teodor
-
     if (gameJSON["clientHasServer"].get<bool>())
 	    this->clientHasServer = true;
     else
@@ -79,8 +78,7 @@ void Game::loadResources()
 
     if (this->clientHasServer)
 	    Server::get().start(gameJSON["serverPort"].get<std::string>());
-    else // TODO: test
-        Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
+    Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
 
 
     // Load Shaders
@@ -259,8 +257,7 @@ void Game::run()
         // Server // TODO: doar test @Teodor
         if (this->clientHasServer)
             Server::get().update();
-        else // TODO: test
-            Client::get().update();
+        Client::get().update();
 
 
 

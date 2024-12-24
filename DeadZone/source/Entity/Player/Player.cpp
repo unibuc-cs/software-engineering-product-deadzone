@@ -29,7 +29,7 @@
 
 std::shared_ptr<Player> Player::instance = nullptr;
 
-glm::vec3 Player::outfitColor_static = glm::vec3(0.055f, 0.29f, 0.125f);
+const glm::vec3 Player::OUTFIT_COLOR = glm::vec3(0.055f, 0.29f, 0.125f);
 
 const std::map<AnimatedEntity::EntityStatus, std::string> Player::ANIMATIONS_NAME_2D = {
 	{ EntityStatus::ARMS_HOLDING_GRENADE, "player0ArmsHoldingGrenade" },
@@ -96,7 +96,7 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 		// {Weapon::WeaponType::MINIGUN, false},
 		{Weapon::WeaponType::GRENADE, true} }),
 	currentWeaponIndex(0),
-	isTired(false), isWalking(false), isRunning(false), isShooting(false), numKills(numKills), outfitColor(outfitColor_static)
+	isTired(false), isWalking(false), isRunning(false), isShooting(false), numKills(numKills), outfitColor(OUTFIT_COLOR)
 {
 	bullets[Weapon::WeaponType::REVOLVER] = 60;
 	bullets[Weapon::WeaponType::SHOTGUN] = 0;

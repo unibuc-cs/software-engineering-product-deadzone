@@ -158,10 +158,10 @@ void Client::update()
 	// TODO: trimite doar daca avem ceva nou de dat server-ului
 	// TODO: deocamdata trimitem toate informatiile posibile
 	jsonData["clientName"] = this->clientName;
+	// TODO: outfitColor
 	jsonData["position"]["x"] = Player::get().getX();
 	jsonData["position"]["y"] = Player::get().getY();
-	// TODO: STATUS
-	// TODO: outfitColor
+	// TODO: statuses
 
 	sendMessage(jsonData.dump(), this->hasToSendName, this->lastTimeSentPing);
 

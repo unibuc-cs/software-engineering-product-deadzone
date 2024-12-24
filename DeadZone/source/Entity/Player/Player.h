@@ -90,7 +90,6 @@ private:
 	int numKills;
 
 	glm::vec3 outfitColor;
-	static glm::vec3 outfitColor_static;
 
 	static std::shared_ptr<Player> instance;
 
@@ -131,7 +130,7 @@ public:
 	inline void setNumKills(int numKills) { this->numKills = numKills; }
 
 	inline glm::vec3 getOutfitColor() { return outfitColor; }
-	inline void setOutfitColor(const glm::vec3& outfitColor) { outfitColor_static = outfitColor; this->outfitColor = outfitColor; }
+	inline void setOutfitColor(const glm::vec3& outfitColor) { this->outfitColor = outfitColor; }
 	
 	inline std::vector<std::shared_ptr<Weapon>> getWeapons() { return this->weapons; }
 	inline std::map<Weapon::WeaponType, bool> getHasWeapon() { return this->hasWeapon; }
@@ -152,5 +151,6 @@ public:
 
 	static const std::map<EntityStatus, std::string> ANIMATIONS_NAME_2D;
 	static const std::vector<EntityStatus> Player::STATUSES;
+	static const glm::vec3 OUTFIT_COLOR;
 };
 
