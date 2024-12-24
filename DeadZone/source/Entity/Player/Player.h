@@ -117,7 +117,7 @@ public:
 
 	inline std::string getCurrentWeaponTexture() const { return this->weapons[this->currentWeaponIndex]->getTextureName2D(); }
 
-	void draw() override;
+	virtual void draw() override;
 
 	void modifyBullets(Weapon::WeaponType weaponType, int amount);
 	inline int getTotalBulletsCurrentWeapon() { return bullets[this->weapons[this->currentWeaponIndex]->getWeaponType()]; }
@@ -149,5 +149,8 @@ public:
 
 	void setCurrentWeaponIndex(int currentWeaponIndex);
 	inline void deleteWeaponFromInventory(Weapon::WeaponType weaponType) { this->hasWeapon[weaponType] = false; }
+
+	static const std::map<EntityStatus, std::string> ANIMATIONS_NAME_2D;
+	static const std::vector<EntityStatus> Player::STATUSES;
 };
 

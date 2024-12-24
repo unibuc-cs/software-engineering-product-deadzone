@@ -79,7 +79,8 @@ void Game::loadResources()
 
     if (this->clientHasServer)
 	    Server::get().start(gameJSON["serverPort"].get<std::string>());
-    Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
+    else // TODO: test
+        Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
 
 
     // Load Shaders
@@ -258,8 +259,8 @@ void Game::run()
         // Server // TODO: doar test @Teodor
         if (this->clientHasServer)
             Server::get().update();
-        // Client // TODO: doar test @Teodor
-        Client::get().update();
+        else // TODO: test
+            Client::get().update();
 
 
 
@@ -356,6 +357,11 @@ void Game::drawEntities() // grenazile si exploziile la urma (sunt mai la inalti
         this->entities[i]->draw();
     }
 
+    for (const auto& it : remotePlayers)
+    {
+        it.second->draw();
+    }
+
     for (int i = 0; i < this->entities.size(); ++i) // grenazi
         if (std::dynamic_pointer_cast<ThrownGrenade>(this->entities[i]))
             this->entities[i]->draw();
@@ -373,5 +379,23 @@ void Game::addEntityForNextFrame(std::shared_ptr<Entity> const entity)
 void Game::addDeadBody(std::shared_ptr<DeadBody> const deadBody)
 {
     this->deadBodies.emplace_back(deadBody);
+}
+
+void Game::addRemotePlayer(const std::string& clientKey, std::shared_ptr<RemotePlayer> const remotePlayer)
+{
+    this->remotePlayers[clientKey] = remotePlayer;
+}
+
+void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)
+{
+    if (remotePlayers.find(clientKey) == remotePlayers.end())
+    {
+        // TODO: delete std::cout
+        std::cout << "ERROR: Could not find the remote player" << std::endl;
+        return;
+    }
+
+    remotePlayers[clientKey]->setX(x);
+    remotePlayers[clientKey]->setY(y);
 }
 

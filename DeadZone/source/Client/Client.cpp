@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "../Entity/Player/Player.h"
+
 Client::Client()
 	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(10)
 	, serverPeer(nullptr), client(NULL), serverAddress(), eNetEvent()
@@ -97,7 +99,8 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 	{
 		timeWhenMessageSent = GlobalClock::get().getCurrentTime();
 
-		std::cout << "Client sent message: " << messageToSend << std::endl;
+		// TODO: uncomment
+		// std::cout << "Client sent message: " << messageToSend << std::endl;
 	}
 	else
 		std::cout << "Error: Client failed to send message" << std::endl;
@@ -105,7 +108,8 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 
 void Client::handleReceivedPacket()
 {
-	std::cout << "In handleReceivedPacket in Client named " << this->clientName << std::endl;
+	// TODO: uncomment
+	// std::cout << "In handleReceivedPacket in Client named " << this->clientName << std::endl;
 
 	if (this->eNetEvent.packet->dataLength == 0)
 	{
@@ -116,7 +120,8 @@ void Client::handleReceivedPacket()
 	this->lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
-	std::cout << "Client: Received Message: " << receivedMessage << " from server, size=" << receivedMessage.size() << std::endl;
+	// TODO: uncomment
+	// std::cout << "Client: Received Message: " << receivedMessage << " from server, size=" << receivedMessage.size() << std::endl;
 
 	// parse json input data
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
@@ -148,13 +153,17 @@ void Client::update()
 	}
 
 	// Trimitem ce informatii vitale stim deja catre server.
-	if (this->hasToSendName)
-	{
-		nlohmann::json jsonData;
-		jsonData["clientName"] = this->clientName;
+	nlohmann::json jsonData;
+	
+	// TODO: trimite doar daca avem ceva nou de dat server-ului
+	// TODO: deocamdata trimitem toate informatiile posibile
+	jsonData["clientName"] = this->clientName;
+	jsonData["position"]["x"] = Player::get().getX();
+	jsonData["position"]["y"] = Player::get().getY();
+	// TODO: STATUS
+	// TODO: outfitColor
 
-		sendMessage(jsonData.dump(), this->hasToSendName, this->lastTimeSentPing);
-	}
+	sendMessage(jsonData.dump(), this->hasToSendName, this->lastTimeSentPing);
 
 	// Vedem ce pachete am primit.
 	// code = 0 inseamna ca nu a fost niciun eveniment
@@ -175,7 +184,6 @@ void Client::update()
 	{
 		std::cout << "Error: Client service failed" << std::endl;
 	}
-
 
 	// Vedem daca am pierdut conexiunea cu serverul.
 	if (GlobalClock::get().getCurrentTime() - this->lastTimeReceivedPing > this->MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST)

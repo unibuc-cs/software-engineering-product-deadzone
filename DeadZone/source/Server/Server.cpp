@@ -6,8 +6,10 @@
 #include <nlohmann/json.hpp>
 
 #include <iostream>
-
 #include <set>
+
+#include "../Game/Game.h"
+#include "../Entity/Player/Player.h"
 
 Server::Server()
 	: MAX_NUM_CLIENTS(2), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(10)
@@ -83,16 +85,7 @@ void Server::handleReceivedPacket()
 		return;
 	}
 
-	std::string receivedMessage((char*)this->eNetEvent.packet->data);
-	std::cout << "Server: Received Message: " << receivedMessage << " from " << clientKey << ", size = " << receivedMessage.size() << std::endl;
-	if (this->connectedClients.find(clientKey) != this->connectedClients.end())
-		std::cout << this->connectedClients[clientKey].clientName << std::endl;
-	else
-		std::cout << "Server: Client who sent package not found in connectedClients" << std::endl;
-
-	// parse json input data
-	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
-
+	// verifica limita maxima de clienti
 	if (this->connectedClients.size() == this->MAX_NUM_CLIENTS
 		&& this->connectedClients.find(clientKey) == this->connectedClients.end())
 	{
@@ -100,15 +93,24 @@ void Server::handleReceivedPacket()
 		return;
 	}
 
+	// adauga un client nou
 	if (this->connectedClients.find(clientKey) == this->connectedClients.end())
 	{
 		this->connectedClients.insert({
 			clientKey, ClientData()
 			});
 		this->connectedClients.find(clientKey)->second.peer = this->eNetEvent.peer;
+
+		// TODO: adauga o un nou RemotePlayer in entities
+		Game::get().addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
 	}
 	this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
+	// parse json input data
+	std::string receivedMessage((char*)this->eNetEvent.packet->data);
+	std::cout << "Server: Received Message from " << this->connectedClients[clientKey].clientName << ": " << receivedMessage << std::endl;
+
+	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
 	if (jsonData.contains("clientName"))
 	{
@@ -118,7 +120,18 @@ void Server::handleReceivedPacket()
 	{
 		this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 	}
-	// TODO: add more ifs for each case
+	if (jsonData.contains("position"))
+	{
+		Game::get().updateRemotePlayerPosition(clientKey, jsonData["position"]["x"].get<double>(), jsonData["position"]["y"].get<double>());
+	}
+	if (jsonData.contains("status"))
+	{
+		// TODO
+	}
+	if (jsonData.contains("outfitColor"))
+	{
+		// TODO
+	}
 
 	enet_packet_destroy(this->eNetEvent.packet);
 }
@@ -146,7 +159,6 @@ void Server::update()
 		return;
 	}
 
-
 	// Vedem ce pachete am primit.
 	// code = 0 inseamna ca nu a fost niciun eveniment
 	int code = enet_host_service(this->server, &this->eNetEvent, this->TIME_WAITING_FOR_EVENTS_MS);
@@ -169,7 +181,6 @@ void Server::update()
 	{
 		std::cout << "Error: Server service failed" << std::endl;
 	}
-
 
 	// Vedem daca am pierdut conexiunea cu cineva.
 	for (auto& connectedClient : this->connectedClients)
@@ -201,7 +212,6 @@ void Server::update()
 	{
 		// TODO: de trimis json-uri cu jocul + de trimis vectorul de butoane apasate de fiecare jucator
 	}
-
 
 	// Eliminam din structura de date clientii pierduti. (Cu exceptia celui ce a initiat serverul, se poate pierde conexiunea daca dam drag and drop lent la fereastra aplicatiei.)
 	for (auto connectedClient = this->connectedClients.begin(); connectedClient != this->connectedClients.end(); )

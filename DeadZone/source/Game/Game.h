@@ -1,10 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <memory>
+#include <unordered_map>
 
 #include "../Entity/Entity.h"
 #include "../Entity/DeadBody/DeadBody.h"
+#include "../Entity/RemotePlayer/RemotePlayer.h"
 
 class Game
 {
@@ -28,6 +31,7 @@ private:
 
 	std::vector<std::shared_ptr<Entity>> entities;
 	std::vector<std::shared_ptr<Entity>> entitiesForNextFrame;
+	std::unordered_map<std::string, std::shared_ptr<RemotePlayer>> remotePlayers;
 
 	const int MAX_NUM_DEAD_BODIES;
 
@@ -50,6 +54,7 @@ public:
 
 	void addEntityForNextFrame(std::shared_ptr<Entity> const entity);
 	void addDeadBody(std::shared_ptr<DeadBody> const deadBody);
+	void addRemotePlayer(const std::string& clientKey, std::shared_ptr<RemotePlayer> const remotePlayer);
 
 	inline std::vector<std::shared_ptr<Entity>>& getEntities() { return this->entities; }
 	inline std::vector<std::shared_ptr<DeadBody>>& getDeadBodies() { return this->deadBodies; }
@@ -60,5 +65,7 @@ public:
 	inline void setGameStatus(const GameStatus& gameStatus) { this->gameStatus = gameStatus; }
 
 	inline bool getClientHasServer() const { return this->clientHasServer; }
+
+	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);
 };
 
