@@ -28,30 +28,24 @@
 #include "../Entity/Explosion/Explosion.h"
 
 #include "../Client/Client.h"
-#include "../Server/Server.h"
 
 Game::Game()
     : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
-	, clientHasServer(false)
 {
     WindowManager::get();
 
-
+    // TODO: mutat in main
     // Initialize ENet
-    if (enet_initialize() != 0)
-    {
-        std::cout << "Error: An error occurred while initializing ENet" << std::endl;
-    }
-    atexit(enet_deinitialize);
+    //if (enet_initialize() != 0)
+    //{
+    //    std::cout << "Error: An error occurred while initializing ENet" << std::endl;
+    //}
+    //atexit(enet_deinitialize);
 }
 
 Game::~Game()
 {
-    // default
-
     // cleanup
-    if (this->clientHasServer)
-        Server::get().stop();
     Client::get().stop();
 }
 
@@ -69,17 +63,8 @@ void Game::loadResources()
     gameFile >> gameJSON;
     gameFile.close();
 
-
-    // Load Player Type // TODO: doar test @Teodor
-    if (gameJSON["clientHasServer"].get<bool>())
-	    this->clientHasServer = true;
-    else
-	    this->clientHasServer = false;
-
-    if (this->clientHasServer)
-	    Server::get().start(gameJSON["serverPort"].get<std::string>());
+    // Start Client
     Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
-
 
     // Load Shaders
     try
@@ -254,9 +239,7 @@ void Game::run()
         }
 
 
-        // Server // TODO: doar test @Teodor
-        if (this->clientHasServer)
-            Server::get().update();
+        // Client
         Client::get().update();
 
 
@@ -381,6 +364,16 @@ void Game::addDeadBody(std::shared_ptr<DeadBody> const deadBody)
 void Game::addRemotePlayer(const std::string& clientKey, std::shared_ptr<RemotePlayer> const remotePlayer)
 {
     this->remotePlayers[clientKey] = remotePlayer;
+}
+
+void Game::spawnRemotePlayer(const std::string& clientKey)
+{
+    if (remotePlayers.find(clientKey) != remotePlayers.end())
+    {
+        return;
+    }
+
+    addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
 }
 
 void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)

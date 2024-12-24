@@ -1,7 +1,10 @@
 #pragma once
 
-#include <string>
 #include <enet/enet.h>
+
+#include <string>
+
+#include "../Entity/RemotePlayer/RemotePlayer.h"
 
 class Client
 {
@@ -33,11 +36,10 @@ private:
 	float lastTimeSentPing;
 
 	std::string clientName;
-
 	bool workingServerConnection;
+	RemotePlayer lastRemotePlayerData;
 
-	bool hasToSendName;
-
+	bool shouldSendRemotePlayerData();
 	void handleReceivedPacket();
 
 public:

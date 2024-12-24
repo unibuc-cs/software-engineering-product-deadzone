@@ -1,11 +1,11 @@
 #include "Client.h"
 
-#include "../GlobalClock/GlobalClock.h"
-
 #include <nlohmann/json.hpp>
 
 #include <iostream>
 
+#include "../GlobalClock/GlobalClock.h"
+#include "../Game/Game.h"
 #include "../Entity/Player/Player.h"
 
 Client::Client()
@@ -14,13 +14,13 @@ Client::Client()
 	, succesfullyConnected(false)
 	, lastTimeTriedConnection(0.0f)
 	, RETRY_CONNECTION_DELTA_TIME(1.0f)
-	, TIME_BETWEEN_PINGS(1.0f)
-	, MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST(5.0f)
+	, TIME_BETWEEN_PINGS(10000.0f) // TODO: test ca sa nu mai trimit prea multe request-uri
+	, MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST(500000.0f) // TODO: test ca sa nu mai trimit prea multe request-uri
 	, lastTimeReceivedPing(0.0f)
 	, lastTimeSentPing(0.0f)
 	, clientName("")
 	, workingServerConnection(false)
-	, hasToSendName(false)
+	, lastRemotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 {
 
 }
@@ -42,11 +42,7 @@ void Client::start(const std::string& serverIP, enet_uint16 serverPort, const st
 
 	this->clientName = clientName;
 
-	// Client Name
-	this->hasToSendName = true;
-
-
-
+	// init enet client
 	this->client = enet_host_create(NULL, this->MAX_NUM_SERVERS, this->NUM_CHANNELS, 0, 0); // 0, 0 inseamna fara limite la latimea de banda
 	if (client == NULL)
 	{
@@ -75,7 +71,8 @@ void Client::sendMessage(const std::string& messageToSend, bool& failedToSendMes
 		timeWhenMessageSent = GlobalClock::get().getCurrentTime();
 		failedToSendMessage = false;
 
-		std::cout << "Client sent message: " << messageToSend << std::endl;
+		// TODO: uncomment
+		// std::cout << "Client sent message: " << messageToSend << std::endl;
 	}
 	else
 	{
@@ -106,6 +103,21 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 		std::cout << "Error: Client failed to send message" << std::endl;
 }
 
+bool Client::shouldSendRemotePlayerData()
+{
+	if (Player::get().getX() != lastRemotePlayerData.getX())
+	{
+		return true;
+	}
+	if (Player::get().getY() != lastRemotePlayerData.getY())
+	{
+		return true;
+	}
+	// TODO
+
+	return false;
+}
+
 void Client::handleReceivedPacket()
 {
 	// TODO: uncomment
@@ -121,12 +133,24 @@ void Client::handleReceivedPacket()
 
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
 	// TODO: uncomment
-	// std::cout << "Client: Received Message: " << receivedMessage << " from server, size=" << receivedMessage.size() << std::endl;
+	// std::cout << "CLIENT: Received Message from server: " << receivedMessage << std::endl;
 
 	// parse json input data
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
-	// TODO: if-uri pentru json in functie de ce primim de la server
+	if (jsonData.contains("remotePlayers"))
+	{
+		for (const auto& [clientKey, playerData] : jsonData["remotePlayers"].items())
+		{
+			// asigurare ca avem spawned remote player-ul pe care vrem sa il actualizam
+			Game::get().spawnRemotePlayer(clientKey);
+
+			// playerData["clientName"]
+			// playerData["outfitColor"]
+			Game::get().updateRemotePlayerPosition(clientKey, playerData["position"]["x"].get<double>(), playerData["position"]["y"].get<double>());
+			// playerData["statuses"]
+		}
+	}
 
 	enet_packet_destroy(this->eNetEvent.packet);
 }
@@ -153,17 +177,20 @@ void Client::update()
 	}
 
 	// Trimitem ce informatii vitale stim deja catre server.
-	nlohmann::json jsonData;
-	
-	// TODO: trimite doar daca avem ceva nou de dat server-ului
-	// TODO: deocamdata trimitem toate informatiile posibile
-	jsonData["clientName"] = this->clientName;
-	// TODO: outfitColor
-	jsonData["position"]["x"] = Player::get().getX();
-	jsonData["position"]["y"] = Player::get().getY();
-	// TODO: statuses
+	if (shouldSendRemotePlayerData())
+	{
+		nlohmann::json jsonData;
 
-	sendMessage(jsonData.dump(), this->hasToSendName, this->lastTimeSentPing);
+		jsonData["clientName"] = this->clientName;
+		// TODO: outfitColor
+		jsonData["position"]["x"] = Player::get().getX();
+		jsonData["position"]["y"] = Player::get().getY();
+		// TODO: statuses
+
+		bool packetSent; // TODO: nu stiu daca mai are sens asta deocamdata
+		sendMessage(jsonData.dump(), packetSent, this->lastTimeSentPing);
+
+	}
 
 	// Vedem ce pachete am primit.
 	// code = 0 inseamna ca nu a fost niciun eveniment
@@ -200,6 +227,7 @@ void Client::update()
 	{
 		nlohmann::json jsonData;
 		jsonData["ping"] = true;
+		jsonData["clientName"] = this->clientName;
 
 		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}
@@ -230,7 +258,5 @@ void Client::stop()
 	this->clientName = "";
 
 	this->workingServerConnection = false;
-
-	this->hasToSendName = false;
 }
 

@@ -16,7 +16,8 @@ Server::Server()
 	, server(nullptr), address(), MINIMUM_PORT(10000), MAXIMUM_PORT(20000)
 	, eNetEvent()
 	, succesfullyCreated(false), lastTimeTriedCreation(0.0f), RETRY_CREATION_DELTA_TIME(1.0f)
-	, TIME_BETWEEN_PINGS(1.0f), MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST(5.0f)
+	, TIME_BETWEEN_PINGS(10000.0f), MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST(500000.0f) // TODO: test ca sa nu mai trimit prea multe request-uri
+	, updateClients(false)
 {
 	this->address.host = ENET_HOST_ANY;
 	this->address.port = 0;
@@ -100,18 +101,14 @@ void Server::handleReceivedPacket()
 			clientKey, ClientData()
 			});
 		this->connectedClients.find(clientKey)->second.peer = this->eNetEvent.peer;
-
-		// adauga o un nou RemotePlayer in entities
-		if (!Game::get().getClientHasServer())
-		{
-			Game::get().addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
-		}
 	}
 	this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
 	// parse json input data
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
-	std::cout << "Server: Received Message from " << this->connectedClients[clientKey].clientName << ": " << receivedMessage << std::endl;
+	
+	// TODO: uncomment
+	// std::cout << "SERVER: Received Message from " << this->connectedClients.find(clientKey)->second.clientName << ": " << receivedMessage << std::endl;
 
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
@@ -119,7 +116,6 @@ void Server::handleReceivedPacket()
 	{
 		this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 	}
-
 	if (jsonData.contains("clientName"))
 	{
 		this->connectedClients.find(clientKey)->second.clientName = jsonData["clientName"].get<std::string>();
@@ -130,12 +126,16 @@ void Server::handleReceivedPacket()
 	}
 	if (jsonData.contains("position"))
 	{
-		Game::get().updateRemotePlayerPosition(clientKey, jsonData["position"]["x"].get<double>(), jsonData["position"]["y"].get<double>());
+		this->connectedClients.find(clientKey)->second.remotePlayerData.setX(jsonData["position"]["x"].get<double>());
+		this->connectedClients.find(clientKey)->second.remotePlayerData.setY(jsonData["position"]["y"].get<double>());
 	}
 	if (jsonData.contains("statuses"))
 	{
 		// TODO
 	}
+
+	// TODO: de pus in if-uri? excluzand "ping"
+	updateClients = true;
 
 	enet_packet_destroy(this->eNetEvent.packet);
 }
@@ -211,10 +211,34 @@ void Server::update()
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 
-	// Mai vedem daca ne ramasese ceva de trimis la vreun client ce a esuat.
-	for (auto& connectedClient : this->connectedClients)
+	// Mai vedem daca ne ramasese ceva de trimis la vreun client ce a esuat
+	if (updateClients)
 	{
-		// TODO: de trimis json-uri cu jocul + de trimis vectorul de butoane apasate de fiecare jucator
+		// TODO: uncomment
+		// std::cout << "SERVER: UPDATE CLIENTS" << std::endl;
+		updateClients = false;
+
+		for (auto& connectedClient : this->connectedClients)
+		{
+			nlohmann::json jsonData;
+
+			for (const auto& otherConnectedClient : this->connectedClients)
+			{
+				if (connectedClient.first == otherConnectedClient.first)
+				{
+					continue;
+				}
+
+				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.clientName;
+				// TODO: outfitColor
+				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["x"] = otherConnectedClient.second.remotePlayerData.getX();
+				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["y"] = otherConnectedClient.second.remotePlayerData.getY();
+				// TODO: statuses
+			}
+
+			bool packetSent; // TODO: nu stiu daca mai are sens asta deocamdata
+			connectedClient.second.sendMessage(jsonData.dump(), packetSent);
+		}
 	}
 
 	// Eliminam din structura de date clientii pierduti. (Cu exceptia celui ce a initiat serverul, se poate pierde conexiunea daca dam drag and drop lent la fereastra aplicatiei.)
@@ -241,9 +265,6 @@ void Server::stop()
 	if (this->server != nullptr)
 		enet_host_destroy(this->server);
 	this->server = nullptr;
-
-
-
 
 	this->address.host = ENET_HOST_ANY;
 	this->address.port = 0;

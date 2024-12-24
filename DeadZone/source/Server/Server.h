@@ -4,6 +4,9 @@
 #include <string>
 #include <map>
 
+#include "../Entity/RemotePlayer/RemotePlayer.h"
+#include "../Entity/Player/Player.h"
+
 class Server
 {
 private:
@@ -11,6 +14,7 @@ private:
 	{
 		ENetPeer* peer;
 		std::string clientName;
+		RemotePlayer remotePlayerData;
 		float lastTimeSentPing;
 		float lastTimeReceivedPing;
 		bool workingConnection;
@@ -21,6 +25,7 @@ private:
 			, lastTimeSentPing(0.0f)
 			, lastTimeReceivedPing(0.0f)
 			, workingConnection(false)
+			, remotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 		{
 
 		}
@@ -55,6 +60,7 @@ private:
 	const float TIME_BETWEEN_PINGS;
 	const float MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST;
 
+	bool updateClients;
 	std::map<std::string, ClientData> connectedClients;
 
 	// Atentie aici la unicitatea cheii
