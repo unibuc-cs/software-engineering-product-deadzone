@@ -9,7 +9,7 @@
 #include "../Entity/Player/Player.h"
 
 Client::Client()
-	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(10)
+	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
 	, serverPeer(nullptr), client(NULL), serverAddress(), eNetEvent()
 	, succesfullyConnected(false)
 	, lastTimeTriedConnection(0.0f)
@@ -187,9 +187,7 @@ void Client::update()
 		jsonData["position"]["y"] = Player::get().getY();
 		// TODO: statuses
 
-		bool packetSent; // TODO: nu stiu daca mai are sens asta deocamdata
-		sendMessage(jsonData.dump(), packetSent, this->lastTimeSentPing);
-
+		sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}
 
 	// Vedem ce pachete am primit.

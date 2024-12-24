@@ -12,7 +12,7 @@
 #include "../Entity/Player/Player.h"
 
 Server::Server()
-	: MAX_NUM_CLIENTS(2), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(10)
+	: MAX_NUM_CLIENTS(2), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
 	, server(nullptr), address(), MINIMUM_PORT(10000), MAXIMUM_PORT(20000)
 	, eNetEvent()
 	, succesfullyCreated(false), lastTimeTriedCreation(0.0f), RETRY_CREATION_DELTA_TIME(1.0f)
@@ -235,9 +235,8 @@ void Server::update()
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["y"] = otherConnectedClient.second.remotePlayerData.getY();
 				// TODO: statuses
 			}
-
-			bool packetSent; // TODO: nu stiu daca mai are sens asta deocamdata
-			connectedClient.second.sendMessage(jsonData.dump(), packetSent);
+			
+			connectedClient.second.sendMessageUnsafe(jsonData.dump());
 		}
 	}
 
