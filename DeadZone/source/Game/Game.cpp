@@ -49,7 +49,7 @@ Game::~Game()
 {
     // default
 
-	// cleanup
+    // cleanup
     if (this->clientHasServer)
         Server::get().stop();
     Client::get().stop();
