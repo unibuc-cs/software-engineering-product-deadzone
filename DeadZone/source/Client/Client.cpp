@@ -105,19 +105,21 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 
 bool Client::shouldSendRemotePlayerData()
 {
+	bool shouldSend = false;
+
 	if (Player::get().getX() != lastRemotePlayerData.getX())
 	{
 		lastRemotePlayerData.setX(Player::get().getX());
-		return true;
+		shouldSend = true;
 	}
 	if (Player::get().getY() != lastRemotePlayerData.getY())
 	{
 		lastRemotePlayerData.setY(Player::get().getY());
-		return true;
+		shouldSend = true;
 	}
 	// TODO
 
-	return false;
+	return shouldSend;
 }
 
 void Client::handleReceivedPacket()
