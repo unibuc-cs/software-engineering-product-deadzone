@@ -105,7 +105,7 @@ void Server::handleReceivedPacket()
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
 	
 	// TODO: uncomment
-	// std::cout << "SERVER: Received Message from " << this->connectedClients.find(clientKey)->second.clientName << ": " << receivedMessage << std::endl;
+	std::cout << "SERVER: Received Message from " << this->connectedClients.find(clientKey)->second.clientName << ": " << receivedMessage << std::endl;
 
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
