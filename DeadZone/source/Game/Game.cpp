@@ -37,7 +37,7 @@ Game::Game()
     WindowManager::get();
 
 
-	// Initialize ENet
+    // Initialize ENet
     if (enet_initialize() != 0)
     {
         std::cout << "Error: An error occurred while initializing ENet" << std::endl;
@@ -69,16 +69,17 @@ void Game::loadResources()
     gameFile >> gameJSON;
     gameFile.close();
 
+
     // Load Player Type // TODO: doar test @Teodor
 
-	if (gameJSON["clientHasServer"].get<bool>())
-		this->clientHasServer = true;
-	else
-		this->clientHasServer = false;
+    if (gameJSON["clientHasServer"].get<bool>())
+	    this->clientHasServer = true;
+    else
+	    this->clientHasServer = false;
 
-	if (this->clientHasServer)
-		Server::get().start(gameJSON["serverPort"].get<std::string>());
-	Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
+    if (this->clientHasServer)
+	    Server::get().start(gameJSON["serverPort"].get<std::string>());
+    Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
 
 
     // Load Shaders
