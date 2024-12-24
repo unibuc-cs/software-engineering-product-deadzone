@@ -3,6 +3,8 @@
 #include "../Random/Random.h"
 #include "../GlobalClock/GlobalClock.h"
 
+#include <nlohmann/json.hpp>
+
 #include <iostream>
 
 #include <set>
@@ -82,7 +84,14 @@ void Server::handleReceivedPacket()
 	}
 
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
-	std::cout << "Received Message: " << receivedMessage << " from " << clientKey << ", size = " << receivedMessage.size() << std::endl;
+	std::cout << "Server: Received Message: " << receivedMessage << " from " << clientKey << ", size = " << receivedMessage.size() << std::endl;
+	if (this->connectedClients.find(clientKey) != this->connectedClients.end())
+		std::cout << this->connectedClients[clientKey].clientName << std::endl;
+	else
+		std::cout << "Server: Client who sent package not found in connectedClients" << std::endl;
+
+	// parse json input data
+	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
 	if (this->connectedClients.size() == this->MAX_NUM_CLIENTS
 		&& this->connectedClients.find(clientKey) == this->connectedClients.end())
@@ -101,18 +110,15 @@ void Server::handleReceivedPacket()
 	this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
 
-	if (receivedMessage.find("name:") == 0) // Are prefixul "name:"
+	if (jsonData.contains("clientName"))
 	{
-		this->connectedClients.find(clientKey)->second.clientName = receivedMessage.substr(std::string("name:").size()); // Pornim de la lungimea prefixului
+		this->connectedClients.find(clientKey)->second.clientName = jsonData["clientName"].get<std::string>();
 	}
-	else if (receivedMessage == "ping")
+	if (jsonData.contains("ping"))
 	{
 		this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 	}
-	else
-	{
-		std::cout << "Warning: Server received unrecognized message" << std::endl;
-	}
+	// TODO: add more ifs for each case
 
 	enet_packet_destroy(this->eNetEvent.packet);
 }
@@ -149,7 +155,7 @@ void Server::update()
 		switch (this->eNetEvent.type)
 		{
 		case ENET_EVENT_TYPE_CONNECT:
-			std::cout << "Client connected" << std::endl;
+			std::cout << "Server: Client connected" << std::endl;
 			break;
 		case ENET_EVENT_TYPE_RECEIVE:
 			this->handleReceivedPacket();
@@ -184,24 +190,10 @@ void Server::update()
 		if (GlobalClock::get().getCurrentTime() - connectedClient.second.lastTimeSentPing < this->TIME_BETWEEN_PINGS)
 			continue;
 
-		std::string messageToSend = "ping";
+		nlohmann::json jsonData;
+		jsonData["ping"] = true;
 
-		for (auto& otherConnectedClient : this->connectedClients)
-		{
-			if (connectedClient.first == otherConnectedClient.first)
-				continue;
-
-			messageToSend.push_back('$');
-			messageToSend += otherConnectedClient.second.clientName;
-
-			if (GlobalClock::get().getCurrentTime() - otherConnectedClient.second.lastTimeReceivedPing > this->MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST)
-				messageToSend.push_back('0');
-			else
-				messageToSend.push_back('1');
-		}
-		messageToSend.push_back('$');
-
-		connectedClient.second.sendMessageUnsafe(messageToSend);
+		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 
 	// Mai vedem daca ne ramasese ceva de trimis la vreun client ce a esuat.

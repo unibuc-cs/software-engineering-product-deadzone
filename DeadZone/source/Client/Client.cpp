@@ -2,6 +2,8 @@
 
 #include "../GlobalClock/GlobalClock.h"
 
+#include <nlohmann/json.hpp>
+
 #include <iostream>
 
 Client::Client()
@@ -105,25 +107,21 @@ void Client::handleReceivedPacket()
 {
 	std::cout << "In handleReceivedPacket in Client named " << this->clientName << std::endl;
 
-	this->lastTimeReceivedPing = GlobalClock::get().getCurrentTime(); // Ar putea fi mutat mai jos de if-ul ce urmeaza.
-
 	if (this->eNetEvent.packet->dataLength == 0)
 	{
 		std::cout << "Warning: Client received empty packet" << std::endl;
 		return;
 	}
 
-	std::string receivedMessage((char*)this->eNetEvent.packet->data);
-	std::cout << "Received Message: " << receivedMessage << " from server, size=" << receivedMessage.size() << std::endl;
+	this->lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
-	if (receivedMessage.find("ping") == 0) // "ping" este prefix pentru mesaj. Aici aflam si daca am pierdut conexiunea doar cu celalalt oponent.
-	{
-		int pos = std::string("ping").size();
-	}
-	else
-	{
-		std::cout << "Warning: Client received unrecognized message" << std::endl;
-	}
+	std::string receivedMessage((char*)this->eNetEvent.packet->data);
+	std::cout << "Client: Received Message: " << receivedMessage << " from server, size=" << receivedMessage.size() << std::endl;
+
+	// parse json input data
+	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
+
+	// TODO: if-uri pentru json in functie de ce primim de la server
 
 	enet_packet_destroy(this->eNetEvent.packet);
 }
@@ -152,7 +150,10 @@ void Client::update()
 	// Trimitem ce informatii vitale stim deja catre server.
 	if (this->hasToSendName)
 	{
-		this->sendMessage("name:" + this->clientName, this->hasToSendName, this->lastTimeSentPing);
+		nlohmann::json jsonData;
+		jsonData["clientName"] = this->clientName;
+
+		sendMessage(jsonData.dump(), this->hasToSendName, this->lastTimeSentPing);
 	}
 
 	// Vedem ce pachete am primit.
@@ -189,9 +190,10 @@ void Client::update()
 	// Apoi trimitem ping-ul catre server.
 	if (GlobalClock::get().getCurrentTime() - this->lastTimeSentPing > this->TIME_BETWEEN_PINGS)
 	{
-		std::string messageToSend = "ping";
+		nlohmann::json jsonData;
+		jsonData["ping"] = true;
 
-		this->sendMessageUnsafe(messageToSend, this->lastTimeSentPing);
+		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}
 }
 
