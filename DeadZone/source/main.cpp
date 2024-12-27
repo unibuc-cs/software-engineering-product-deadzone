@@ -47,7 +47,6 @@ int main()
 
         serverThread.detach();
     }
-
 	Game::get().run();
 
     // TODO: delete

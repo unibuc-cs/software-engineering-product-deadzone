@@ -173,10 +173,12 @@ void Game::loadResources()
         std::cout << "ERROR::FONT: other error" << std::endl;
     }
 
-    // Load Map
+    // Generate & Save and Load Map
     try
     {
-        std::string file = gameJSON["map"].get<std::string>();
+        int width = gameJSON["map"]["width"].get<int>();
+        int height = gameJSON["map"]["height"].get<int>();
+        std::string file = Map::get().generateProceduralMap(width, height);
 
         Map::get().readMap(file);
     }
@@ -389,4 +391,5 @@ void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, do
     remotePlayers[clientKey]->setX(x);
     remotePlayers[clientKey]->setY(y);
 }
+
 

@@ -412,3 +412,4 @@ TestResults/*
 
 # Ignore save.json
 DeadZone/config/save.json
+/CppProperties.json

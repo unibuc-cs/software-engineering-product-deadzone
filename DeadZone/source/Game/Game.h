@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <queue>
 
 #include "../Entity/Entity.h"
 #include "../Entity/DeadBody/DeadBody.h"

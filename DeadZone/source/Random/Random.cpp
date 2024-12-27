@@ -1,7 +1,5 @@
 #include "Random.h"
 
-#include <random>
-
 double Random::random01()
 {
     static std::random_device rd;
@@ -19,3 +17,10 @@ int Random::randomInt(int min, int max)
 
 	return dis(gen);
 }
+
+std::mt19937 Random::randomGen() {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	return gen;
+}
+
