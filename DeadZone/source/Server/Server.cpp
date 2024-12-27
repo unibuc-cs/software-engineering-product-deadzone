@@ -9,7 +9,7 @@
 #include <set>
 
 Server::Server()
-	: MAX_NUM_CLIENTS((1 << 5)), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(1) // TODO: test ca sa proceseze mai rpd
+	: MAX_NUM_CLIENTS((1 << 5)), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(10) // TODO: test ca sa proceseze mai rpd
 	, server(nullptr), address(), MINIMUM_PORT(10000), MAXIMUM_PORT(20000)
 	, eNetEvent()
 	, succesfullyCreated(false), lastTimeTriedCreation(0.0f), RETRY_CREATION_DELTA_TIME(1.0f)
@@ -163,24 +163,30 @@ void Server::update()
 	// Vedem ce pachete am primit.
 	// code = 0 inseamna ca nu a fost niciun eveniment
 	int code = enet_host_service(this->server, &this->eNetEvent, this->TIME_WAITING_FOR_EVENTS_MS);
-	if (code > 0)
+	while (code != 0)
 	{
-		switch (this->eNetEvent.type)
+		if (code > 0)
 		{
-		case ENET_EVENT_TYPE_CONNECT:
-			std::cout << "Server: Client connected" << std::endl;
-			break;
-		case ENET_EVENT_TYPE_RECEIVE:
-			this->handleReceivedPacket();
-			break;
-		default:
-			std::cout << "Warning: Server received unrecognized event type" << std::endl;
+			switch (this->eNetEvent.type)
+			{
+			case ENET_EVENT_TYPE_CONNECT:
+				std::cout << "Server: Client connected" << std::endl;
+				break;
+			case ENET_EVENT_TYPE_RECEIVE:
+				this->handleReceivedPacket();
+				break;
+			default:
+				std::cout << "Warning: Server received unrecognized event type" << std::endl;
+				break;
+			}
+		}
+		else if (code < 0)
+		{
+			std::cout << "Error: Server service failed" << std::endl;
 			break;
 		}
-	}
-	else if (code < 0)
-	{
-		std::cout << "Error: Server service failed" << std::endl;
+
+		code = enet_host_service(this->server, &this->eNetEvent, this->TIME_WAITING_FOR_EVENTS_MS);
 	}
 
 	// Vedem daca am pierdut conexiunea cu cineva.

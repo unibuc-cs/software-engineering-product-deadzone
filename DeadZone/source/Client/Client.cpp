@@ -9,7 +9,7 @@
 #include "../Entity/Player/Player.h"
 
 Client::Client()
-	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(1) // TODO: test ca sa proceseze mai rpd
+	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(10) // TODO: test ca sa proceseze mai rpd
 	, serverPeer(nullptr), client(NULL), serverAddress(), eNetEvent()
 	, succesfullyConnected(false)
 	, lastTimeTriedConnection(0.0f)
@@ -197,21 +197,27 @@ void Client::update()
 	// Vedem ce pachete am primit.
 	// code = 0 inseamna ca nu a fost niciun eveniment
 	int code = enet_host_service(this->client, &this->eNetEvent, this->TIME_WAITING_FOR_EVENTS_MS);
-	if (code > 0)
+	while (code != 0)
 	{
-		switch (this->eNetEvent.type)
+		if (code > 0)
 		{
-		case ENET_EVENT_TYPE_RECEIVE:
-			this->handleReceivedPacket();
-			break;
-		default:
-			std::cout << "Warning: Client received unrecognized event type" << std::endl;
+			switch (this->eNetEvent.type)
+			{
+			case ENET_EVENT_TYPE_RECEIVE:
+				this->handleReceivedPacket();
+				break;
+			default:
+				std::cout << "Warning: Client received unrecognized event type" << std::endl;
+				break;
+			}
+		}
+		else if (code < 0)
+		{
+			std::cout << "Error: Client service failed" << std::endl;
 			break;
 		}
-	}
-	else if (code < 0)
-	{
-		std::cout << "Error: Client service failed" << std::endl;
+
+		code = enet_host_service(this->client, &this->eNetEvent, this->TIME_WAITING_FOR_EVENTS_MS);
 	}
 
 	// Vedem daca am pierdut conexiunea cu serverul.
