@@ -117,7 +117,21 @@ bool Client::shouldSendRemotePlayerData()
 		lastRemotePlayerData.setY(Player::get().getY());
 		shouldSend = true;
 	}
-	// TODO
+
+	if (Player::get().getRotateAngle() != lastRemotePlayerData.getRotateAngle())
+	{
+		lastRemotePlayerData.setRotateAngle(Player::get().getRotateAngle());
+		shouldSend = true;
+	}
+
+	for (size_t indexStatus = 0; indexStatus < Player::get().getStatuses().size(); ++indexStatus)
+	{
+		if (Player::get().getStatus(indexStatus) != lastRemotePlayerData.getStatus(indexStatus))
+		{
+			lastRemotePlayerData.updateStatus(Player::get().getStatus(indexStatus), indexStatus);
+			shouldSend = true;
+		}
+	}
 
 	return shouldSend;
 }
@@ -149,10 +163,24 @@ void Client::handleReceivedPacket()
 			// asigurare ca avem spawned remote player-ul pe care vrem sa il actualizam
 			Game::get().spawnRemotePlayer(clientKey);
 
-			// playerData["clientName"]
-			// playerData["outfitColor"]
+			// TODO: deocamdata trimit toate atributele despre player => trimite doar ce e nou
+
+			// TODO: playerData["clientName"]
+			// TODO: playerData["outfitColor"]
+
+			// position
 			Game::get().updateRemotePlayerPosition(clientKey, playerData["position"]["x"].get<double>(), playerData["position"]["y"].get<double>());
-			// playerData["statuses"]
+
+			// rotateAngle
+			Game::get().updateRemotePlayerRotateAngle(clientKey, playerData["rotateAngle"].get<double>());
+			
+			// statuses
+			std::vector<AnimatedEntity::EntityStatus> statuses;
+			for (const auto& status : jsonData["statuses"])
+			{
+				statuses.push_back(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()));
+			}
+			Game::get().updateRemotePlayerStatuses(clientKey, statuses);
 		}
 	}
 
@@ -185,11 +213,18 @@ void Client::update()
 	{
 		nlohmann::json jsonData;
 
+		// TODO: trimite doar ce avem de schimbat
+
 		jsonData["clientName"] = this->clientName;
 		// TODO: outfitColor
 		jsonData["position"]["x"] = Player::get().getX();
 		jsonData["position"]["y"] = Player::get().getY();
-		// TODO: statuses
+		jsonData["rotateAngle"] = Player::get().getRotateAngle();
+		jsonData["statuses"] = Player::get().getStatuses();
+
+		// TODO: isWalking
+		// TODO: isRunning
+		// TODO: isDead
 
 		sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}

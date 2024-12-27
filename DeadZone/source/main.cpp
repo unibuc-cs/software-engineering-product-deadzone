@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include <exception>
 
 #include <enet/enet.h>
 #include <nlohmann/json.hpp>
@@ -47,7 +48,19 @@ int main()
 
         serverThread.detach();
     }
-	Game::get().run();
+
+    try
+    {
+	    Game::get().run();
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cout << "Unexpected error" << std::endl;
+    }
 
     // TODO: delete
     Server::get().stop();

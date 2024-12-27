@@ -373,6 +373,7 @@ void Game::spawnRemotePlayer(const std::string& clientKey)
 {
     if (remotePlayers.find(clientKey) != remotePlayers.end())
     {
+        // TODO: throw error
         return;
     }
 
@@ -381,15 +382,19 @@ void Game::spawnRemotePlayer(const std::string& clientKey)
 
 void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)
 {
-    if (remotePlayers.find(clientKey) == remotePlayers.end())
-    {
-        // TODO: delete std::cout
-        std::cout << "ERROR: Could not find the remote player" << std::endl;
-        return;
-    }
-
     remotePlayers[clientKey]->setX(x);
     remotePlayers[clientKey]->setY(y);
 }
 
+void Game::updateRemotePlayerRotateAngle(const std::string& clientKey, double angle)
+{
+    remotePlayers[clientKey]->setRotateAngle(angle);
+}
 
+void Game::updateRemotePlayerStatuses(const std::string& clientKey, const std::vector<AnimatedEntity::EntityStatus>& statuses)
+{
+    for (size_t indexStatus = 0; indexStatus < statuses.size(); ++indexStatus)
+    {
+        remotePlayers[clientKey]->updateStatus(statuses[indexStatus], indexStatus);
+    }
+}

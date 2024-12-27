@@ -654,7 +654,7 @@ void Player::draw()
 		for (int i = 0; i < this->statuses.size(); ++i)
 			SpriteRenderer::get().draw(ResourceManager::getShader("player"), ResourceManager::getFlipbook(this->animationsName2D[this->statuses[i]]).getTextureAtTime(GlobalClock::get().getCurrentTime() - this->timesSinceStatuses[i]), Camera::get().screenPosition(this->x, this->y), Camera::get().screenSize(this->drawWidth + this->runningOffsetSize * glm::sin(this->runningOffsetSpeed * GlobalClock::get().getCurrentTime()), this->drawHeight + this->runningOffsetSize * glm::sin(this->runningOffsetSpeed * GlobalClock::get().getCurrentTime())), this->rotateAngle, outfitColor);
 	}
-	else
+	else // IDLE
 	{
 		for (int i = 0; i < this->statuses.size(); ++i)
 		{

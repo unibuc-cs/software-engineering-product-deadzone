@@ -111,11 +111,11 @@ void Server::handleReceivedPacket()
 
 	if (jsonData.contains("ping"))
 	{
-		this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
+		connectedClients[clientKey].lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 	}
 	if (jsonData.contains("clientName"))
 	{
-		this->connectedClients.find(clientKey)->second.clientName = jsonData["clientName"].get<std::string>();
+		connectedClients[clientKey].clientName = jsonData["clientName"].get<std::string>();
 	}
 	if (jsonData.contains("outfitColor"))
 	{
@@ -123,12 +123,20 @@ void Server::handleReceivedPacket()
 	}
 	if (jsonData.contains("position"))
 	{
-		this->connectedClients.find(clientKey)->second.remotePlayerData.setX(jsonData["position"]["x"].get<double>());
-		this->connectedClients.find(clientKey)->second.remotePlayerData.setY(jsonData["position"]["y"].get<double>());
+		connectedClients[clientKey].remotePlayerData.setX(jsonData["position"]["x"].get<double>());
+		connectedClients[clientKey].remotePlayerData.setY(jsonData["position"]["y"].get<double>());
+	}
+	if (jsonData.contains("rotateAngle"))
+	{
+		connectedClients[clientKey].remotePlayerData.setRotateAngle(jsonData["rotateAngle"].get<double>());
 	}
 	if (jsonData.contains("statuses"))
 	{
-		// TODO
+		int indexStatus = 0;
+		for (const auto& status : jsonData["statuses"])
+		{
+			connectedClients[clientKey].remotePlayerData.updateStatus(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()), indexStatus++);
+		}
 	}
 
 	// TODO: de pus in if-uri? excluzand "ping"
@@ -217,8 +225,6 @@ void Server::update()
 	// Mai vedem daca ne ramasese ceva de trimis la vreun client ce a esuat
 	if (updateClients)
 	{
-		// TODO: uncomment
-		// std::cout << "SERVER: UPDATE CLIENTS" << std::endl;
 		updateClients = false;
 
 		for (auto& connectedClient : this->connectedClients)
@@ -232,13 +238,18 @@ void Server::update()
 					continue;
 				}
 
+				// TODO: deocamdata consideram ca vin toate atributele pt un player
+				// TODO: verifica doar valorile noi
+
 				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.clientName;
 				// TODO: outfitColor
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["x"] = otherConnectedClient.second.remotePlayerData.getX();
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["y"] = otherConnectedClient.second.remotePlayerData.getY();
-				// TODO: statuses
+				jsonData["remotePlayers"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.remotePlayerData.getRotateAngle();
+				jsonData["remotePlayers"][otherConnectedClient.first]["statuses"] = otherConnectedClient.second.remotePlayerData.getStatuses();
 			}
 			
+			std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 			connectedClient.second.sendMessageUnsafe(jsonData.dump());
 		}
 	}
