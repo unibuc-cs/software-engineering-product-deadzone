@@ -4,10 +4,12 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <queue>
 
 #include "../Entity/Entity.h"
 #include "../Entity/DeadBody/DeadBody.h"
 #include "../Entity/RemotePlayer/RemotePlayer.h"
+#include "../GeneralUtilities/GeneralUtilities.h"
 
 class Game
 {
@@ -46,6 +48,7 @@ public:
 
 private:
 	GameStatus gameStatus = GameStatus::InMenu;
+	GeneralUtilities genUtil;
 
 public:
 	static Game& get();
@@ -67,5 +70,10 @@ public:
 
 	void spawnRemotePlayer(const std::string& clientKey);
 	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);
+
+	void putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& M, std::vector<std::vector<bool>>& enclosed);
+	void putShopInGoodArea(const int& width, const int& height, std::vector<std::vector<std::string>>& map, const std::vector<std::vector<bool>>& enclosed);
+
+	std::string generateProceduralMap(const int& width, const int& height);
 };
 

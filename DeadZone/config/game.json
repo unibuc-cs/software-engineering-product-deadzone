@@ -629,6 +629,8 @@
     }
   },
 
-  "map": "maps/sandbox.map"
+  "map": {
+    "width": 60,
+    "height": 40
+  }
 }
-
