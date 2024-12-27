@@ -74,7 +74,7 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 	CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight),
 	AnimatedEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, animationsName2D, statuses),
 	Human(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, animationsName2D, statuses, health, armor),
-	runningSpeed(runningSpeed), stamina(stamina), staminaChangeSpeed(50.0), staminaCap(100.0), gold(0), goldCap(9999999),
+	runningSpeed(runningSpeed), stamina(stamina), staminaChangeSpeed(50.0), staminaCap(100.0), gold(1000), goldCap(9999999),
 	moveUpUsed(false), moveDownUsed(false), moveRightUsed(false), moveLeftUsed(false), runUsed(false), interactUsed(false), enterShopUsed(false),
 	walkingOffsetSize(0.01), runningOffsetSize(0.05),
 	walkingOffsetSpeed(10.0), runningOffsetSpeed(15.0),
