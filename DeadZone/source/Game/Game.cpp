@@ -178,9 +178,9 @@ void Game::loadResources()
     {
         int width = gameJSON["map"]["width"].get<int>();
         int height = gameJSON["map"]["height"].get<int>();
-        std::string file = Map::get().generateProceduralMap(width, height);
+        // std::string file = Map::get().generateProceduralMap(width, height); // TODO: use
 
-        Map::get().readMap(file);
+        Map::get().readMap("maps/sandbox.map"); // TODO: test
     }
     catch (const std::runtime_error& err)
     {

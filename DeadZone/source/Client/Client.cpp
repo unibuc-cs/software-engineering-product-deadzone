@@ -151,7 +151,7 @@ void Client::handleReceivedPacket()
 
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
 	// TODO: uncomment
-	// std::cout << "CLIENT: Received Message from server: " << receivedMessage << std::endl;
+	std::cout << "CLIENT: Received Message from server: " << receivedMessage << std::endl;
 
 	// parse json input data
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
@@ -176,9 +176,10 @@ void Client::handleReceivedPacket()
 			
 			// statuses
 			std::vector<AnimatedEntity::EntityStatus> statuses;
-			for (const auto& status : jsonData["statuses"])
+			for (const auto& status : playerData["statuses"])
 			{
 				statuses.push_back(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()));
+				std::cout << status.get<int>() << std::endl;
 			}
 			Game::get().updateRemotePlayerStatuses(clientKey, statuses);
 		}
@@ -225,6 +226,8 @@ void Client::update()
 		// TODO: isWalking
 		// TODO: isRunning
 		// TODO: isDead
+
+		std::cout << "CLIENT send message: " << jsonData.dump() << std::endl;
 
 		sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}
