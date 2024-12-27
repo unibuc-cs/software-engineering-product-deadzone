@@ -43,8 +43,6 @@ public:
 	void readMap(const std::string& path);
 	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
 	void draw();
-	void addDoor(std::shared_ptr<Door> const door);
-	void addShop(std::shared_ptr<Shop> const shop);
 	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
 	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
 	void update();

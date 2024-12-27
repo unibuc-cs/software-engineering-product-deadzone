@@ -86,16 +86,6 @@ void Map::draw()
 	}
 }
 
-void Map::addDoor(std::shared_ptr<Door> door)
-{
-	this->doors.emplace_back(door);
-}
-
-void Map::addShop(std::shared_ptr<Shop> const shop)
-{
-	this->shops.emplace_back(shop);
-}
-
 void Map::update()
 {
 	for (int i = 0; i < this->doors.size(); ++i)
