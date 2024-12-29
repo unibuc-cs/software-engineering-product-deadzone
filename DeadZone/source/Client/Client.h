@@ -3,7 +3,9 @@
 #include <enet/enet.h>
 
 #include <string>
+#include <memory>
 
+#include "../Entity/Bullet/Bullet.h"
 #include "../Entity/RemotePlayer/RemotePlayer.h"
 
 class Client
@@ -42,6 +44,9 @@ private:
 	bool shouldSendRemotePlayerData();
 	void handleReceivedPacket();
 
+	void sendMessage(const std::string& messageToSend, bool& failedToSendMessage, float& timeWhenMessageSent);
+	void sendMessageUnsafe(const std::string& messageToSend, float& timeWhenMessageSent);
+
 public:
 	static Client& get();
 
@@ -49,8 +54,7 @@ public:
 	void update();
 	void stop();
 
-	void sendMessage(const std::string& messageToSend, bool& failedToSendMessage, float& timeWhenMessageSent);
-	void sendMessageUnsafe(const std::string& messageToSend, float& timeWhenMessageSent);
+	void sendBullet(const std::shared_ptr<Bullet>& const entity);
 
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }
 };

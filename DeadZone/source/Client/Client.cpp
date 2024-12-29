@@ -7,6 +7,7 @@
 #include "../GlobalClock/GlobalClock.h"
 #include "../Game/Game.h"
 #include "../Entity/Player/Player.h"
+#include "../Entity/Bullet/ThrownGrenade.h"
 
 Client::Client()
 	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
@@ -185,6 +186,43 @@ void Client::handleReceivedPacket()
 		}
 	}
 
+	// bullet
+	if (jsonData.contains("bullets"))
+	{
+		for (const auto& [clientKey, bulletData] : jsonData["bullets"].items())
+		{
+			bool isThrownGrenade = bulletData["isThrownGrenade"].get<bool>();
+			if (isThrownGrenade)
+			{
+				Game::get().addEntityForNextFrame(std::make_shared<ThrownGrenade>(
+					bulletData["x"].get<double>(), bulletData["y"].get<double>(),
+					0.3, 0.3,
+					bulletData["rotateAngle"].get<double>(),
+					bulletData["speed"].get<double>(),
+					0.3, 0.3,
+					bulletData["textureName2D"].get<std::string>(),
+					0.0,
+					1.0,
+					bulletData["damage"].get<double>(),
+					15.0,
+					1.0
+				));
+			}
+			else
+			{
+				Game::get().addEntityForNextFrame(std::make_shared<Bullet>(
+					bulletData["x"].get<double>(), bulletData["y"].get<double>(),
+					0.3, 0.3,
+					bulletData["rotateAngle"].get<double>(),
+					bulletData["speed"].get<double>(),
+					0.3, 0.3,
+					bulletData["textureName2D"].get<std::string>(),
+					bulletData["damage"].get<double>()
+				));
+			}
+		}
+	}
+
 	enet_packet_destroy(this->eNetEvent.packet);
 }
 
@@ -304,5 +342,28 @@ void Client::stop()
 	this->clientName = "";
 
 	this->workingServerConnection = false;
+}
+
+void Client::sendBullet(const std::shared_ptr<Bullet>& const entity)
+{
+	bool isThrownGrenade = false;
+	if (std::dynamic_pointer_cast<ThrownGrenade>(entity))
+	{
+		isThrownGrenade = true;
+	}
+
+	nlohmann::json jsonData;
+
+	jsonData["bullet"]["isThrownGrenade"] = isThrownGrenade;
+	jsonData["bullet"]["x"] = entity->getX();
+	jsonData["bullet"]["y"] = entity->getY();
+	jsonData["bullet"]["rotateAngle"] = entity->getRotateAngle();
+	jsonData["bullet"]["speed"] = entity->getSpeed();
+	jsonData["bullet"]["textureName2D"] = entity->getTextureName2D();
+	jsonData["bullet"]["damage"] = entity->getDamage();
+
+	// TODO: trimite si ceilalti parametrii daca vrem sa avem mai multi modificatori
+
+	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 }
 

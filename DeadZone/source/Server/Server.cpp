@@ -2,6 +2,7 @@
 
 #include "../Random/Random.h"
 #include "../GlobalClock/GlobalClock.h"
+#include "../Entity/Bullet/ThrownGrenade.h"
 
 #include <nlohmann/json.hpp>
 
@@ -109,6 +110,7 @@ void Server::handleReceivedPacket()
 
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
+	// player
 	if (jsonData.contains("ping"))
 	{
 		connectedClients[clientKey].lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
@@ -136,6 +138,40 @@ void Server::handleReceivedPacket()
 		for (const auto& status : jsonData["statuses"])
 		{
 			connectedClients[clientKey].remotePlayerData.updateStatus(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()), indexStatus++);
+		}
+	}
+
+	// bullet
+	if (jsonData.contains("bullet"))
+	{
+		bool isThrownGrenade = jsonData["bullet"]["isThrownGrenade"].get<bool>();
+		if (isThrownGrenade)
+		{
+			connectedClients[clientKey].bulletData = std::make_shared<ThrownGrenade>(
+				jsonData["bullet"]["x"].get<double>(), jsonData["bullet"]["y"].get<double>(),
+				0.3, 0.3,
+				jsonData["bullet"]["rotateAngle"].get<double>(),
+				jsonData["bullet"]["speed"].get<double>(),
+				0.3, 0.3,
+				jsonData["bullet"]["textureName2D"].get<std::string>(),
+				0.0,
+				1.0,
+				jsonData["bullet"]["damage"].get<double>(),
+				15.0,
+				1.0
+			);
+		}
+		else
+		{
+			connectedClients[clientKey].bulletData = std::make_shared<Bullet>(
+				jsonData["bullet"]["x"].get<double>(), jsonData["bullet"]["y"].get<double>(),
+				0.3, 0.3,
+				jsonData["bullet"]["rotateAngle"].get<double>(),
+				jsonData["bullet"]["speed"].get<double>(),
+				0.3, 0.3,
+				jsonData["bullet"]["textureName2D"].get<std::string>(),
+				jsonData["bullet"]["damage"].get<double>()
+			);
 		}
 	}
 
@@ -231,7 +267,7 @@ void Server::update()
 		{
 			nlohmann::json jsonData;
 
-			for (const auto& otherConnectedClient : this->connectedClients)
+			for (auto& otherConnectedClient : this->connectedClients)
 			{
 				if (connectedClient.first == otherConnectedClient.first)
 				{
@@ -241,12 +277,33 @@ void Server::update()
 				// TODO: deocamdata consideram ca vin toate atributele pt un player
 				// TODO: verifica doar valorile noi
 
+				// player
 				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.clientName;
 				// TODO: outfitColor
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["x"] = otherConnectedClient.second.remotePlayerData.getX();
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["y"] = otherConnectedClient.second.remotePlayerData.getY();
 				jsonData["remotePlayers"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.remotePlayerData.getRotateAngle();
 				jsonData["remotePlayers"][otherConnectedClient.first]["statuses"] = otherConnectedClient.second.remotePlayerData.getStatuses();
+
+				// bullet
+				if (otherConnectedClient.second.bulletData.get())
+				{
+					bool isThrownGrenade = false;
+					if (std::dynamic_pointer_cast<ThrownGrenade>(otherConnectedClient.second.bulletData))
+					{
+						isThrownGrenade = true;
+					}
+
+					jsonData["bullets"][otherConnectedClient.first]["isThrownGrenade"] = isThrownGrenade;
+					jsonData["bullets"][otherConnectedClient.first]["x"] = otherConnectedClient.second.bulletData.get()->getX();
+					jsonData["bullets"][otherConnectedClient.first]["y"] = otherConnectedClient.second.bulletData.get()->getY();
+					jsonData["bullets"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.bulletData.get()->getRotateAngle();
+					jsonData["bullets"][otherConnectedClient.first]["speed"] = otherConnectedClient.second.bulletData.get()->getSpeed();
+					jsonData["bullets"][otherConnectedClient.first]["textureName2D"] = otherConnectedClient.second.bulletData.get()->getTextureName2D();
+					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
+
+					otherConnectedClient.second.bulletData.reset(); // bulletData = nullptr
+				}
 			}
 			
 			std::cout << "SERVER send json: " << jsonData.dump() << std::endl;

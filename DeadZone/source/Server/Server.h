@@ -3,9 +3,11 @@
 #include <enet/enet.h>
 #include <string>
 #include <map>
+#include <memory>
 
 #include "../Entity/RemotePlayer/RemotePlayer.h"
 #include "../Entity/Player/Player.h"
+#include "../Entity/Bullet/Bullet.h"
 
 class Server
 {
@@ -15,6 +17,7 @@ private:
 		ENetPeer* peer;
 		std::string clientName;
 		RemotePlayer remotePlayerData;
+		std::shared_ptr<Bullet> bulletData;
 		float lastTimeSentPing;
 		float lastTimeReceivedPing;
 		bool workingConnection;
@@ -26,6 +29,7 @@ private:
 			, lastTimeReceivedPing(0.0f)
 			, workingConnection(false)
 			, remotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
+			, bulletData(nullptr)
 		{
 
 		}
