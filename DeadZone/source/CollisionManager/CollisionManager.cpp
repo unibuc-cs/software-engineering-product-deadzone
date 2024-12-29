@@ -182,3 +182,31 @@ void CollisionManager::handleCollisions(std::vector<std::shared_ptr<Entity>>& en
 	}
 }
 
+void CollisionManager::handleMultiplayerCollisions(std::vector<std::shared_ptr<Entity>>& entities, std::unordered_map<std::string, std::shared_ptr<RemotePlayer>>& remotePlayers)
+{
+	// Functia de onCollide SE APELEAZA DIN AMBELE PERSPECTIVE ALE CELOR 2 OBIECTE IMPLICATE
+
+	// Player vs RemotePlayer
+	// TODO
+
+	// RemotePlayer vs Entities
+	for (const auto& [clientKey, remotePlayer] : remotePlayers)
+	{
+		for (const std::shared_ptr<Entity>& entity : entities)
+		{
+			if (std::dynamic_pointer_cast<CollidableEntity>(entity) == nullptr)
+				continue;
+
+			if (!std::dynamic_pointer_cast<CollidableEntity>(entity)->getCollisionActive())
+				continue;
+
+			glm::vec2 overlap = std::dynamic_pointer_cast<CollidableEntity>(remotePlayer)->isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entity));
+			if (overlap.x > 0.0 && overlap.y > 0.0)
+			{
+				std::dynamic_pointer_cast<CollidableEntity>(remotePlayer)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entity), overlap);
+				std::dynamic_pointer_cast<CollidableEntity>(entity)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(remotePlayer), overlap);
+			}
+		}
+	}
+}
+

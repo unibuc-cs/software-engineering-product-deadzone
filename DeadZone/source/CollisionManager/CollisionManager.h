@@ -1,11 +1,15 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <memory>
+#include <unordered_map>
 
 #include "../Entity/Entity.h"
 #include "../Entity/CollidableEntity.h"
 #include "../Map/Map.h"
 #include "../Entity/Player/Player.h"
+#include "../Entity/RemotePlayer/RemotePlayer.h"
 
 class CollisionManager
 {
@@ -21,5 +25,6 @@ public:
 
 	static CollisionManager& get();
 	void handleCollisions(std::vector<std::shared_ptr<Entity>>& entities);
+	void handleMultiplayerCollisions(std::vector<std::shared_ptr<Entity>>& entities, std::unordered_map<std::string, std::shared_ptr<RemotePlayer>>& remotePlayers);
 };
 

@@ -236,6 +236,7 @@ void Game::run()
 
             // Collision System
             CollisionManager::get().handleCollisions(this->entities);
+            CollisionManager::get().handleMultiplayerCollisions(this->entities, this->remotePlayers);
 
             // Interactions System
             InteractionManager::get().handleInteractions(this->entities);
