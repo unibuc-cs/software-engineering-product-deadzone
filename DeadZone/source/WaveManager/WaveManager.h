@@ -1,8 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <queue>
 #include <memory>
+#include <unordered_map>
+
+#include "../Entity/Enemy/Enemy.h"
 
 class WaveManager
 {
@@ -32,8 +36,10 @@ private:
 
 	static std::shared_ptr<WaveManager> instance;
 
-public:
+	// Multiplayer
+	std::unordered_map<std::string, std::shared_ptr<Enemy>> remoteZombies;
 
+public:
 	~WaveManager();
 
 	static WaveManager& get();
@@ -41,9 +47,18 @@ public:
 	int getNumFinishedWaves() const { return this->numFinishedWaves; }
 	int getCurrentWaveNumber() const { return this->numFinishedWaves + 1; }
 
-	void update(); // TODO:
+	void update();
+	void draw();
 	
 	static void deleteInstance();
 
+	// Multiplayer
+	void spawnRemoteZombie(const std::string& id, double x, double y);
+	void updateRemoteZombiePosition(const std::string& id, double x, double y);
+	void updateRemoteZombieRotateAngle(const std::string& id, double angle);
+	void updateRemoteZombieStatuses(const std::string& id, const std::vector<AnimatedEntity::EntityStatus>& statuses);
+
+	// Getters
 	inline bool getInWave() const { return this->inWave; }
+	inline const std::unordered_map<std::string, std::shared_ptr<Enemy>> getRemoteZombies() const { return remoteZombies; };
 };

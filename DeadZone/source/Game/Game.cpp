@@ -31,6 +31,7 @@
 
 Game::Game()
     : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+    , isServer(false)
 {
     WindowManager::get();
 
@@ -62,6 +63,9 @@ void Game::loadResources()
     nlohmann::json gameJSON;
     gameFile >> gameJSON;
     gameFile.close();
+
+    // Server
+    isServer = gameJSON["clientHasServer"].get<bool>();
 
     // Start Client
     Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
@@ -280,7 +284,10 @@ void Game::run()
 
         // Wave Manager
         if (MenuManager::get().size() == 0)
+        {
             WaveManager::get().update();
+            WaveManager::get().draw();  // TODO: verifica
+        }
 
         // Update/Tick
         GlobalClock::get().updateTime();

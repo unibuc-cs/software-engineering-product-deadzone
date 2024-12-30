@@ -8,11 +8,12 @@
 #include "../Random/Random.h"
 #include "../Entity/Enemy/EnemyFactory.h"
 #include "../SoundManager/SoundManager.h"
+#include "../Server/Server.h"
 
 std::shared_ptr<WaveManager> WaveManager::instance = nullptr;
 
 WaveManager::WaveManager(const double waveCoolDown, bool inWave, double timeWaveEnded, int numEnemiesPerTurn, int numFinishedWaves) :
-	waveCoolDown(waveCoolDown), inWave(inWave), timeWaveEnded(timeWaveEnded), numEnemiesPerTurn(0), numFinishedWaves(numFinishedWaves)
+	waveCoolDown(waveCoolDown), inWave(inWave), timeWaveEnded(timeWaveEnded), numEnemiesPerTurn(numEnemiesPerTurn), numFinishedWaves(numFinishedWaves)
 {
 
 }
@@ -126,27 +127,31 @@ void WaveManager::bfsSearch()
 
 void WaveManager::update()
 {
-	if (this->inWave)
+	// TODO: doar server-ul se ocupa de calcularea tuturor pozitiilor + trimite noile date
+	if (Game::get().getIsServer())
 	{
-		int numEnemiesActive = 0;
-		std::vector<std::shared_ptr<Entity>>& entities = Game::get().getEntities();
-		for (int i = 0; i < entities.size(); ++i)
+		if (this->inWave)
 		{
-			if (std::dynamic_pointer_cast<Enemy>(entities[i]))
-				++numEnemiesActive;
-		}
+			int numEnemiesActive = remoteZombies.size();
+			// TODO: foloseste direct remoteZombies
+			//std::vector<std::shared_ptr<Entity>>& entities = Game::get().getEntities();
+			//for (int i = 0; i < entities.size(); ++i)
+			//{
+			//	if (std::dynamic_pointer_cast<Enemy>(entities[i]))
+			//		++numEnemiesActive;
+			//}
 
-		if (numEnemiesActive == 0)
+			if (numEnemiesActive == 0)
+			{
+				this->inWave = false;
+				++this->numFinishedWaves;
+				this->timeWaveEnded = GlobalClock::get().getCurrentTime();
+
+				//SoundManager::get().play("newWave", false);
+			}
+		}
+		else if (GlobalClock::get().getCurrentTime() - this->timeWaveEnded > this->waveCoolDown)
 		{
-			this->inWave = false;
-			++this->numFinishedWaves;
-			this->timeWaveEnded = GlobalClock::get().getCurrentTime();
-
-			//SoundManager::get().play("newWave", false);
-		}
-	}
-	else if (GlobalClock::get().getCurrentTime() - this->timeWaveEnded > this->waveCoolDown)
-	{
 			this->inWave = true;
 			bfsSearch();
 
@@ -174,11 +179,60 @@ void WaveManager::update()
 				std::pair<int, int> spawnPos = this->visitedCells[(int)this->visitedCells.size() - k];
 				std::swap(this->visitedCells[(int)this->visitedCells.size() - k], this->visitedCells[(int)this->visitedCells.size() - 1]);
 				this->visitedCells.pop_back();
-				Game::get().addEntityForNextFrame(EnemyFactory::getDefaultEnemy(spawnPos.first, spawnPos.second));
+
+				// TODO: de verificat daca merge ok asta
+				spawnRemoteZombie(std::to_string(i), spawnPos.first, spawnPos.second);
 
 				// sound effect
 				SoundManager::get().play("newWave", false);
 			}
+		}
+
+		for (auto& zombie : remoteZombies)
+		{
+			// TODO: deocamdata zombies urmaresc doar player-ul care are server-ul
+			// TODO: schimba functia de update astfel incat sa ia in calcul remotePlayers
+			zombie.second->update();
+		}
+
+		Server::get().sendZombiesData(remoteZombies);
 	}
 }
 
+void WaveManager::draw()
+{
+	for (auto& zombie : remoteZombies)
+	{
+		zombie.second->draw();
+	}
+}
+
+void WaveManager::spawnRemoteZombie(const std::string& id, double x, double y)
+{
+	if (remoteZombies.find(id) != remoteZombies.end())
+	{
+		// TODO: throw error
+		return;
+	}
+
+	remoteZombies[id] = EnemyFactory::getDefaultEnemy(x, y);
+}
+
+void WaveManager::updateRemoteZombiePosition(const std::string& id, double x, double y)
+{
+	remoteZombies[id]->setX(x);
+	remoteZombies[id]->setY(y);
+}
+
+void WaveManager::updateRemoteZombieRotateAngle(const std::string& id, double angle)
+{
+	remoteZombies[id]->setRotateAngle(angle);
+}
+
+void WaveManager::updateRemoteZombieStatuses(const std::string& id, const std::vector<AnimatedEntity::EntityStatus>& statuses)
+{
+	for (size_t indexStatus = 0; indexStatus < statuses.size(); ++indexStatus)
+	{
+		remoteZombies[id]->updateStatus(statuses[indexStatus], indexStatus);
+	}
+}

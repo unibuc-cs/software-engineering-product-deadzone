@@ -8,6 +8,7 @@
 #include "../Game/Game.h"
 #include "../Entity/Player/Player.h"
 #include "../Entity/Bullet/ThrownGrenade.h"
+#include "../WaveManager/WaveManager.h"
 
 Client::Client()
 	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
@@ -101,7 +102,9 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 		// std::cout << "Client sent message: " << messageToSend << std::endl;
 	}
 	else
+	{
 		std::cout << "Error: Client failed to send message" << std::endl;
+	}
 }
 
 bool Client::shouldSendRemotePlayerData()
@@ -220,6 +223,25 @@ void Client::handleReceivedPacket()
 					bulletData["damage"].get<double>()
 				));
 			}
+		}
+	}
+
+	if (jsonData.contains("zombies"))
+	{
+		for (const auto& [zombieId, zombieData] : jsonData["zombies"].items())
+		{
+			// asigurare ca avem spawned remote zombie-ul pe care vrem sa il actualizam
+			WaveManager::get().spawnRemoteZombie(zombieId, zombieData["position"]["x"].get<double>(), zombieData["position"]["y"].get<double>());
+
+			WaveManager::get().updateRemoteZombiePosition(zombieId, zombieData["position"]["x"].get<double>(), zombieData["position"]["y"].get<double>());
+			WaveManager::get().updateRemoteZombieRotateAngle(zombieId, zombieData["rotateAngle"].get<double>());
+
+			std::vector<AnimatedEntity::EntityStatus> statuses;
+			for (const auto& status : zombieData["statuses"])
+			{
+				statuses.push_back(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()));
+			}
+			WaveManager::get().updateRemoteZombieStatuses(zombieId, statuses);
 		}
 	}
 

@@ -38,6 +38,8 @@ private:
 
 	const int MAX_NUM_DEAD_BODIES;
 
+	bool isServer;
+
 public:
 	enum class GameStatus
 	{
@@ -70,5 +72,7 @@ public:
 	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);
 	void updateRemotePlayerRotateAngle(const std::string& clientKey, double angle);
 	void updateRemotePlayerStatuses(const std::string& clientKey, const std::vector<AnimatedEntity::EntityStatus>& statuses);
+
+	inline bool getIsServer() const { return isServer; }
 };
 

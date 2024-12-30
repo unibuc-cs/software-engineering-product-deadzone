@@ -1,10 +1,10 @@
 #include "Server.h"
 
+#include <nlohmann/json.hpp>
+
 #include "../Random/Random.h"
 #include "../GlobalClock/GlobalClock.h"
 #include "../Entity/Bullet/ThrownGrenade.h"
-
-#include <nlohmann/json.hpp>
 
 #include <iostream>
 #include <set>
@@ -303,8 +303,9 @@ void Server::update()
 					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
 				}
 			}
-			
-			std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
+
+			// TODO: uncomment
+			// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 			connectedClient.second.sendMessageUnsafe(jsonData.dump());
 		}
 
@@ -350,3 +351,21 @@ void Server::stop()
 	this->connectedClients.clear();
 }
 
+void Server::sendZombiesData(std::unordered_map<std::string, std::shared_ptr<Enemy>> remoteZombies)
+{
+	for (auto& connectedClient : this->connectedClients)
+	{
+		nlohmann::json jsonData;
+
+		for (const auto& zombie : remoteZombies)
+		{
+			jsonData["zombies"][zombie.first]["position"]["x"] = zombie.second.get()->getX();
+			jsonData["zombies"][zombie.first]["position"]["y"] = zombie.second.get()->getY();
+			jsonData["zombies"][zombie.first]["rotateAngle"] = zombie.second.get()->getRotateAngle();
+			jsonData["zombies"][zombie.first]["statuses"] = zombie.second.get()->getStatuses();
+		}
+
+		std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
+		connectedClient.second.sendMessageUnsafe(jsonData.dump());
+	}
+}

@@ -8,6 +8,7 @@
 #include "../Entity/RemotePlayer/RemotePlayer.h"
 #include "../Entity/Player/Player.h"
 #include "../Entity/Bullet/Bullet.h"
+#include "../Entity/Enemy/Enemy.h"
 
 class Server
 {
@@ -81,5 +82,7 @@ public:
 	void stop();
 
 	enet_uint16 getPort() const { return this->address.port; }
+
+	void sendZombiesData(std::unordered_map<std::string, std::shared_ptr<Enemy>> remoteZombies);
 };
 
