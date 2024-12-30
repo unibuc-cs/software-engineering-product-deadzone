@@ -188,11 +188,20 @@ void WaveManager::update()
 			}
 		}
 
-		for (auto& zombie : remoteZombies)
+		for (auto it = remoteZombies.begin(); it != remoteZombies.end(); )
 		{
 			// TODO: deocamdata zombies urmaresc doar player-ul care are server-ul
 			// TODO: schimba functia de update astfel incat sa ia in calcul remotePlayers
-			zombie.second->update();
+			it->second->update();
+
+			if (it->second->getDeleteEntity())
+			{
+				it = remoteZombies.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 
 		Server::get().sendZombiesData(remoteZombies);

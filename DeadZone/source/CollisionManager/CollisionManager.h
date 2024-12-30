@@ -25,6 +25,6 @@ public:
 
 	static CollisionManager& get();
 	void handleCollisions(std::vector<std::shared_ptr<Entity>>& entities);
-	void handleMultiplayerCollisions(std::vector<std::shared_ptr<Entity>>& entities, std::unordered_map<std::string, std::shared_ptr<RemotePlayer>>& remotePlayers);
+	void handleMultiplayerCollisions(std::vector<std::shared_ptr<Entity>>& entities);
 };
 

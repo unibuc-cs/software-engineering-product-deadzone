@@ -60,5 +60,5 @@ public:
 
 	// Getters
 	inline bool getInWave() const { return this->inWave; }
-	inline const std::unordered_map<std::string, std::shared_ptr<Enemy>> getRemoteZombies() const { return remoteZombies; };
+	inline std::unordered_map<std::string, std::shared_ptr<Enemy>> getRemoteZombies() const { return remoteZombies; };
 };

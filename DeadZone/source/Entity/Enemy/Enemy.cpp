@@ -188,8 +188,7 @@ void Enemy::draw()
 		};
 		std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
 
-		Game::get().addDeadBody(std::make_shared<DeadBody>
-			(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0));
+		Game::get().addDeadBody(std::make_shared<DeadBody>(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0));
 
 		Player::get().setGold(Player::get().getGold() + this->goldOnKill);
 		Player::get().setNumKills(Player::get().getNumKills() + 1);
