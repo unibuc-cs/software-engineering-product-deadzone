@@ -143,9 +143,9 @@ void WaveManager::update()
 
 			Game::get().addDeadBody(std::make_shared<DeadBody>(it->second->getX(), it->second->getY(), deadResize * it->second->getDrawWidth(), deadResize * it->second->getDrawHeight(), deadRotateAngle, 0.0, m0, v0));
 
-			// TODO: SERVER-ul va fi noul responsabil pentru asta
-			//Player::get().setGold(Player::get().getGold() + this->goldOnKill);
-			//Player::get().setNumKills(Player::get().getNumKills() + 1);
+			// toti jucatorii primesc gold
+			Player::get().setGold(Player::get().getGold() + it->second->getGoldOnKill());
+			Player::get().setNumKills(Player::get().getNumKills() + 1);
 
 			it = remoteZombies.erase(it);
 		}

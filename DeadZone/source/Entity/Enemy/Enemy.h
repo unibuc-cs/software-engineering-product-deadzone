@@ -30,7 +30,6 @@ protected:
 	int goldOnKill;
 
 	double attackDamage;
-
 	double attackRadius;
 
 public:
@@ -48,4 +47,5 @@ public:
 
 	inline double getAttackDamage() const { return this->attackDamage; }
 	inline double getAttackRadius() const { return this->attackRadius; }
+	inline int getGoldOnKill() const { return goldOnKill; }
 };

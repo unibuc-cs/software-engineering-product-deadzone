@@ -239,7 +239,7 @@ Flipbook& ResourceManager::getFlipbook(const std::string& name)
 {
 	if (flipbooks.find(name) == flipbooks.end())
 	{
-		std::cout << "ERROR::RESOURCEMANAGER: Could not find the flipbook!\n";
+		std::cout << "ERROR::RESOURCEMANAGER: Could not find the flipbook: " << name << std::endl;
 	}
 
 	return flipbooks[name];
