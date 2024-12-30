@@ -57,6 +57,7 @@ public:
 	void updateRemoteZombiePosition(const std::string& id, double x, double y);
 	void updateRemoteZombieRotateAngle(const std::string& id, double angle);
 	void updateRemoteZombieStatuses(const std::string& id, const std::vector<AnimatedEntity::EntityStatus>& statuses);
+	void updateRemoteZombieDeleteEntity(const std::string& id, bool value);
 
 	// Getters
 	inline bool getInWave() const { return this->inWave; }

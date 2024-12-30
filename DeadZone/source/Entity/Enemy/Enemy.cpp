@@ -177,24 +177,7 @@ bool Enemy::nearTarget()
 
 void Enemy::draw()
 {
-	if (this->isDead())
-	{
-		int deadTextureIndex = Random::randomInt(0, 1);
-		double deadRotateAngle = (Random::random01() * 360.0 - Random::EPSILON);
-		double deadResize = 1.25;
-
-		std::map<AnimatedEntity::EntityStatus, std::string> m0 = {
-			{EntityStatus::DEAD_HUMAN, "enemy" + std::to_string(deadTextureIndex) + "Dead"}
-		};
-		std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
-
-		Game::get().addDeadBody(std::make_shared<DeadBody>(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0));
-
-		Player::get().setGold(Player::get().getGold() + this->goldOnKill);
-		Player::get().setNumKills(Player::get().getNumKills() + 1);
-		this->setDeleteEntity(true);
-	}
-	else if (this->isMoving)
+	if (this->isMoving)
 	{
 		for (int i = 0; i < this->statuses.size(); ++i)
 			SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getFlipbook(this->animationsName2D[this->statuses[i]]).getTextureAtTime(GlobalClock::get().getCurrentTime() - this->timesSinceStatuses[i]), Camera::get().screenPosition(this->x, this->y), Camera::get().screenSize(this->drawWidth + this->movingOffsetSize * glm::sin(this->movingOffsetSpeed * GlobalClock::get().getCurrentTime()), this->drawHeight + this->movingOffsetSize * glm::sin(this->movingOffsetSpeed * GlobalClock::get().getCurrentTime())), this->rotateAngle);
@@ -208,6 +191,12 @@ void Enemy::draw()
 
 void Enemy::update()
 {
+	if (this->isDead() || getDeleteEntity())
+	{
+		setDeleteEntity(true);
+		return;
+	}
+
 	this->isMoving = false;
 
 	this->pathFindingTarget();

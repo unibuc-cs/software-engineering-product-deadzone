@@ -127,7 +127,35 @@ void WaveManager::bfsSearch()
 
 void WaveManager::update()
 {
-	// TODO: doar server-ul se ocupa de calcularea tuturor pozitiilor + trimite noile date
+	// killed zombies
+	for (auto it = remoteZombies.begin(); it != remoteZombies.end(); )
+	{
+		if (it->second->getDeleteEntity())
+		{
+			int deadTextureIndex = Random::randomInt(0, 1);
+			double deadRotateAngle = (Random::random01() * 360.0 - Random::EPSILON);
+			double deadResize = 1.25;
+
+			std::map<AnimatedEntity::EntityStatus, std::string> m0 = {
+				{ AnimatedEntity::EntityStatus::DEAD_HUMAN, "enemy" + std::to_string(deadTextureIndex) + "Dead" }
+			};
+			std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
+
+			Game::get().addDeadBody(std::make_shared<DeadBody>(it->second->getX(), it->second->getY(), deadResize * it->second->getDrawWidth(), deadResize * it->second->getDrawHeight(), deadRotateAngle, 0.0, m0, v0));
+
+			// TODO: SERVER-ul va fi noul responsabil pentru asta
+			//Player::get().setGold(Player::get().getGold() + this->goldOnKill);
+			//Player::get().setNumKills(Player::get().getNumKills() + 1);
+
+			it = remoteZombies.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
+	// doar server-ul se ocupa de calcularea tuturor pozitiilor + trimite noile date
 	if (Game::get().getIsServer())
 	{
 		if (this->inWave)
@@ -188,20 +216,11 @@ void WaveManager::update()
 			}
 		}
 
-		for (auto it = remoteZombies.begin(); it != remoteZombies.end(); )
+		for (auto& zombie : remoteZombies)
 		{
 			// TODO: deocamdata zombies urmaresc doar player-ul care are server-ul
 			// TODO: schimba functia de update astfel incat sa ia in calcul remotePlayers
-			it->second->update();
-
-			if (it->second->getDeleteEntity())
-			{
-				it = remoteZombies.erase(it);
-			}
-			else
-			{
-				++it;
-			}
+			zombie.second->update();
 		}
 
 		Server::get().sendZombiesData(remoteZombies);
@@ -244,4 +263,9 @@ void WaveManager::updateRemoteZombieStatuses(const std::string& id, const std::v
 	{
 		remoteZombies[id]->updateStatus(statuses[indexStatus], indexStatus);
 	}
+}
+
+void WaveManager::updateRemoteZombieDeleteEntity(const std::string& id, bool value)
+{
+	remoteZombies[id]->setDeleteEntity(value);
 }

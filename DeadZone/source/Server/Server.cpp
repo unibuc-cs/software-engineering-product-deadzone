@@ -363,6 +363,7 @@ void Server::sendZombiesData(std::unordered_map<std::string, std::shared_ptr<Ene
 			jsonData["zombies"][zombie.first]["position"]["y"] = zombie.second.get()->getY();
 			jsonData["zombies"][zombie.first]["rotateAngle"] = zombie.second.get()->getRotateAngle();
 			jsonData["zombies"][zombie.first]["statuses"] = zombie.second.get()->getStatuses();
+			jsonData["zombies"][zombie.first]["deleteEntity"] = zombie.second.get()->getDeleteEntity();
 		}
 
 		std::cout << "SERVER send json: " << jsonData.dump() << std::endl;

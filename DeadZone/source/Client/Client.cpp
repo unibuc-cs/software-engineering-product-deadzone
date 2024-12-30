@@ -183,7 +183,6 @@ void Client::handleReceivedPacket()
 			for (const auto& status : playerData["statuses"])
 			{
 				statuses.push_back(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()));
-				std::cout << status.get<int>() << std::endl;
 			}
 			Game::get().updateRemotePlayerStatuses(clientKey, statuses);
 		}
@@ -242,6 +241,8 @@ void Client::handleReceivedPacket()
 				statuses.push_back(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()));
 			}
 			WaveManager::get().updateRemoteZombieStatuses(zombieId, statuses);
+
+			WaveManager::get().updateRemoteZombieDeleteEntity(zombieId, zombieData["deleteEntity"].get<bool>());
 		}
 	}
 
