@@ -83,6 +83,7 @@ public:
 
 	enet_uint16 getPort() const { return this->address.port; }
 
-	void sendZombiesData(std::unordered_map<std::string, std::shared_ptr<Enemy>> remoteZombies);
+	void sendMap(const std::string& map);
+	void sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies);
 };
 

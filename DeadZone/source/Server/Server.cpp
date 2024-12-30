@@ -324,7 +324,9 @@ void Server::update()
 			connectedClient = this->connectedClients.erase(connectedClient);
 		}
 		else
+		{
 			++connectedClient;
+		}
 	}
 }
 
@@ -351,7 +353,7 @@ void Server::stop()
 	this->connectedClients.clear();
 }
 
-void Server::sendZombiesData(std::unordered_map<std::string, std::shared_ptr<Enemy>> remoteZombies)
+void Server::sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies)
 {
 	for (auto& connectedClient : this->connectedClients)
 	{

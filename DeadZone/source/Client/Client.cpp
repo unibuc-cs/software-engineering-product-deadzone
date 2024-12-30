@@ -225,6 +225,7 @@ void Client::handleReceivedPacket()
 		}
 	}
 
+	// zombies
 	if (jsonData.contains("zombies"))
 	{
 		for (const auto& [zombieId, zombieData] : jsonData["zombies"].items())
