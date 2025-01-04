@@ -28,6 +28,7 @@ private:
 	ENetEvent eNetEvent;
 
 	bool succesfullyConnected;
+	bool hasMap;
 	float lastTimeTriedConnection;
 	const float RETRY_CONNECTION_DELTA_TIME;
 
@@ -56,6 +57,7 @@ public:
 
 	void sendBullet(const std::shared_ptr<Bullet>& const entity);
 
+	// Getters
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }
 };
 

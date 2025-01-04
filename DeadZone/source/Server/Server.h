@@ -67,11 +67,14 @@ private:
 
 	bool updateClients;
 	std::map<std::string, ClientData> connectedClients;
+	std::vector<std::vector<std::string>> map;
 
 	// Atentie aici la unicitatea cheii
 	inline std::string getClientKey(const ENetAddress& address) const { return std::to_string(address.host) + ":" + std::to_string(address.port); }
 
 	void handleReceivedPacket();
+
+	void generateMap();
 
 public:
 	static Server& get();
@@ -83,7 +86,7 @@ public:
 
 	enet_uint16 getPort() const { return this->address.port; }
 
-	void sendMap(const std::string& map);
+	void sendMap(const std::string& clientKey);
 	void sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies);
 };
 

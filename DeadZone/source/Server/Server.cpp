@@ -5,8 +5,11 @@
 #include "../Random/Random.h"
 #include "../GlobalClock/GlobalClock.h"
 #include "../Entity/Bullet/ThrownGrenade.h"
+#include "../Map/Map.h"
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <set>
 
 Server::Server()
@@ -19,6 +22,8 @@ Server::Server()
 {
 	this->address.host = ENET_HOST_ANY;
 	this->address.port = 0;
+
+	generateMap();
 }
 
 Server::~Server()
@@ -106,7 +111,7 @@ void Server::handleReceivedPacket()
 	std::string receivedMessage((char*)this->eNetEvent.packet->data);
 	
 	// TODO: uncomment
-	std::cout << "SERVER: Received Message from " << this->connectedClients.find(clientKey)->second.clientName << ": " << receivedMessage << std::endl;
+	// std::cout << "SERVER: Received Message from " << this->connectedClients.find(clientKey)->second.clientName << ": " << receivedMessage << std::endl;
 
 	nlohmann::json jsonData = nlohmann::json::parse(receivedMessage);
 
@@ -175,10 +180,59 @@ void Server::handleReceivedPacket()
 		}
 	}
 
+	// map
+	if (jsonData.contains("map"))
+	{
+		// trimite map catre clientul nou
+		sendMap(clientKey);
+	}
+
 	// TODO: de pus in if-uri? excluzand "ping"
 	updateClients = true;
 
 	enet_packet_destroy(this->eNetEvent.packet);
+}
+
+void Server::generateMap()
+{
+	// Load JSON
+	std::ifstream gameFile("config/game.json");
+	nlohmann::json gameJSON;
+	gameFile >> gameJSON;
+	gameFile.close();
+
+	int width = gameJSON["map"]["width"].get<int>();
+	int height = gameJSON["map"]["height"].get<int>();
+
+	// TODO: foloseste mapa generata procedural
+	std::string filePath = Map::generateProceduralMap(width, height);
+	// std::string filePath = "maps/sandbox.map";
+
+	std::ios_base::sync_with_stdio(false);
+
+	std::ifstream in(filePath);
+	if (in.fail())
+	{
+		throw std::runtime_error("Cannot open file: " + filePath);
+	}
+	in.tie(nullptr);
+
+	while (!in.eof())
+	{
+		std::string line;
+		std::getline(in, line);
+		std::stringstream ss(line);
+
+		map.push_back(std::vector<std::string>());
+
+		std::string code;
+		while (ss >> code)
+		{
+			map.back().push_back(code);
+		}
+	}
+
+	in.close();
 }
 
 void Server::update()
@@ -353,6 +407,14 @@ void Server::stop()
 	this->connectedClients.clear();
 }
 
+void Server::sendMap(const std::string& clientKey)
+{
+	nlohmann::json jsonData;
+	jsonData["map"] = map;
+
+	connectedClients[clientKey].sendMessageUnsafe(jsonData.dump());
+}
+
 void Server::sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies)
 {
 	for (auto& connectedClient : this->connectedClients)
@@ -368,7 +430,7 @@ void Server::sendZombiesData(const std::unordered_map<std::string, std::shared_p
 			jsonData["zombies"][zombie.first]["deleteEntity"] = zombie.second.get()->getDeleteEntity();
 		}
 
-		std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
+		// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 }

@@ -17,7 +17,7 @@ std::shared_ptr<Map> Map::instance = nullptr;
 
 Map::Map()
 {
-	this->genUtil = GeneralUtilities::get();
+
 }
 
 Map& Map::get()
@@ -33,7 +33,7 @@ void Map::deleteInstance()
 	Map::instance = nullptr;
 }
 
-void Map::readMap(const std::string& path)
+void Map::readMapFromFile(const std::string& path)
 {
 	std::ios_base::sync_with_stdio(false);
 
@@ -73,7 +73,8 @@ void Map::readMap(const std::string& path)
 				this->map.back().emplace_back(std::make_shared<Door>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, m0, v0, 2.0, 2.0, 500));
 				this->doors.emplace_back(std::dynamic_pointer_cast<Door>(this->map.back().back()));
 			}
-			else if (code[0] == 's') {
+			else if (code[0] == 's')
+			{
 				this->map.back().emplace_back(std::make_shared<Shop>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code, 10.0, 10.0));
 				this->shops.emplace_back(std::dynamic_pointer_cast<Shop>(this->map.back().back()));
 			}
@@ -81,6 +82,43 @@ void Map::readMap(const std::string& path)
 	}
 
 	in.close();
+
+	this->mapLoaded = true;
+}
+
+void Map::readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer)
+{
+	for (const std::vector<std::string> &line : buffer)
+	{
+		this->map.emplace_back();
+
+		for (const std::string& code : line)
+		{
+			if (code[0] == 'M')
+			{
+				this->map.back().emplace_back(std::make_shared<Wall>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code));
+			}
+			else if (code[0] == '.')
+			{
+				this->map.back().emplace_back(std::make_shared<Floor>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, code));
+			}
+			else if (code[0] == 'D')
+			{
+				std::map<AnimatedEntity::EntityStatus, std::string> m0 = {
+					{ AnimatedEntity::EntityStatus::IDLE, "doorStatic0"},
+					{ AnimatedEntity::EntityStatus::OPENED, "doorOpening0"}
+				};
+				std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::IDLE };
+				this->map.back().emplace_back(std::make_shared<Door>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, m0, v0, 2.0, 2.0, 500));
+				this->doors.emplace_back(std::dynamic_pointer_cast<Door>(this->map.back().back()));
+			}
+			else if (code[0] == 's')
+			{
+				this->map.back().emplace_back(std::make_shared<Shop>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code, 10.0, 10.0));
+				this->shops.emplace_back(std::dynamic_pointer_cast<Shop>(this->map.back().back()));
+			}
+		}
+	}
 
 	this->mapLoaded = true;
 }
@@ -202,7 +240,7 @@ std::string Map::generateProceduralMap(const int& width, const int& height) {
 	std::vector<std::vector<std::string>> map(height, std::vector<std::string>(width, "."));
 
 	// Generate Perlin Noise Map
-	genUtil.generatePerlinMap(width, height, 10, 256, map);
+	GeneralUtilities::get().generatePerlinMap(width, height, 10, 256, map);
 
 	// Update corners
 	for (int i = 0; i < height; i++)
@@ -219,7 +257,7 @@ std::string Map::generateProceduralMap(const int& width, const int& height) {
 	putShopInGoodArea(width, height, map, enclosed);
 
 	// Gettime sinch epoch in ms
-	long long ms_since_epoch = genUtil.getTimeSinceEpochInMs();
+	long long ms_since_epoch = GeneralUtilities::get().getTimeSinceEpochInMs();
 
 	std::string maps_dir = "maps/";
 	std::string new_map_name = "sandbox_" + std::to_string(ms_since_epoch);

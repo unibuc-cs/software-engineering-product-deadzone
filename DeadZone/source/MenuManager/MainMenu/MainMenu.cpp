@@ -38,17 +38,19 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 			MenuManager::get().pop();
 			InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
 
-			if (Map::get().hasBeenLoaded() == false)
+			if (Map::get().getHasBeenLoaded() == false)
 				try
 				{
-					std::ifstream gameFile("config/game.json");
-					nlohmann::json gameJSON;
-					gameFile >> gameJSON;
-					gameFile.close();
+					// TODO: map primim direct de la server acum
+					// TODO: delete
+					//std::ifstream gameFile("config/game.json");
+					//nlohmann::json gameJSON;
+					//gameFile >> gameJSON;
+					//gameFile.close();
 
-					std::string file = gameJSON["map"].get<std::string>();
+					//std::string file = gameJSON["map"].get<std::string>();
 
-					Map::get().readMap(file);
+					//Map::get().readMapFromFile(file);
 				}
 				catch (const std::runtime_error& err)
 				{

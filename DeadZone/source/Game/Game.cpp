@@ -34,14 +34,6 @@ Game::Game()
     , isServer(false)
 {
     WindowManager::get();
-
-    // TODO: mutat in main
-    // Initialize ENet
-    //if (enet_initialize() != 0)
-    //{
-    //    std::cout << "Error: An error occurred while initializing ENet" << std::endl;
-    //}
-    //atexit(enet_deinitialize);
 }
 
 Game::~Game()
@@ -177,24 +169,6 @@ void Game::loadResources()
         std::cout << "ERROR::FONT: other error" << std::endl;
     }
 
-    // Generate & Save and Load Map
-    try
-    {
-        int width = gameJSON["map"]["width"].get<int>();
-        int height = gameJSON["map"]["height"].get<int>();
-        // std::string file = Map::get().generateProceduralMap(width, height); // TODO: use
-
-        Map::get().readMap("maps/sandbox.map"); // TODO: test
-    }
-    catch (const std::runtime_error& err)
-    {
-        std::cout << "ERROR::MAP: " << err.what() << std::endl;
-    }
-    catch (...)
-    {
-        std::cout << "ERROR::MAP: other error" << std::endl;
-    }
-
     // Configure Shaders
     glm::mat4 projection = glm::ortho(-0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), 0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), -0.5f * static_cast<float>(WindowManager::get().getWindowHeight()), 0.5f * static_cast<float>(WindowManager::get().getWindowHeight()));
     ResourceManager::getShader("sprite").use().setInteger("sprite", 0);
@@ -229,6 +203,9 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
+        // Client
+        Client::get().update();
+
         if (gameStatus == GameStatus::InGame)
         {
             // Update
@@ -237,7 +214,6 @@ void Game::run()
             Player::get().update();
             this->updateEntities();
 
-
             // Collision System
             CollisionManager::get().handleCollisions(this->entities);
             CollisionManager::get().handleMultiplayerCollisions(this->entities);
@@ -245,12 +221,6 @@ void Game::run()
             // Interactions System
             InteractionManager::get().handleInteractions(this->entities);
         }
-
-
-        // Client
-        Client::get().update();
-
-
 
         // Render
         glClearColor(0.08f, 0.08f, 0.08f, 1.0f);

@@ -412,4 +412,8 @@ TestResults/*
 
 # Ignore save.json
 DeadZone/config/save.json
+
 /CppProperties.json
+
+# Ignore procedurally generated maps
+DeadZone/maps/sandbox_*

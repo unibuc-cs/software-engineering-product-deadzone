@@ -39,23 +39,25 @@ private:
 	std::vector<std::shared_ptr<Door>> doors;
 	std::vector<std::shared_ptr<Shop>> shops;
 
-	GeneralUtilities genUtil;
-
 public:
 	~Map() = default;
 	static Map& get();
-	void readMap(const std::string& path);
-	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
+	void readMapFromFile(const std::string& path);
+	void readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer);
+
 	void draw();
-	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
-	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
 	void update();
+
 	static void deleteInstance();
 
-	bool hasBeenLoaded() const { return mapLoaded; }
+	static void putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& M, std::vector<std::vector<bool>>& enclosed);
+	static void putShopInGoodArea(const int& width, const int& height, std::vector<std::vector<std::string>>& map, const std::vector<std::vector<bool>>& enclosed);
+	static std::string generateProceduralMap(const int& width, const int& height);
 
-	void putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& M, std::vector<std::vector<bool>>& enclosed);
-	void putShopInGoodArea(const int& width, const int& height, std::vector<std::vector<std::string>>& map, const std::vector<std::vector<bool>>& enclosed);
-	std::string generateProceduralMap(const int& width, const int& height);
+	// Getters
+	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
+	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
+	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
+	bool getHasBeenLoaded() const { return mapLoaded; }
 };
 
