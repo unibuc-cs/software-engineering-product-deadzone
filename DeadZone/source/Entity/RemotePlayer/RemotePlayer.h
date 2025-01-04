@@ -15,8 +15,13 @@ public:
 
 	virtual void draw() override;
 
+	// Getters
+	inline std::string getClientName() const { return clientName; }
+	inline glm::vec3 getOutfitColor() const { return outfitColor; }
+
 	// Setters
 	inline void setClientName(const std::string& name) { clientName = name; }
+	inline void setOutfitColor(const glm::vec3& color) { outfitColor = color; }
 
 private:
 	std::string clientName;

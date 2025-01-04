@@ -25,7 +25,6 @@ private:
 	struct ClientData
 	{
 		ENetPeer* peer;
-		std::string clientName;
 		RemotePlayer remotePlayerData;
 		std::shared_ptr<Bullet> bulletData;
 		std::shared_ptr<ReplicatedSound> soundData;
@@ -35,7 +34,6 @@ private:
 
 		ClientData()
 			: peer(nullptr)
-			, clientName("")
 			, lastTimeSentPing(0.0f)
 			, lastTimeReceivedPing(0.0f)
 			, workingConnection(false)

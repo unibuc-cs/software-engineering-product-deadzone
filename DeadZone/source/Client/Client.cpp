@@ -183,7 +183,12 @@ void Client::handleReceivedPacket()
 			Game::get().updateRemotePlayerClientName(clientKey, playerData["clientName"].get<std::string>());
 
 			// outfitColor
-			// TODO: playerData["outfitColor"]
+			glm::vec3 outfitColor = glm::vec3(
+				playerData["outfitColor"]["x"].get<double>(),
+				playerData["outfitColor"]["y"].get<double>(),
+				playerData["outfitColor"]["z"].get<double>()
+			);
+			Game::get().updateRemotePlayerOutfitColor(clientKey, outfitColor);
 
 			// position
 			Game::get().updateRemotePlayerPosition(clientKey, playerData["position"]["x"].get<double>(), playerData["position"]["y"].get<double>());
@@ -323,7 +328,9 @@ void Client::update()
 		// TODO: trimite doar ce avem de schimbat
 
 		jsonData["clientName"] = this->clientName;
-		// TODO: outfitColor
+		jsonData["outfitColor"]["x"] = Player::get().getOutfitColor().x;
+		jsonData["outfitColor"]["y"] = Player::get().getOutfitColor().y;
+		jsonData["outfitColor"]["z"] = Player::get().getOutfitColor().z;
 		jsonData["position"]["x"] = Player::get().getX();
 		jsonData["position"]["y"] = Player::get().getY();
 		jsonData["rotateAngle"] = Player::get().getRotateAngle();

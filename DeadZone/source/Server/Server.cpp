@@ -130,11 +130,16 @@ void Server::handleReceivedPacket()
 	}
 	if (jsonData.contains("clientName"))
 	{
-		connectedClients[clientKey].clientName = jsonData["clientName"].get<std::string>();
+		connectedClients[clientKey].remotePlayerData.setClientName(jsonData["clientName"].get<std::string>());
 	}
 	if (jsonData.contains("outfitColor"))
 	{
-		// TODO
+		glm::vec3 outfitColor = glm::vec3(
+			jsonData["outfitColor"]["x"].get<double>(),
+			jsonData["outfitColor"]["y"].get<double>(),
+			jsonData["outfitColor"]["z"].get<double>()
+		);
+		connectedClients[clientKey].remotePlayerData.setOutfitColor(outfitColor);
 	}
 	if (jsonData.contains("position"))
 	{
@@ -349,8 +354,10 @@ void Server::update()
 				// TODO: verifica doar valorile noi
 
 				// player
-				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.clientName;
-				// TODO: outfitColor
+				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.remotePlayerData.getClientName();
+				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["x"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().x;
+				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["y"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().y;
+				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["z"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().z;
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["x"] = otherConnectedClient.second.remotePlayerData.getX();
 				jsonData["remotePlayers"][otherConnectedClient.first]["position"]["y"] = otherConnectedClient.second.remotePlayerData.getY();
 				jsonData["remotePlayers"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.remotePlayerData.getRotateAngle();

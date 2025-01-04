@@ -363,6 +363,11 @@ void Game::updateRemotePlayerClientName(const std::string& clientKey, const std:
     remotePlayers[clientKey]->setClientName(name);
 }
 
+void Game::updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color)
+{
+    remotePlayers[clientKey]->setOutfitColor(color);
+}
+
 void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)
 {
     remotePlayers[clientKey]->setX(x);
