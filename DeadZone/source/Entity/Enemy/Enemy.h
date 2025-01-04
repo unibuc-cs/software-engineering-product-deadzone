@@ -47,6 +47,7 @@ public:
 	virtual bool nearTarget() override;
 
 	virtual void update() override;
+	void updateClient();
 
 	virtual void draw() override;
 

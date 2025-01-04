@@ -203,6 +203,12 @@ void Enemy::draw()
 
 void Enemy::update()
 {
+	if (this->isDead() || getDeleteEntity())
+	{
+		setDeleteEntity(true);
+		return;
+	}
+
 	// Gasirea celui mai apropiat jucator
 	this->nearestPlayerX = Enemy::INF;
 	this->nearestPlayerY = Enemy::INF;
@@ -229,17 +235,6 @@ void Enemy::update()
 			this->nearestPlayerX = remotePlayer.second->getX();
 			this->nearestPlayerY = remotePlayer.second->getY();
 		}
-	}
-
-
-
-
-
-
-	if (this->isDead() || getDeleteEntity())
-	{
-		setDeleteEntity(true);
-		return;
 	}
 
 	this->isMoving = false;
@@ -306,8 +301,10 @@ void Enemy::update()
 				this->rotateAngle -= 360.0;
 		}
 	}
+}
 
-
+void Enemy::updateClient()
+{
 	// Atac Player
 	if ((this->x - Player::get().getX()) * (this->x - Player::get().getX()) +
 		(this->y - Player::get().getY()) * (this->y - Player::get().getY())

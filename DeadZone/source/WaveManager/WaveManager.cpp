@@ -159,6 +159,12 @@ void WaveManager::update()
 		}
 	}
 
+	// Update specific doar pentru clienti fara server
+	for (auto& zombie : remoteZombies)
+	{
+		zombie.second->updateClient();
+	}
+
 	// doar server-ul se ocupa de calcularea tuturor pozitiilor + trimite noile date
 	if (Game::get().getIsServer())
 	{
