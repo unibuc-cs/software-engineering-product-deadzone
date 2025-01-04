@@ -358,6 +358,11 @@ void Game::spawnRemotePlayer(const std::string& clientKey)
     addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
 }
 
+void Game::updateRemotePlayerClientName(const std::string& clientKey, const std::string& name)
+{
+    remotePlayers[clientKey]->setClientName(name);
+}
+
 void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)
 {
     remotePlayers[clientKey]->setX(x);

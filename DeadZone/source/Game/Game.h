@@ -69,6 +69,7 @@ public:
 	inline std::unordered_map<std::string, std::shared_ptr<RemotePlayer>> getRemotePlayers() const { return remotePlayers; }
 
 	void spawnRemotePlayer(const std::string& clientKey);
+	void updateRemotePlayerClientName(const std::string& clientKey, const std::string& name);
 	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);
 	void updateRemotePlayerRotateAngle(const std::string& clientKey, double angle);
 	void updateRemotePlayerStatuses(const std::string& clientKey, const std::vector<AnimatedEntity::EntityStatus>& statuses);

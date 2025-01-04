@@ -383,7 +383,7 @@ void Server::update()
 			}
 
 			// TODO: uncomment
-			std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
+			// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 			connectedClient.second.sendMessageUnsafe(jsonData.dump());
 		}
 

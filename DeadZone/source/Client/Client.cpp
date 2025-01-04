@@ -112,6 +112,13 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 
 bool Client::shouldSendRemotePlayerData()
 {
+	static bool firstTime = true;
+	if (firstTime)
+	{
+		firstTime = false;
+		return true;
+	}
+
 	bool shouldSend = false;
 
 	if (Player::get().getX() != lastRemotePlayerData.getX())
@@ -172,7 +179,10 @@ void Client::handleReceivedPacket()
 
 			// TODO: deocamdata trimit toate atributele despre player => trimite doar ce e nou
 
-			// TODO: playerData["clientName"]
+			// clientName
+			Game::get().updateRemotePlayerClientName(clientKey, playerData["clientName"].get<std::string>());
+
+			// outfitColor
 			// TODO: playerData["outfitColor"]
 
 			// position
@@ -231,9 +241,6 @@ void Client::handleReceivedPacket()
 	// sounds
 	if (jsonData.contains("sounds"))
 	{
-		// TODO: delete
-		std::cout << jsonData["sounds"] << std::endl;
-
 		for (const auto& [clientKey, soundData] : jsonData["sounds"].items())
 		{
 			SoundManager::get().play(

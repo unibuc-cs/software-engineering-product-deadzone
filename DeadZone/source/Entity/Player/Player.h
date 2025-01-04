@@ -89,6 +89,7 @@ private:
 
 	int numKills;
 
+	std::string clientName;
 	glm::vec3 outfitColor;
 
 	static std::shared_ptr<Player> instance;

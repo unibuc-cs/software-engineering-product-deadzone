@@ -15,6 +15,10 @@ public:
 
 	virtual void draw() override;
 
+	// Setters
+	inline void setClientName(const std::string& name) { clientName = name; }
+
 private:
+	std::string clientName;
 	glm::vec3 outfitColor;
 };

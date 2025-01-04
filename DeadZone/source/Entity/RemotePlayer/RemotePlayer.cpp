@@ -1,6 +1,7 @@
 #include "RemotePlayer.h"
 
 #include "../../Renderer/SpriteRenderer.h"
+#include "../../Renderer/TextRenderer.h"
 #include "../../ResourceManager/ResourceManager.h"
 #include "../../Camera/Camera.h"
 
@@ -9,6 +10,7 @@ RemotePlayer::RemotePlayer(double x, double y, double drawWidth, double drawHeig
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
 	, AnimatedEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, animationsName2D, statuses)
 	, Human(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, animationsName2D, statuses, health, armor)
+	, clientName("")
 {
 	outfitColor = glm::vec3(1.0f, 0.0f, 0.0f);	// TODO: pune in constructor
 }
@@ -27,6 +29,18 @@ void RemotePlayer::draw()
 			Camera::get().screenPosition(this->x, this->y),
 			Camera::get().screenSize(this->drawWidth, this->drawHeight),
 			this->rotateAngle,
-			outfitColor);
+			outfitColor
+		);
 	}
+
+	glm::vec2 clientNameTextScreenPosition = Camera::get().screenPositionText(this->x, this->y);
+	clientNameTextScreenPosition.y -= 45.0f;
+
+	TextRenderer::get().draw(ResourceManager::getShader("text"),
+		ResourceManager::getFont("Antonio"),
+		clientName,
+		clientNameTextScreenPosition.x, clientNameTextScreenPosition.y,
+		0.75f,
+		outfitColor
+	);
 }
