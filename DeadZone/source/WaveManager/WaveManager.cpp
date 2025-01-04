@@ -11,6 +11,8 @@
 #include "../SoundManager/SoundManager.h"
 #include "../Server/Server.h"
 
+#include <iostream>
+
 std::shared_ptr<WaveManager> WaveManager::instance = nullptr;
 
 WaveManager::WaveManager(const double waveCoolDown, bool inWave, double timeWaveEnded, int numEnemiesPerTurn, int numFinishedWaves) :
@@ -142,6 +144,7 @@ void WaveManager::update()
 			};
 			std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
 
+			std::cout << deadTextureIndex << std::endl;
 			Game::get().addDeadBody(std::make_shared<DeadBody>(it->second->getX(), it->second->getY(), deadResize * it->second->getDrawWidth(), deadResize * it->second->getDrawHeight(), deadRotateAngle, 0.0, m0, v0));
 
 			// toti jucatorii primesc gold

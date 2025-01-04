@@ -252,7 +252,7 @@ void Client::handleReceivedPacket()
 	// map
 	if (jsonData.contains("map") && !hasMap)
 	{
-		std::cout << "SERVER: " << receivedMessage << std::endl; // TODO: delete
+		// std::cout << "SERVER: " << receivedMessage << std::endl; // TODO: delete
 		Map::get().readMapFromBuffer(jsonData["map"].get<std::vector<std::vector<std::string>>>());
 		hasMap = true;
 	}
