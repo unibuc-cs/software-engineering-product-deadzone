@@ -10,6 +10,7 @@
 #include "../Entity/Bullet/ThrownGrenade.h"
 #include "../WaveManager/WaveManager.h"
 #include "../Map/Map.h"
+#include "../SoundManager/SoundManager.h"
 
 Client::Client()
 	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
@@ -227,6 +228,22 @@ void Client::handleReceivedPacket()
 		}
 	}
 
+	// sounds
+	if (jsonData.contains("sounds"))
+	{
+		// TODO: delete
+		std::cout << jsonData["sounds"] << std::endl;
+
+		for (const auto& [clientKey, soundData] : jsonData["sounds"].items())
+		{
+			SoundManager::get().play(
+				soundData["name"].get<std::string>(),
+				soundData["paused"].get<bool>(),
+				false
+			);
+		}
+	}
+
 	// zombies
 	if (jsonData.contains("zombies"))
 	{
@@ -408,6 +425,16 @@ void Client::sendBullet(const std::shared_ptr<Bullet>& const entity)
 	jsonData["bullet"]["damage"] = entity->getDamage();
 
 	// TODO: trimite si ceilalti parametrii daca vrem sa avem mai multi modificatori
+
+	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+}
+
+void Client::sendSound(const std::string& name, bool paused)
+{
+	nlohmann::json jsonData;
+
+	jsonData["sound"]["name"] = name;
+	jsonData["sound"]["paused"] = paused;
 
 	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 }

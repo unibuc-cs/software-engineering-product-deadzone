@@ -12,6 +12,14 @@
 #include <sstream>
 #include <set>
 
+
+ReplicatedSound::ReplicatedSound(const std::string& name, bool paused)
+	: name(name)
+	, paused(paused)
+{
+
+}
+
 Server::Server()
 	: MAX_NUM_CLIENTS((1 << 5)), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
 	, server(nullptr), address(), MINIMUM_PORT(10000), MAXIMUM_PORT(20000)
@@ -178,6 +186,15 @@ void Server::handleReceivedPacket()
 				jsonData["bullet"]["damage"].get<double>()
 			);
 		}
+	}
+
+	// sound
+	if (jsonData.contains("sound"))
+	{
+		connectedClients[clientKey].soundData = std::make_shared<ReplicatedSound>(
+			jsonData["sound"]["name"].get<std::string>(),
+			jsonData["sound"]["paused"].get<bool>()
+		);
 	}
 
 	// map
@@ -356,16 +373,24 @@ void Server::update()
 					jsonData["bullets"][otherConnectedClient.first]["textureName2D"] = otherConnectedClient.second.bulletData.get()->getTextureName2D();
 					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
 				}
+
+				// sound
+				if (otherConnectedClient.second.soundData.get())
+				{
+					jsonData["sounds"][otherConnectedClient.first]["name"] = otherConnectedClient.second.soundData->name;
+					jsonData["sounds"][otherConnectedClient.first]["paused"] = otherConnectedClient.second.soundData->paused;
+				}
 			}
 
 			// TODO: uncomment
-			// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
+			std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 			connectedClient.second.sendMessageUnsafe(jsonData.dump());
 		}
 
 		for (auto& connectedClient : this->connectedClients)
 		{
 			connectedClient.second.bulletData.reset(); // bulletData = nullptr
+			connectedClient.second.soundData.reset(); // soundData = nullptr
 		}
 	}
 

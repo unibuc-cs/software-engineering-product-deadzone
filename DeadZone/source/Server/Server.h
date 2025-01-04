@@ -10,6 +10,15 @@
 #include "../Entity/Bullet/Bullet.h"
 #include "../Entity/Enemy/Enemy.h"
 
+struct ReplicatedSound
+{
+	std::string name;
+	bool paused;
+
+	// Constructor
+	ReplicatedSound(const std::string& name, bool paused);
+};
+
 class Server
 {
 private:
@@ -19,6 +28,7 @@ private:
 		std::string clientName;
 		RemotePlayer remotePlayerData;
 		std::shared_ptr<Bullet> bulletData;
+		std::shared_ptr<ReplicatedSound> soundData;
 		float lastTimeSentPing;
 		float lastTimeReceivedPing;
 		bool workingConnection;
@@ -31,6 +41,7 @@ private:
 			, workingConnection(false)
 			, remotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 			, bulletData(nullptr)
+			, soundData(nullptr)
 		{
 
 		}

@@ -32,7 +32,6 @@ private:
 	float lastTimeTriedConnection;
 	const float RETRY_CONNECTION_DELTA_TIME;
 
-
 	const float TIME_BETWEEN_PINGS;
 	const float MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST;
 	float lastTimeReceivedPing;
@@ -56,6 +55,7 @@ public:
 	void stop();
 
 	void sendBullet(const std::shared_ptr<Bullet>& const entity);
+	void sendSound(const std::string& name, bool paused);
 
 	// Getters
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }

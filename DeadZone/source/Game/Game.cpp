@@ -193,7 +193,7 @@ void Game::run()
     SoundManager::get().play("walking", true);
     SoundManager::get().play("running", true);
     SoundManager::get().play("tired", true);
-    SoundManager::get().play("soundtrack", true);
+    SoundManager::get().play("soundtrack", true, false);
 
     // MainMenu::get().setupMainMenuInputComponent();
     MenuManager::get().push(MainMenu::get());

@@ -205,7 +205,7 @@ Font& ResourceManager::getFont(const std::string& name)
 {
 	if (fonts.find(name) == fonts.end())
 	{
-		std::cout << "ERROR::RESOURCEMANAGER: Could not find the font!\n";
+		std::cout << "ERROR::RESOURCEMANAGER: Could not find the font: " << name << std::endl;
 	}
 
 	return fonts[name];
@@ -257,7 +257,7 @@ FMOD::Sound* ResourceManager::getSound(const std::string& name)
 {
 	if (sounds.find(name) == sounds.end())
 	{
-		std::cout << "ERROR::RESOURCEMANAGER: Could not find the sound!\n";
+		std::cout << "ERROR::RESOURCEMANAGER: Could not find the sound: " << name << std::endl;
 	}
 
 	return sounds[name];

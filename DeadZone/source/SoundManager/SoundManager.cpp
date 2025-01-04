@@ -3,6 +3,7 @@
 #include <iostream> // TODO: debug
 
 #include "../ResourceManager/ResourceManager.h"
+#include "../Client/Client.h"
 
 // instantiate static variables
 FMOD::System* SoundManager::fmodSystem = nullptr;
@@ -33,9 +34,15 @@ SoundManager& SoundManager::get()
 	return instance;
 }
 
-void SoundManager::play(const std::string& name, bool paused)
+void SoundManager::play(const std::string& name, bool paused, bool multiplayer)
 {
 	fmodSystem->playSound(ResourceManager::getSound(name), nullptr, paused, &channels[name]);
+
+	// TODO: muta nu vreau sa trimit orice fel de sunet - trimite la catre ceilalti clienti
+	if (multiplayer)
+	{
+		Client::get().sendSound(name, paused);
+	}
 }
 
 void SoundManager::pause(const std::string& name)
