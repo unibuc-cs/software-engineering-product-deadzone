@@ -32,6 +32,11 @@ protected:
 	double attackDamage;
 	double attackRadius;
 
+	float nearestPlayerX;
+	float nearestPlayerY;
+
+	static const float INF;
+
 public:
 
 	Enemy(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double health, double rotateSpeed, double attackDamage, double attackRadius, double armor = 0.0);
