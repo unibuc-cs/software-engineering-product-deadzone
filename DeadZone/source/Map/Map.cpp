@@ -295,5 +295,5 @@ bool Map::IsEnclosed(const int& x, const int& y) {
 }
 
 bool Map::IsWall(const int& x, const int& y) {
-	return (mapString[x][y][0] == '.');
+	return (mapString[x][y][0] != '.');
 }

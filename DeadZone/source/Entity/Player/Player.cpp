@@ -117,12 +117,15 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 std::pair<double, double> Player::getPlayerSpawnPoint() {
 	int width = Map::get().getWidth();
 	int height = Map::get().getHeight();
-	double x, y;
+	int x, y;
+	double x_scaled, y_scaled;
 	do {
-		x = Random::randomInt(10, height - 10) + 0.5;
-		y = Random::randomInt(10, width - 10) + 0.5;
+		x = Random::randomInt(10, height - 10);
+		y = Random::randomInt(10, width - 10);
+		x_scaled = x + 0.5;
+		y_scaled = y + 0.5;
 	} while (Map::get().IsEnclosed(x, y) || Map::get().IsWall(x, y));
-	return { x, y };
+	return { y_scaled , x_scaled }; // player positions are reversed
 }
 
 Player& Player::get()
