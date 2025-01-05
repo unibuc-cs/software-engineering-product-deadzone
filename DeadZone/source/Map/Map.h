@@ -35,9 +35,14 @@ private:
 private:
 	bool mapLoaded = false;
 
-	std::vector<std::vector<std::shared_ptr<Entity>>> map;
 	std::vector<std::shared_ptr<Door>> doors;
 	std::vector<std::shared_ptr<Shop>> shops;
+	std::vector<std::vector<std::shared_ptr<Entity>>> map;
+
+public:
+	static std::vector<std::vector<std::string>> mapString;
+	static std::vector<std::vector<bool>> enclosed;
+	static int height, width;
 
 public:
 	~Map() = default;
@@ -52,8 +57,8 @@ public:
 
 	static void deleteInstance();
 
-	static void putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& M, std::vector<std::vector<bool>>& enclosed);
-	static void putShopInGoodArea(const int& width, const int& height, std::vector<std::vector<std::string>>& map, const std::vector<std::vector<bool>>& enclosed);
+	static void putDoorsInEnclosedAreas();
+	static void putShopInGoodArea();
 	static std::string generateProceduralMap(const int& width, const int& height);
 
 	// Getters

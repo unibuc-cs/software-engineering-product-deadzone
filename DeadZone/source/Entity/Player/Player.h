@@ -96,6 +96,9 @@ private:
 
 	bool hasDied = false;
 
+private:
+	static std::pair<double, double> getPlayerSpawnPoint();
+
 public:
 
 	virtual ~Player();

@@ -15,6 +15,10 @@
 
 std::shared_ptr<Map> Map::instance = nullptr;
 
+std::vector<std::vector<std::string>> Map::mapString;
+std::vector<std::vector<bool>> Map::enclosed;
+int Map::height, Map::width;
+
 Map::Map()
 {
 
@@ -155,7 +159,7 @@ void Map::updateDoorStatus(unsigned int id)
 	}
 }
 
-void Map::putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& map, std::vector<std::vector<bool>>& enclosed) {
+void Map::putDoorsInEnclosedAreas() {
 	std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
 	const int di[4] = { -1, 0, 1, 0 };
 	const int dj[4] = { 0, 1, 0, -1 };
@@ -171,7 +175,7 @@ void Map::putDoorsInEnclosedAreas(const int& width, const int& height, std::vect
 	std::vector<std::pair<int, int>> visitedCells;
 	for (int i = 0; i < height; i++)
 		for (int j = 0; j < width; j++)
-			if (map[i][j][0] == '.' && !visited[i][j]) {
+			if (mapString[i][j][0] == '.' && !visited[i][j]) {
 				candidatesForDoor.clear();
 				visitedCells.clear();
 				int cnt = 0;
@@ -185,12 +189,12 @@ void Map::putDoorsInEnclosedAreas(const int& width, const int& height, std::vect
 					for (int k = 0; k < 4; k++) {
 						std::pair<int, int> new_cell = { cell.first + di[k], cell.second + dj[k] };
 						if (inside(new_cell) && !visited[new_cell.first][new_cell.second]) {
-							if (map[new_cell.first][new_cell.second][0] == '.') {
+							if (mapString[new_cell.first][new_cell.second][0] == '.') {
 								cellsInQueue.push({ new_cell.first, new_cell.second });
 								visited[new_cell.first][new_cell.second] = 1;
 								visitedCells.push_back({ new_cell.first, new_cell.second });
 							}
-							else if (map[new_cell.first][new_cell.second][0] == 'M')
+							else if (mapString[new_cell.first][new_cell.second][0] == 'M')
 								candidatesForDoor.push_back({ new_cell.first, new_cell.second });
 						}
 					}
@@ -203,7 +207,7 @@ void Map::putDoorsInEnclosedAreas(const int& width, const int& height, std::vect
 					for (int k = 0; k < candidatesForDoor.size(); k++) {
 						std::pair<int, int> cell = candidatesForDoor[k];
 						if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1) {
-							map[cell.first][cell.second] = "D0";
+							mapString[cell.first][cell.second] = "D0";
 							break;
 						}
 					}
@@ -211,7 +215,7 @@ void Map::putDoorsInEnclosedAreas(const int& width, const int& height, std::vect
 			}
 }
 
-void Map::putShopInGoodArea(const int& width, const int& height, std::vector<std::vector<std::string>>& map, const std::vector<std::vector<bool>>& enclosed) {
+void Map::putShopInGoodArea() {
 	const std::vector<std::vector<std::string>> pattern = { {".2", ".6", ".1"}, {".8", ".9", ".7"}, {".8", ".9", ".7"}, {".8", ".9", ".7"}, {".4", ".5", ".3"} };
 
 	std::vector<std::pair<int, int>> shopPrefered, shopAnyway;
@@ -220,7 +224,7 @@ void Map::putShopInGoodArea(const int& width, const int& height, std::vector<std
 			bool okSP = 1, okSA = 1;
 			for (int k = 0; k < 6; k++)
 				for (int l = 0; l < 3; l++) {
-					if (map[i + k][j + l][0] != '.')
+					if (mapString[i + k][j + l][0] != '.')
 						okSP = 0, okSA = 0;
 					if (enclosed[i + k][j + l] == 0)
 						okSP = 0;
@@ -242,30 +246,33 @@ void Map::putShopInGoodArea(const int& width, const int& height, std::vector<std
 
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 3; j++)
-			map[i + positionForShop.first][j + positionForShop.second] = pattern[i][j];
-	map[5 + positionForShop.first][1 + positionForShop.second] = "shop0";
+			mapString[i + positionForShop.first][j + positionForShop.second] = pattern[i][j];
+	mapString[5 + positionForShop.first][1 + positionForShop.second] = "shop0";
 }
 
-std::string Map::generateProceduralMap(const int& width, const int& height) {
+std::string Map::generateProceduralMap(const int& w, const int& h) {
+	
+	width = w;
+	height = h;
 
-	std::vector<std::vector<std::string>> map(height, std::vector<std::string>(width, "."));
+	mapString.assign(height, std::vector<std::string>(width, "."));
 
 	// Generate Perlin Noise Map
-	GeneralUtilities::get().generatePerlinMap(width, height, 10, 256, map);
+	GeneralUtilities::get().generatePerlinMap(width, height, 10, 256, mapString);
 
 	// Update corners
 	for (int i = 0; i < height; i++)
-		map[i][0] = map[i][width - 1] = "M0";
+		mapString[i][0] = mapString[i][width - 1] = "M0";
 
 	for (int j = 0; j < width; j++)
-		map[0][j] = map[height - 1][j] = "M0";
+		mapString[0][j] = mapString[height - 1][j] = "M0";
 
 	// Put doors where areas are enclosed
-	std::vector<std::vector<bool>> enclosed(height, std::vector<bool>(width, 0));
-	putDoorsInEnclosedAreas(width, height, map, enclosed);
+	enclosed.assign(height, std::vector<bool>(width, 0));
+	putDoorsInEnclosedAreas();
 
 	// Find position for shop
-	putShopInGoodArea(width, height, map, enclosed);
+	putShopInGoodArea();
 
 	// Gettime sinch epoch in ms
 	long long ms_since_epoch = GeneralUtilities::get().getTimeSinceEpochInMs();
@@ -278,7 +285,7 @@ std::string Map::generateProceduralMap(const int& width, const int& height) {
 	std::ofstream MAP_OUTPUT(output_dir);
 	for (int i = 0; i < height; i++, MAP_OUTPUT << "\n "[i == height])
 		for (int j = 0; j < width; j++)
-			MAP_OUTPUT << map[i][j] << ' ';
+			MAP_OUTPUT << mapString[i][j] << ' ';
 
 	return output_dir;
 }
