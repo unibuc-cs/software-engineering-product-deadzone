@@ -30,8 +30,12 @@ protected:
 	int goldOnKill;
 
 	double attackDamage;
-
 	double attackRadius;
+
+	float nearestPlayerX;
+	float nearestPlayerY;
+
+	static const float INF;
 
 public:
 
@@ -43,9 +47,11 @@ public:
 	virtual bool nearTarget() override;
 
 	virtual void update() override;
+	void updateClient();
 
 	virtual void draw() override;
 
 	inline double getAttackDamage() const { return this->attackDamage; }
 	inline double getAttackRadius() const { return this->attackRadius; }
+	inline int getGoldOnKill() const { return goldOnKill; }
 };

@@ -11,6 +11,8 @@
 #include "../Entity/Door/Door.h"
 #include "../Entity/Shop/Shop.h"
 
+#include "../GeneralUtilities/GeneralUtilities.h"
+
 /*
 * Codificare:
 * 
@@ -22,7 +24,7 @@
 class Map
 {
 private:
-	Map() = default;
+	Map();
 	Map(const Map& other) = delete;
 	Map& operator= (const Map& other) = delete;
 	Map(const Map&& other) = delete;
@@ -40,16 +42,24 @@ private:
 public:
 	~Map() = default;
 	static Map& get();
-	void readMap(const std::string& path);
-	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
+	void readMapFromFile(const std::string& path);
+	void readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer);
+
 	void draw();
-	void addDoor(std::shared_ptr<Door> const door);
-	void addShop(std::shared_ptr<Shop> const shop);
-	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
-	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
 	void update();
+
+	void updateDoorStatus(unsigned int id);
+
 	static void deleteInstance();
 
-	bool hasBeenLoaded() const { return mapLoaded; }
+	static void putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& M, std::vector<std::vector<bool>>& enclosed);
+	static void putShopInGoodArea(const int& width, const int& height, std::vector<std::vector<std::string>>& map, const std::vector<std::vector<bool>>& enclosed);
+	static std::string generateProceduralMap(const int& width, const int& height);
+
+	// Getters
+	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
+	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
+	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
+	bool getHasBeenLoaded() const { return mapLoaded; }
 };
 

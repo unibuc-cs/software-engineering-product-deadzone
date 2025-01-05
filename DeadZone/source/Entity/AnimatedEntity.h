@@ -72,9 +72,15 @@ public:
 	virtual ~AnimatedEntity();
 
 	void draw() override;
-	double getTimeSinceStatus(int index = 0) const { return this->timesSinceStatuses[index]; };
-	void setTimeSinceStatus(double timeSinceStatus, int index = 0) { this->timesSinceStatuses[index] = timeSinceStatus; }
-	EntityStatus getStatus(int index = 0) const { return this->statuses[0]; }
+	
 	void updateStatus(EntityStatus newStatus, int index = 0);
+
+	// Getters
+	double getTimeSinceStatus(int index = 0) const { return this->timesSinceStatuses[index]; };
+	EntityStatus getStatus(int index = 0) const { return this->statuses[index]; }
+	inline std::vector<EntityStatus> getStatuses() const { return statuses; }
+
+	// Setters
+	void setTimeSinceStatus(double timeSinceStatus, int index = 0) { this->timesSinceStatuses[index] = timeSinceStatus; }
 };
 

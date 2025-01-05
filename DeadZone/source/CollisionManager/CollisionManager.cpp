@@ -2,6 +2,8 @@
 
 #include <glm/vec2.hpp>
 
+#include "../Game/Game.h"
+#include "../WaveManager/WaveManager.h"
 #include "../Entity/CollidableEntity.h"
 #include "../Entity/Bullet/Bullet.h"
 #include "../Entity/Enemy/Enemy.h"
@@ -177,6 +179,54 @@ void CollisionManager::handleCollisions(std::vector<std::shared_ptr<Entity>>& en
 			{
 				std::dynamic_pointer_cast<CollidableEntity>(entity)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(otherEntity), overlap);
 				std::dynamic_pointer_cast<CollidableEntity>(otherEntity)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entity), overlap);
+			}
+		}
+	}
+}
+
+void CollisionManager::handleMultiplayerCollisions(std::vector<std::shared_ptr<Entity>>& entities)
+{
+	// Functia de onCollide SE APELEAZA DIN AMBELE PERSPECTIVE ALE CELOR 2 OBIECTE IMPLICATE
+
+	// Player vs RemotePlayer
+	// TODO
+
+	// RemotePlayer vs Entities
+	for (const auto& [clientKey, remotePlayer] : Game::get().getRemotePlayers())
+	{
+		for (const std::shared_ptr<Entity>& entity : entities)
+		{
+			if (std::dynamic_pointer_cast<CollidableEntity>(entity) == nullptr)
+				continue;
+
+			if (!std::dynamic_pointer_cast<CollidableEntity>(entity)->getCollisionActive())
+				continue;
+
+			glm::vec2 overlap = std::dynamic_pointer_cast<CollidableEntity>(remotePlayer)->isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entity));
+			if (overlap.x > 0.0 && overlap.y > 0.0)
+			{
+				std::dynamic_pointer_cast<CollidableEntity>(remotePlayer)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entity), overlap);
+				std::dynamic_pointer_cast<CollidableEntity>(entity)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(remotePlayer), overlap);
+			}
+		}
+	}
+
+	// RemoteZombie vs Entities
+	for (const auto& [zombieId, remoteZombie] : WaveManager::get().getRemoteZombies())
+	{
+		for (const std::shared_ptr<Entity>& entity : entities)
+		{
+			if (std::dynamic_pointer_cast<CollidableEntity>(entity) == nullptr)
+				continue;
+
+			if (!std::dynamic_pointer_cast<CollidableEntity>(entity)->getCollisionActive())
+				continue;
+
+			glm::vec2 overlap = std::dynamic_pointer_cast<CollidableEntity>(remoteZombie)->isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entity));
+			if (overlap.x > 0.0 && overlap.y > 0.0)
+			{
+				std::dynamic_pointer_cast<CollidableEntity>(remoteZombie)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entity), overlap);
+				std::dynamic_pointer_cast<CollidableEntity>(entity)->onCollide(*std::dynamic_pointer_cast<CollidableEntity>(remoteZombie), overlap);
 			}
 		}
 	}

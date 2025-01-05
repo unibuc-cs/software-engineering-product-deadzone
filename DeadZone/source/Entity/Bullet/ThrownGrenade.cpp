@@ -64,15 +64,15 @@ void ThrownGrenade::update()
 		switch (random_number)
 		{
 		case 0:
-			SoundManager::get().play("grenadeDetonate_01", false);
+			SoundManager::get().play("grenadeDetonate_01", false, false);
 			break;
 
 		case 1:
-			SoundManager::get().play("grenadeDetonate_02", false);
+			SoundManager::get().play("grenadeDetonate_02", false, false);
 			break;
 
 		case 2:
-			SoundManager::get().play("grenadeDetonate_03", false);
+			SoundManager::get().play("grenadeDetonate_03", false, false);
 			break;
 
 		default:

@@ -10,7 +10,7 @@ class SoundManager
 public:
 	static SoundManager& get();
 
-	void play(const std::string& name, bool paused);
+	void play(const std::string& name, bool paused, bool multiplayer = true);
 	void pause(const std::string& name);
 	void resume(const std::string& name);
 	bool isPlaying(const std::string& name);

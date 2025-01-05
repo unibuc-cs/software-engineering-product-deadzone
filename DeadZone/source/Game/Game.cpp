@@ -27,15 +27,19 @@
 #include "../Entity/Bullet/ThrownGrenade.h"
 #include "../Entity/Explosion/Explosion.h"
 
-Game::Game() :
-    MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+#include "../Client/Client.h"
+
+Game::Game()
+    : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+    , isServer(false)
 {
     WindowManager::get();
 }
 
 Game::~Game()
 {
-    // default
+    // cleanup
+    Client::get().stop();
 }
 
 Game& Game::get()
@@ -51,6 +55,12 @@ void Game::loadResources()
     nlohmann::json gameJSON;
     gameFile >> gameJSON;
     gameFile.close();
+
+    // Server
+    isServer = gameJSON["clientHasServer"].get<bool>();
+
+    // Start Client
+    Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
 
     // Load Shaders
     try
@@ -159,21 +169,8 @@ void Game::loadResources()
         std::cout << "ERROR::FONT: other error" << std::endl;
     }
 
-    // Load Map
-    try
-    {
-        std::string file = gameJSON["map"].get<std::string>();
-
-        Map::get().readMap(file);
-    }
-    catch (const std::runtime_error& err)
-    {
-        std::cout << "ERROR::MAP: " << err.what() << std::endl;
-    }
-    catch (...)
-    {
-        std::cout << "ERROR::MAP: other error" << std::endl;
-    }
+    // Load player save file
+    Player::get().load();
 
     // Configure Shaders
     glm::mat4 projection = glm::ortho(-0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), 0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), -0.5f * static_cast<float>(WindowManager::get().getWindowHeight()), 0.5f * static_cast<float>(WindowManager::get().getWindowHeight()));
@@ -199,7 +196,7 @@ void Game::run()
     SoundManager::get().play("walking", true);
     SoundManager::get().play("running", true);
     SoundManager::get().play("tired", true);
-    SoundManager::get().play("soundtrack", true);
+    SoundManager::get().play("soundtrack", true, false);
 
     // MainMenu::get().setupMainMenuInputComponent();
     MenuManager::get().push(MainMenu::get());
@@ -209,20 +206,25 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
-        if (gameStatus == GameStatus::InGame) {
+        // Client
+        Client::get().update();
+
+        if (gameStatus == GameStatus::InGame)
+        {
             // Update
             Map::get().update();
             Camera::get().update();
             Player::get().update();
             this->updateEntities();
 
-
             // Collision System
             CollisionManager::get().handleCollisions(this->entities);
+            CollisionManager::get().handleMultiplayerCollisions(this->entities);
 
             // Interactions System
             InteractionManager::get().handleInteractions(this->entities);
         }
+
         // Render
         glClearColor(0.08f, 0.08f, 0.08f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -256,8 +258,8 @@ void Game::run()
         // Wave Manager
         if (MenuManager::get().size() == 0)
         {
-            // std::cout << "ok\n";
             WaveManager::get().update();
+            WaveManager::get().draw();
         }
 
         // Update/Tick
@@ -269,6 +271,9 @@ void Game::run()
         // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
     }
+
+    // Save player file
+    Player::get().save();
 }
 
 void Game::updateEntities()
@@ -319,6 +324,11 @@ void Game::drawEntities() // grenazile si exploziile la urma (sunt mai la inalti
         this->entities[i]->draw();
     }
 
+    for (const auto& it : remotePlayers)
+    {
+        it.second->draw();
+    }
+
     for (int i = 0; i < this->entities.size(); ++i) // grenazi
         if (std::dynamic_pointer_cast<ThrownGrenade>(this->entities[i]))
             this->entities[i]->draw();
@@ -338,3 +348,47 @@ void Game::addDeadBody(std::shared_ptr<DeadBody> const deadBody)
     this->deadBodies.emplace_back(deadBody);
 }
 
+void Game::addRemotePlayer(const std::string& clientKey, std::shared_ptr<RemotePlayer> const remotePlayer)
+{
+    this->remotePlayers[clientKey] = remotePlayer;
+}
+
+void Game::spawnRemotePlayer(const std::string& clientKey)
+{
+    if (remotePlayers.find(clientKey) != remotePlayers.end())
+    {
+        // TODO: throw error
+        return;
+    }
+
+    addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
+}
+
+void Game::updateRemotePlayerClientName(const std::string& clientKey, const std::string& name)
+{
+    remotePlayers[clientKey]->setClientName(name);
+}
+
+void Game::updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color)
+{
+    remotePlayers[clientKey]->setOutfitColor(color);
+}
+
+void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)
+{
+    remotePlayers[clientKey]->setX(x);
+    remotePlayers[clientKey]->setY(y);
+}
+
+void Game::updateRemotePlayerRotateAngle(const std::string& clientKey, double angle)
+{
+    remotePlayers[clientKey]->setRotateAngle(angle);
+}
+
+void Game::updateRemotePlayerStatuses(const std::string& clientKey, const std::vector<AnimatedEntity::EntityStatus>& statuses)
+{
+    for (size_t indexStatus = 0; indexStatus < statuses.size(); ++indexStatus)
+    {
+        remotePlayers[clientKey]->updateStatus(statuses[indexStatus], indexStatus);
+    }
+}

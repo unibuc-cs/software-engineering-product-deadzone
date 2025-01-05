@@ -7,13 +7,16 @@
 #include "../../Renderer/TextRenderer.h"
 #include "../../Camera/Camera.h"
 #include "../../SoundManager/SoundManager.h"
+#include "../../Client/Client.h"
+
+unsigned int Door::globalID = 0;
 
 Door::Door(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string> animationsName2D, std::vector<EntityStatus> statuses, double interactionWidth, double interactionHeight, int openCost) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
 	CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight),
 	AnimatedEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, animationsName2D, statuses),
 	InteractiveEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, interactionWidth, interactionHeight),
-	openCost(openCost)
+	openCost(openCost), id(globalID++)
 {
 
 }
@@ -42,11 +45,12 @@ void Door::onInteraction()
 {
 	if (this->getStatus() != EntityStatus::OPENED && Player::get().getInteractUsed() && Player::get().getGold() >= this->openCost)
 	{
-		this->updateStatus(EntityStatus::OPENED);
-
 		Player::get().setGold(Player::get().getGold() - this->openCost);
 
-		SoundManager::get().play("door", false);
+		openDoor();
+
+		// Send to server
+		Client::get().sendOpenedDoor(id);
 	}
 }
 
@@ -69,5 +73,11 @@ void Door::draw()
 			static_cast<float>(Camera::get().screenPositionText(this->getX(), this->getY()).y),
 			0.75f, glm::vec3(0.0f, 0.5f, 0.5f));
 	}
+}
+
+void Door::openDoor()
+{
+	this->updateStatus(EntityStatus::OPENED);
+	SoundManager::get().play("door", false, false);
 }
 

@@ -13,6 +13,8 @@
 #include "../../Renderer/SpriteRenderer.h"
 #include "../../Random/Random.h"
 
+const float Enemy::INF = 1000000.0f;
+
 Enemy::Enemy(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double health, double rotateSpeed, double attackDamage, double attackRadius, double armor)
 	: Entity(x, y, drawWidth, drawHeight, rotateAngle, speed)
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
@@ -23,6 +25,7 @@ Enemy::Enemy(double x, double y, double drawWidth, double drawHeight, double rot
 	, currentTarget(std::make_pair(x, y)), nextTarget(std::make_pair(x, y))
 	, movingOffsetSize(0.05), movingOffsetSpeed(15.0), isMoving(false), goldOnKill(100) // TODO:
 	, attackDamage(attackDamage), attackRadius(attackRadius)
+	, nearestPlayerX(Enemy::INF), nearestPlayerY(Enemy::INF)
 {
 
 }
@@ -30,6 +33,12 @@ Enemy::Enemy(double x, double y, double drawWidth, double drawHeight, double rot
 
 void Enemy::pathFindingTarget()
 {
+	if (this->nearestPlayerX == Enemy::INF || this->nearestPlayerY == Enemy::INF)
+	{
+		this->nextTarget = std::make_pair(this->x, this->y);
+		return;
+	}
+
 	// Clear
 	while (!this->pq.empty())
 	{
@@ -87,8 +96,8 @@ void Enemy::pathFindingTarget()
 
 	int xCell = static_cast<int>(this->x);
 	int yCell = static_cast<int>(this->y);
-	int xTarget = static_cast<int>(Player::get().getX());
-	int yTarget = static_cast<int>(Player::get().getY());
+	int xTarget = static_cast<int>(this->nearestPlayerX);
+	int yTarget = static_cast<int>(this->nearestPlayerY);
 
 	if (xCell == xTarget && yCell == yTarget)
 	{
@@ -129,7 +138,7 @@ void Enemy::pathFindingTarget()
 		}
 	}
 
-	if (!Player::get().isDead() && this->cellDistance[yTarget][xTarget] > 0)
+	if (this->cellDistance[yTarget][xTarget] > 0)
 	{
 		std::pair<int, int> lastCurrentCell = std::make_pair(-1, -1);
 		std::pair<int, int> currentCell = std::make_pair(xTarget, yTarget);
@@ -170,32 +179,17 @@ void Enemy::onTargetReach()
 
 bool Enemy::nearTarget()
 {
-	if (this->cellDistance[(int)Player::get().getY()][(int)Player::get().getX()] == 0)
+	if (this->nearestPlayerX == Enemy::INF || this->nearestPlayerY == Enemy::INF)
 		return false;
-	return this->cellDistance[(int)Player::get().getY()][(int)Player::get().getX()] - 1 < (int)this->nearTargetRadius;
+
+	if (this->cellDistance[(int)this->nearestPlayerY][(int)this->nearestPlayerX] == 0)
+		return false;
+	return this->cellDistance[(int)this->nearestPlayerY][(int)this->nearestPlayerX] - 1 < (int)this->nearTargetRadius;
 }
 
 void Enemy::draw()
 {
-	if (this->isDead())
-	{
-		int deadTextureIndex = Random::randomInt(0, 1);
-		double deadRotateAngle = (Random::random01() * 360.0 - Random::EPSILON);
-		double deadResize = 1.25;
-
-		std::map<AnimatedEntity::EntityStatus, std::string> m0 = {
-			{EntityStatus::DEAD_HUMAN, "enemy" + std::to_string(deadTextureIndex) + "Dead"}
-		};
-		std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
-
-		Game::get().addDeadBody(std::make_shared<DeadBody>
-			(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0));
-
-		Player::get().setGold(Player::get().getGold() + this->goldOnKill);
-		Player::get().setNumKills(Player::get().getNumKills() + 1);
-		this->setDeleteEntity(true);
-	}
-	else if (this->isMoving)
+	if (this->isMoving)
 	{
 		for (int i = 0; i < this->statuses.size(); ++i)
 			SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getFlipbook(this->animationsName2D[this->statuses[i]]).getTextureAtTime(GlobalClock::get().getCurrentTime() - this->timesSinceStatuses[i]), Camera::get().screenPosition(this->x, this->y), Camera::get().screenSize(this->drawWidth + this->movingOffsetSize * glm::sin(this->movingOffsetSpeed * GlobalClock::get().getCurrentTime()), this->drawHeight + this->movingOffsetSize * glm::sin(this->movingOffsetSpeed * GlobalClock::get().getCurrentTime())), this->rotateAngle);
@@ -209,6 +203,40 @@ void Enemy::draw()
 
 void Enemy::update()
 {
+	if (this->isDead() || getDeleteEntity())
+	{
+		setDeleteEntity(true);
+		return;
+	}
+
+	// Gasirea celui mai apropiat jucator
+	this->nearestPlayerX = Enemy::INF;
+	this->nearestPlayerY = Enemy::INF;
+
+	if (!Player::get().isDead() && (this->x - Player::get().getX()) * (this->x - Player::get().getX()) +
+		(this->y - Player::get().getY()) * (this->y - Player::get().getY()) <
+		(this->nearestPlayerX - this->x) * (this->nearestPlayerX - this->x) +
+		(this->nearestPlayerY - this->y) * (this->nearestPlayerY - this->y))
+	{
+		this->nearestPlayerX = Player::get().getX();
+		this->nearestPlayerY = Player::get().getY();
+	}
+
+	for (const auto& remotePlayer : Game::get().getRemotePlayers())
+	{
+		if (remotePlayer.second->isDead())
+			continue;
+
+		if ((this->x - remotePlayer.second->getX()) * (this->x - remotePlayer.second->getX()) +
+			(this->y - remotePlayer.second->getY()) * (this->y - remotePlayer.second->getY()) <
+			(this->nearestPlayerX - this->x) * (this->nearestPlayerX - this->x) +
+			(this->nearestPlayerY - this->y) * (this->nearestPlayerY - this->y))
+		{
+			this->nearestPlayerX = remotePlayer.second->getX();
+			this->nearestPlayerY = remotePlayer.second->getY();
+		}
+	}
+
 	this->isMoving = false;
 
 	this->pathFindingTarget();
@@ -273,8 +301,10 @@ void Enemy::update()
 				this->rotateAngle -= 360.0;
 		}
 	}
+}
 
-
+void Enemy::updateClient()
+{
 	// Atac Player
 	if ((this->x - Player::get().getX()) * (this->x - Player::get().getX()) +
 		(this->y - Player::get().getY()) * (this->y - Player::get().getY())
