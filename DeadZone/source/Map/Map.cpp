@@ -290,4 +290,10 @@ std::string Map::generateProceduralMap(const int& w, const int& h) {
 	return output_dir;
 }
 
+bool Map::IsEnclosed(const int& x, const int& y) {
+	return (enclosed[x][y] == true);
+}
 
+bool Map::IsWall(const int& x, const int& y) {
+	return (mapString[x][y][0] == '.');
+}

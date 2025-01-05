@@ -115,13 +115,13 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 }
 
 std::pair<double, double> Player::getPlayerSpawnPoint() {
-	int width = Map::get().width;
-	int height = Map::get().height;
+	int width = Map::get().getWidth();
+	int height = Map::get().getHeight();
 	double x, y;
 	do {
 		x = Random::randomInt(10, height - 10) + 0.5;
 		y = Random::randomInt(10, width - 10) + 0.5;
-	} while (Map::enclosed[x][y] == true || Map::mapString[x][y][0] == '.');
+	} while (Map::get().IsEnclosed(x, y) || Map::get().IsWall(x, y));
 	return { x, y };
 }
 
