@@ -449,19 +449,30 @@ void Server::sendMap(const std::string& clientKey)
 
 void Server::sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies)
 {
+	nlohmann::json jsonData;
+	for (const auto& zombie : remoteZombies)
+	{
+		jsonData["zombies"][zombie.first]["position"]["x"] = zombie.second.get()->getX();
+		jsonData["zombies"][zombie.first]["position"]["y"] = zombie.second.get()->getY();
+		jsonData["zombies"][zombie.first]["rotateAngle"] = zombie.second.get()->getRotateAngle();
+		jsonData["zombies"][zombie.first]["statuses"] = zombie.second.get()->getStatuses();
+		jsonData["zombies"][zombie.first]["deleteEntity"] = zombie.second.get()->getDeleteEntity();
+	}
+
 	for (auto& connectedClient : this->connectedClients)
 	{
-		nlohmann::json jsonData;
+		// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
+		connectedClient.second.sendMessageUnsafe(jsonData.dump());
+	}
+}
 
-		for (const auto& zombie : remoteZombies)
-		{
-			jsonData["zombies"][zombie.first]["position"]["x"] = zombie.second.get()->getX();
-			jsonData["zombies"][zombie.first]["position"]["y"] = zombie.second.get()->getY();
-			jsonData["zombies"][zombie.first]["rotateAngle"] = zombie.second.get()->getRotateAngle();
-			jsonData["zombies"][zombie.first]["statuses"] = zombie.second.get()->getStatuses();
-			jsonData["zombies"][zombie.first]["deleteEntity"] = zombie.second.get()->getDeleteEntity();
-		}
+void Server::sendNumFinishedWaves(int number)
+{
+	nlohmann::json jsonData;
+	jsonData["waveNumber"] = number;
 
+	for (auto& connectedClient : this->connectedClients)
+	{
 		// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}

@@ -97,5 +97,6 @@ public:
 
 	void sendMap(const std::string& clientKey);
 	void sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies);
+	void sendNumFinishedWaves(int number);
 };
 

@@ -286,6 +286,12 @@ void Client::handleReceivedPacket()
 		hasMap = true;
 	}
 
+	// waveNumber
+	if (jsonData.contains("waveNumber"))
+	{
+		WaveManager::get().setNumFinishedWaves(jsonData["waveNumber"].get<int>());
+	}
+
 	enet_packet_destroy(this->eNetEvent.packet);
 }
 

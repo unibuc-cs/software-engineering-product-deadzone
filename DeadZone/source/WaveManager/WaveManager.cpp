@@ -182,6 +182,9 @@ void WaveManager::update()
 				++this->numFinishedWaves;
 				this->timeWaveEnded = GlobalClock::get().getCurrentTime();
 
+				// update other clients
+				Server::get().sendNumFinishedWaves(numFinishedWaves);
+
 				//SoundManager::get().play("newWave", false);
 			}
 		}

@@ -44,9 +44,6 @@ public:
 
 	static WaveManager& get();
 
-	int getNumFinishedWaves() const { return this->numFinishedWaves; }
-	int getCurrentWaveNumber() const { return this->numFinishedWaves + 1; }
-
 	void update();
 	void draw();
 	
@@ -60,6 +57,11 @@ public:
 	void updateRemoteZombieDeleteEntity(const std::string& id, bool value);
 
 	// Getters
+	inline int getNumFinishedWaves() const { return this->numFinishedWaves; }
+	inline int getCurrentWaveNumber() const { return this->numFinishedWaves + 1; }
 	inline bool getInWave() const { return this->inWave; }
 	inline std::unordered_map<std::string, std::shared_ptr<Enemy>> getRemoteZombies() const { return remoteZombies; };
+
+	// Setters
+	inline void setNumFinishedWaves(int number) { numFinishedWaves = number; }
 };
