@@ -68,6 +68,8 @@ void Server::ClientData::sendMessage(const std::string& messageToSend, bool& fai
 	{
 		this->lastTimeSentPing = GlobalClock::get().getCurrentTime();
 		failedToSendMessage = false;
+		// TODO: uncomment
+		// std::cout << "SERVER send: " << messageToSend << std::endl;
 	}
 	else
 	{
@@ -82,9 +84,15 @@ void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
 
 	// 0 daca a avut succes
 	if (enet_peer_send(this->peer, 0, packet) == 0)
+	{
 		this->lastTimeSentPing = GlobalClock::get().getCurrentTime();
+		// TODO: uncomment
+		// std::cout << "SERVER send: " << messageToSend << std::endl;
+	}
 	else
+	{
 		std::cout << "Error: Client failed to send message" << std::endl;
+	}
 }
 
 void Server::handleReceivedPacket()
@@ -232,7 +240,6 @@ void Server::generateMap()
 	int width = gameJSON["map"]["width"].get<int>();
 	int height = gameJSON["map"]["height"].get<int>();
 
-	// TODO: foloseste mapa generata procedural
 	std::string filePath = Map::generateProceduralMap(width, height);
 	// std::string filePath = "maps/sandbox.map";
 
@@ -401,8 +408,6 @@ void Server::update()
 				}
 			}
 
-			// TODO: uncomment
-			// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 			connectedClient.second.sendMessageUnsafe(jsonData.dump());
 		}
 
@@ -474,7 +479,6 @@ void Server::sendZombiesData(const std::unordered_map<std::string, std::shared_p
 
 	for (auto& connectedClient : this->connectedClients)
 	{
-		// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 }
@@ -486,7 +490,6 @@ void Server::sendNumFinishedWaves(int number)
 
 	for (auto& connectedClient : this->connectedClients)
 	{
-		// std::cout << "SERVER send json: " << jsonData.dump() << std::endl;
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 }

@@ -239,7 +239,7 @@ void Map::putShopInGoodArea(const int& width, const int& height, std::vector<std
 		int ind = Random::randomInt(1, static_cast<int>(shopAnyway.size())) - 1;
 		positionForShop = shopAnyway[ind];
 	}
-	std::cout << positionForShop.first << ' ' << positionForShop.second << '\n';
+
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 3; j++)
 			map[i + positionForShop.first][j + positionForShop.second] = pattern[i][j];

@@ -38,7 +38,6 @@ void SoundManager::play(const std::string& name, bool paused, bool multiplayer)
 {
 	fmodSystem->playSound(ResourceManager::getSound(name), nullptr, paused, &channels[name]);
 
-	// TODO: muta nu vreau sa trimit orice fel de sunet - trimite la catre ceilalti clienti
 	if (multiplayer)
 	{
 		Client::get().sendSound(name, paused);

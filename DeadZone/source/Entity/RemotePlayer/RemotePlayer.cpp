@@ -10,9 +10,9 @@ RemotePlayer::RemotePlayer(double x, double y, double drawWidth, double drawHeig
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
 	, AnimatedEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, animationsName2D, statuses)
 	, Human(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, animationsName2D, statuses, health, armor)
-	, clientName("")
+	, clientName(""), outfitColor(glm::vec3(1.0f, 0.0f, 0.0f))
 {
-	outfitColor = glm::vec3(1.0f, 0.0f, 0.0f);	// TODO: pune in constructor
+
 }
 
 RemotePlayer::~RemotePlayer()
@@ -35,6 +35,8 @@ void RemotePlayer::draw()
 
 	glm::vec2 clientNameTextScreenPosition = Camera::get().screenPositionText(this->x, this->y);
 	clientNameTextScreenPosition.y -= 45.0f;
+
+	// TODO: de pus limita la numarul de caractere pe care il afisam la clientName
 
 	TextRenderer::get().draw(ResourceManager::getShader("text"),
 		ResourceManager::getFont("Antonio"),

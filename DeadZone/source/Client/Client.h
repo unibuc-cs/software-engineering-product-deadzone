@@ -28,7 +28,6 @@ private:
 	ENetEvent eNetEvent;
 
 	bool succesfullyConnected;
-	bool hasMap;
 	float lastTimeTriedConnection;
 	const float RETRY_CONNECTION_DELTA_TIME;
 

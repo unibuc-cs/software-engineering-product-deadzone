@@ -16,7 +16,6 @@ Client::Client()
 	: MAX_NUM_SERVERS(1), NUM_CHANNELS(1), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
 	, serverPeer(nullptr), client(NULL), serverAddress(), eNetEvent()
 	, succesfullyConnected(false)
-	, hasMap(false)
 	, lastTimeTriedConnection(0.0f)
 	, RETRY_CONNECTION_DELTA_TIME(1.0f)
 	, TIME_BETWEEN_PINGS(10000.0f) // TODO: test ca sa nu mai trimit prea multe request-uri
@@ -152,9 +151,6 @@ bool Client::shouldSendRemotePlayerData()
 
 void Client::handleReceivedPacket()
 {
-	// TODO: uncomment
-	// std::cout << "In handleReceivedPacket in Client named " << this->clientName << std::endl;
-
 	if (this->eNetEvent.packet->dataLength == 0)
 	{
 		std::cout << "Warning: Client received empty packet" << std::endl;
@@ -288,11 +284,9 @@ void Client::handleReceivedPacket()
 	}
 
 	// map
-	if (jsonData.contains("map") && !hasMap)
+	if (jsonData.contains("map") && !Map::get().getHasBeenLoaded())
 	{
-		// std::cout << "SERVER: " << receivedMessage << std::endl; // TODO: delete
 		Map::get().readMapFromBuffer(jsonData["map"].get<std::vector<std::vector<std::string>>>());
-		hasMap = true;
 	}
 
 	// waveNumber
@@ -326,7 +320,7 @@ void Client::update()
 	}
 
 	// map
-	if (!hasMap)
+	if (!Map::get().getHasBeenLoaded())
 	{
 		nlohmann::json jsonData;
 
@@ -354,9 +348,6 @@ void Client::update()
 		// TODO: isWalking
 		// TODO: isRunning
 		// TODO: isDead
-
-		// TODO: uncomment
-		// std::cout << "CLIENT send message: " << jsonData.dump() << std::endl;
 
 		sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}

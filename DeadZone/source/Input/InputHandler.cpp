@@ -25,8 +25,6 @@ void InputHandler::setMousePosition(double xpos, double ypos)
 
 void InputHandler::callbackAction(int key, int action)
 {
-	// TODO: refactor
-
 	if (activeInputComponent)
 	{
 		activeInputComponent->callbackAction(key, action);
