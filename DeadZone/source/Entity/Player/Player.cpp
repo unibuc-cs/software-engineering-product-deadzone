@@ -673,17 +673,9 @@ void Player::save()
 	std::ofstream saveFile("config/save.json");
 	nlohmann::json saveJSON;
 
-	saveJSON["health"] = health;
-	saveJSON["healthCap"] = healthCap;
-
-	saveJSON["armor"] = armor;
-	saveJSON["armorCap"] = armorCap;
-
-	saveJSON["staminaCap"] = staminaCap;
-
-	saveJSON["gold"] = gold;
-
-	// TODO
+	saveJSON["outfitColor"]["r"] = outfitColor.x;
+	saveJSON["outfitColor"]["g"] = outfitColor.y;
+	saveJSON["outfitColor"]["b"] = outfitColor.z;
 
 	saveFile << std::setw(4) << saveJSON << std::endl;
 	saveFile.close();
@@ -692,21 +684,21 @@ void Player::save()
 void Player::load()
 {
 	std::ifstream saveFile("config/save.json");
+
+	if (!saveFile.is_open())
+	{
+		return;
+	}
+
 	nlohmann::json saveJSON;
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	health = saveJSON["health"].get<double>();
-	healthCap = saveJSON["healthCap"].get<double>();
-
-	armor = saveJSON["armor"].get<double>();
-	armorCap = saveJSON["armorCap"].get<double>();
-
-	staminaCap = saveJSON["staminaCap"].get<double>();
-
-	gold = saveJSON["gold"].get<int>();
-
-	// TODO
+	setOutfitColor(glm::vec3(
+		saveJSON["outfitColor"]["r"].get<double>(),
+		saveJSON["outfitColor"]["g"].get<double>(),
+		saveJSON["outfitColor"]["b"].get<double>()
+	));
 }
 
 void Player::enterShopButton()

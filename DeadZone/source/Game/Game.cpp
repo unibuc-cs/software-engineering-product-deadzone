@@ -169,6 +169,9 @@ void Game::loadResources()
         std::cout << "ERROR::FONT: other error" << std::endl;
     }
 
+    // Load player save file
+    Player::get().load();
+
     // Configure Shaders
     glm::mat4 projection = glm::ortho(-0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), 0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), -0.5f * static_cast<float>(WindowManager::get().getWindowHeight()), 0.5f * static_cast<float>(WindowManager::get().getWindowHeight()));
     ResourceManager::getShader("sprite").use().setInteger("sprite", 0);
@@ -256,7 +259,7 @@ void Game::run()
         if (MenuManager::get().size() == 0)
         {
             WaveManager::get().update();
-            WaveManager::get().draw();  // TODO: verifica
+            WaveManager::get().draw();
         }
 
         // Update/Tick
@@ -268,6 +271,9 @@ void Game::run()
         // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
     }
+
+    // Save player file
+    Player::get().save();
 }
 
 void Game::updateEntities()
