@@ -56,6 +56,7 @@ public:
 
 	void sendBullet(const std::shared_ptr<Bullet>& const entity);
 	void sendSound(const std::string& name, bool paused);
+	void sendOpenedDoor(int id);
 
 	// Getters
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }

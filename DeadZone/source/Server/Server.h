@@ -28,6 +28,7 @@ private:
 		RemotePlayer remotePlayerData;
 		std::shared_ptr<Bullet> bulletData;
 		std::shared_ptr<ReplicatedSound> soundData;
+		std::shared_ptr<unsigned int> openedDoorData;
 		float lastTimeSentPing;
 		float lastTimeReceivedPing;
 		bool workingConnection;

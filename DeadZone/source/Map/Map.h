@@ -48,6 +48,8 @@ public:
 	void draw();
 	void update();
 
+	void updateDoorStatus(unsigned int id);
+
 	static void deleteInstance();
 
 	static void putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& M, std::vector<std::vector<bool>>& enclosed);

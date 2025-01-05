@@ -202,6 +202,12 @@ void Server::handleReceivedPacket()
 		);
 	}
 
+	// openedDoor
+	if (jsonData.contains("openedDoor"))
+	{
+		connectedClients[clientKey].openedDoorData = std::make_shared<unsigned int>(jsonData["openedDoor"].get<unsigned int>());
+	}
+
 	// map
 	if (jsonData.contains("map"))
 	{
@@ -353,7 +359,7 @@ void Server::update()
 				// TODO: deocamdata consideram ca vin toate atributele pt un player
 				// TODO: verifica doar valorile noi
 
-				// player
+				// remotePlayers
 				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.remotePlayerData.getClientName();
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["x"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().x;
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["y"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().y;
@@ -363,7 +369,7 @@ void Server::update()
 				jsonData["remotePlayers"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.remotePlayerData.getRotateAngle();
 				jsonData["remotePlayers"][otherConnectedClient.first]["statuses"] = otherConnectedClient.second.remotePlayerData.getStatuses();
 
-				// bullet
+				// bullets
 				if (otherConnectedClient.second.bulletData.get())
 				{
 					bool isThrownGrenade = false;
@@ -381,11 +387,17 @@ void Server::update()
 					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
 				}
 
-				// sound
+				// sounds
 				if (otherConnectedClient.second.soundData.get())
 				{
 					jsonData["sounds"][otherConnectedClient.first]["name"] = otherConnectedClient.second.soundData->name;
 					jsonData["sounds"][otherConnectedClient.first]["paused"] = otherConnectedClient.second.soundData->paused;
+				}
+
+				// openedDoors
+				if (otherConnectedClient.second.openedDoorData.get())
+				{
+					jsonData["openedDoors"][otherConnectedClient.first]["id"] = *otherConnectedClient.second.openedDoorData;
 				}
 			}
 
@@ -398,6 +410,7 @@ void Server::update()
 		{
 			connectedClient.second.bulletData.reset(); // bulletData = nullptr
 			connectedClient.second.soundData.reset(); // soundData = nullptr
+			connectedClient.second.openedDoorData.reset(); // openedDoorData = nullptr
 		}
 	}
 

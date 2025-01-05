@@ -19,9 +19,17 @@ public:
 	void onInteraction() override;
 
 	void update() override;
-
 	void draw() override;
 
-	int getOpenCost() const { return this->openCost; }
+	void openDoor();
+
+	// Getters
+	inline int getOpenCost() const { return this->openCost; }
+	inline unsigned int getID() const { return id; }
+
+private:
+	const unsigned int id;
+
+	static unsigned int globalID;
 };
 

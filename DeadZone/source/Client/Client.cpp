@@ -278,6 +278,15 @@ void Client::handleReceivedPacket()
 		}
 	}
 
+	// openedDoors
+	if (jsonData.contains("openedDoors"))
+	{
+		for (const auto& [clientKey, openedDoorData] : jsonData["openedDoors"].items())
+		{
+			Map::get().updateDoorStatus(openedDoorData["id"].get<unsigned int>());
+		}
+	}
+
 	// map
 	if (jsonData.contains("map") && !hasMap)
 	{
@@ -455,6 +464,15 @@ void Client::sendSound(const std::string& name, bool paused)
 
 	jsonData["sound"]["name"] = name;
 	jsonData["sound"]["paused"] = paused;
+
+	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+}
+
+void Client::sendOpenedDoor(int id)
+{
+	nlohmann::json jsonData;
+
+	jsonData["openedDoor"] = id;
 
 	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 }

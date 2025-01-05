@@ -144,6 +144,17 @@ void Map::update()
 	// shops nu are update, deoarece interactiunile cu player-ul au loc in interactionManager
 }
 
+void Map::updateDoorStatus(unsigned int id)
+{
+	for (auto& door : doors)
+	{
+		if (door.get()->getID() == id)
+		{
+			door.get()->openDoor();
+		}
+	}
+}
+
 void Map::putDoorsInEnclosedAreas(const int& width, const int& height, std::vector<std::vector<std::string>>& map, std::vector<std::vector<bool>>& enclosed) {
 	std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
 	const int di[4] = { -1, 0, 1, 0 };

@@ -144,7 +144,7 @@ void WaveManager::update()
 
 			Game::get().addDeadBody(std::make_shared<DeadBody>(it->second->getX(), it->second->getY(), deadResize * it->second->getDrawWidth(), deadResize * it->second->getDrawHeight(), deadRotateAngle, 0.0, m0, v0));
 
-			// toti jucatorii primesc gold
+			// TODO: toti jucatorii primesc gold + kill
 			Player::get().setGold(Player::get().getGold() + it->second->getGoldOnKill());
 			Player::get().setNumKills(Player::get().getNumKills() + 1);
 
@@ -167,16 +167,7 @@ void WaveManager::update()
 	{
 		if (this->inWave)
 		{
-			int numEnemiesActive = remoteZombies.size();
-			// TODO: foloseste direct remoteZombies
-			//std::vector<std::shared_ptr<Entity>>& entities = Game::get().getEntities();
-			//for (int i = 0; i < entities.size(); ++i)
-			//{
-			//	if (std::dynamic_pointer_cast<Enemy>(entities[i]))
-			//		++numEnemiesActive;
-			//}
-
-			if (numEnemiesActive == 0)
+			if (remoteZombies.size() == 0)
 			{
 				this->inWave = false;
 				++this->numFinishedWaves;
@@ -218,7 +209,7 @@ void WaveManager::update()
 				std::swap(this->visitedCells[(int)this->visitedCells.size() - k], this->visitedCells[(int)this->visitedCells.size() - 1]);
 				this->visitedCells.pop_back();
 
-				// TODO: de verificat daca merge ok asta
+				// spawn remote zombie
 				spawnRemoteZombie(std::to_string(i), spawnPos.first, spawnPos.second);
 
 				// sound effect
@@ -226,10 +217,9 @@ void WaveManager::update()
 			}
 		}
 
+		// update enemy specific SERVER
 		for (auto& zombie : remoteZombies)
 		{
-			// TODO: deocamdata zombies urmaresc doar player-ul care are server-ul
-			// TODO: schimba functia de update astfel incat sa ia in calcul remotePlayers
 			zombie.second->update();
 		}
 
