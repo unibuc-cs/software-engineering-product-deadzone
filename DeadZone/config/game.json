@@ -164,8 +164,8 @@
       "file": "resources/textures/bullets/bullet3.png",
       "alpha": true
     },
-    "shop0": {
-      "file": "resources/textures/shops/shop0.png",
+    "S0": {
+      "file": "resources/textures/shops/S0.png",
       "alpha": true
     },
     "tab1": {

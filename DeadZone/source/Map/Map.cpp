@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <queue>
+#include <set>
 
 #include "../Renderer/SpriteRenderer.h"
 #include "../ResourceManager/ResourceManager.h"
@@ -108,18 +109,25 @@ void Map::readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer)
 			}
 			else if (code[0] == 'D')
 			{
+				this->map.back().emplace_back(std::make_shared<Floor>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, ".0"));
 				std::map<AnimatedEntity::EntityStatus, std::string> m0 = {
 					{ AnimatedEntity::EntityStatus::IDLE, "doorStatic0"},
 					{ AnimatedEntity::EntityStatus::OPENED, "doorOpening0"}
 				};
 				std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::IDLE };
-				this->map.back().emplace_back(std::make_shared<Door>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, m0, v0, 2.0, 2.0, 500));
-				this->doors.emplace_back(std::dynamic_pointer_cast<Door>(this->map.back().back()));
+				if (code[3] == '0') 
+				{
+					this->doors.emplace_back(std::make_shared<Door>((double)this->map.back().size() - 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, m0, v0, 2.0, 2.0, 500));
+				}
+				else 
+				{
+					this->doors.emplace_back(std::make_shared<Door>((double)this->map.back().size() - 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 90.0, 0.0, 1.0, 1.0, m0, v0, 2.0, 2.0, 500));
+				}
 			}
-			else if (code[0] == 's')
+			else if (code[0] == 'S')
 			{
-				this->map.back().emplace_back(std::make_shared<Shop>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code, 10.0, 10.0));
-				this->shops.emplace_back(std::dynamic_pointer_cast<Shop>(this->map.back().back()));
+				this->map.back().emplace_back(std::make_shared<Floor>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, ".0"));
+				this->shops.emplace_back(std::make_shared<Shop>((double)this->map.back().size() - 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code, 10.0, 10.0));
 			}
 		}
 	}
@@ -135,6 +143,14 @@ void Map::draw()
 		{
 			this->map[i][j]->draw();
 		}
+	}
+	for (int i = 0; i < this->doors.size(); ++i)
+	{
+		this->doors[i]->draw();
+	}
+	for (int i = 0; i < this->shops.size(); ++i)
+	{
+		this->shops[i]->draw();
 	}
 }
 
@@ -204,11 +220,40 @@ void Map::putDoorsInEnclosedAreas() {
 						std::pair<int, int> cell = visitedCells[k];
 						enclosed[cell.first][cell.second] = 1;
 					}
+					std::set<std::pair<int, int>> isCandidateForDoor;
+					for (int k = 0; k < candidatesForDoor.size(); k++) {
+						std::pair<int, int> cell = candidatesForDoor[k];
+						if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1)
+							isCandidateForDoor.insert(candidatesForDoor[k]);
+					}
+					bool findDoor = false;
 					for (int k = 0; k < candidatesForDoor.size(); k++) {
 						std::pair<int, int> cell = candidatesForDoor[k];
 						if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1) {
-							mapString[cell.first][cell.second] = "D0";
-							break;
+							// check to see if I can place it
+							if (isCandidateForDoor.count({ cell.first, cell.second - 1 }) && isCandidateForDoor.count({ cell.first, cell.second + 1 })
+								&& !isCandidateForDoor.count({ cell.first - 1, cell.second - 1 }) && !isCandidateForDoor.count({ cell.first - 1, cell.second + 1 }) && !isCandidateForDoor.count({ cell.first - 1, cell.second })
+								&& !isCandidateForDoor.count({ cell.first + 1, cell.second - 1 }) && !isCandidateForDoor.count({ cell.first + 1, cell.second + 1 }) && !isCandidateForDoor.count({ cell.first + 1, cell.second})) {
+								mapString[cell.first][cell.second] = "D0R9";
+								findDoor = true;
+								break;
+							}
+							if (isCandidateForDoor.count({ cell.first - 1, cell.second }) && isCandidateForDoor.count({ cell.first + 1, cell.second })
+								&& !isCandidateForDoor.count({ cell.first - 1, cell.second - 1 }) && !isCandidateForDoor.count({ cell.first + 1, cell.second - 1 }) && !isCandidateForDoor.count({ cell.first, cell.second - 1 })
+								&& !isCandidateForDoor.count({ cell.first - 1, cell.second + 1 }) && !isCandidateForDoor.count({ cell.first + 1, cell.second + 1 }) && !isCandidateForDoor.count({ cell.first, cell.second + 1 })) {
+								mapString[cell.first][cell.second] = "D0R0";
+								findDoor = true;
+								break;
+							}
+						}
+					}
+					if (findDoor == false) {
+						for (int k = 0; k < candidatesForDoor.size(); k++) {
+							std::pair<int, int> cell = candidatesForDoor[k];
+							if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1) {
+								mapString[cell.first][cell.second] = ".0";
+								break;
+							}
 						}
 					}
 				}
@@ -247,7 +292,7 @@ void Map::putShopInGoodArea() {
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 3; j++)
 			mapString[i + positionForShop.first][j + positionForShop.second] = pattern[i][j];
-	mapString[5 + positionForShop.first][1 + positionForShop.second] = "shop0";
+	mapString[5 + positionForShop.first][1 + positionForShop.second] = "S0";
 }
 
 std::string Map::generateProceduralMap(const int& w, const int& h) {

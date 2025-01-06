@@ -218,10 +218,10 @@ namespace TestTexture
             TestTextureFunc("../../../DeadZone/resources/textures/bullets/bullet3.png", "bullet3", 128u, 128u);
         }
 
-        TEST_METHOD(shop0)
+        TEST_METHOD(S0)
         {
-            Logger::WriteMessage("shop0");
-            TestTextureFunc("../../../DeadZone/resources/textures/shops/shop0.png", "shop0", 128u, 128u);
+            Logger::WriteMessage("S0");
+            TestTextureFunc("../../../DeadZone/resources/textures/shops/S0.png", "S0", 128u, 128u);
         }
 
         TEST_METHOD(Tab1)
