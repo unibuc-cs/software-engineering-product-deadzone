@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include <string>
 
 #include "../../GlobalClock/GlobalClock.h"
@@ -63,6 +65,8 @@ public:
 	inline double getDamage() const { return this->damage; }
 	inline double getFireRate() const { return this->fireRate; }
 	inline double getPrice() const { return this->price; }
+
+	static bool applyCloseRangeDamage(const glm::vec2 playerPosition, const double playerRotateAngle, const glm::vec2& enemyPosition, const double shortRangeAttackRadius);
 
 	std::string weaponTypeToString();
 	std::string convertToJson(int identation = 0, bool showSuper = true);
