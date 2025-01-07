@@ -114,25 +114,11 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 	bulletPrices[Weapon::WeaponType::GRENADE] = 200;
 }
 
-std::pair<double, double> Player::getPlayerSpawnPoint() {
-	int width = Map::get().getWidth();
-	int height = Map::get().getHeight();
-	int x, y;
-	double x_scaled, y_scaled;
-	do {
-		x = Random::randomInt(10, height - 10);
-		y = Random::randomInt(10, width - 10);
-		x_scaled = x + 0.5;
-		y_scaled = y + 0.5;
-	} while (Map::get().IsEnclosed(x, y) || Map::get().IsWall(x, y));
-	return { y_scaled , x_scaled }; // player positions are reversed
-}
-
 Player& Player::get()
 {
 	if (Player::instance == nullptr)
 	{
-		std::pair<double, double> spawn_point = getPlayerSpawnPoint(); // 10.5, 10.5
+		std::pair<double, double> spawn_point = { 10.5, 10.5 };
 		Player::instance = std::shared_ptr<Player>(new Player(spawn_point.first, spawn_point.second, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, ANIMATIONS_NAME_2D, STATUSES, 7.5));
 	}
 

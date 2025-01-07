@@ -295,6 +295,65 @@ void Map::putShopInGoodArea() {
 	mapString[5 + positionForShop.first][1 + positionForShop.second] = "S0";
 }
 
+void Map::clearSpawnArea() {
+	std::pair<int, int> player_spawn_point = { 10, 10 };
+	if (!enclosed[player_spawn_point.first][player_spawn_point.second] && mapString[player_spawn_point.first][player_spawn_point.second][0] == '.')
+		return;
+
+	const int di[4] = { -1, 0, 1, 0 };
+	const int dj[4] = { 0, 1, 0, -1 };
+
+	auto inside = [&](std::pair<int, int> cell) {
+		if (cell.first < height && cell.first >= 0 && cell.second < width && cell.second >= 0)
+			return 1;
+		return 0;
+		};
+
+	std::pair<int, int> now;
+	if (enclosed[player_spawn_point.first][player_spawn_point.second]) {
+		std::queue<std::pair<int, int>> Q;
+		std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
+		Q.push(now);
+		visited[now.first][now.second] = 1;
+		bool canStop = 0;
+		while (Q.size() > 0 && canStop == 0) {
+			std::pair<int, int> cur = Q.front();
+			Q.pop();
+			for (int k = 0; k < 4; k++) {
+				std::pair<int, int> cur_new = { cur.first + di[k], cur.second + dj[k] };
+				if (inside(cur_new) && (mapString[cur_new.first][cur_new.second][0] == mapString[now.first][now.first][0])) {
+					Q.push(cur_new);
+					visited[cur_new.first][cur_new.second] = 1;
+				}
+				if (inside(cur_new) && (mapString[cur_new.first][cur_new.second][0] == 'M')) {
+					canStop = 1;
+					now = cur_new;
+					break;
+				}
+			}
+		}
+	}
+	else now = player_spawn_point;
+
+	std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
+	std::queue<std::pair<int, int>> Q;
+	Q.push(now);
+	visited[now.first][now.second] = 1;
+	while (Q.size() > 0) {
+		std::pair<int, int> cur = Q.front();
+		mapString[cur.first][cur.second] = ".0";
+		Q.pop();
+		for (int k = 0; k < 4; k++) {
+			std::pair<int, int> cur_new = { cur.first + di[k], cur.second + dj[k] };
+			if (inside(cur_new) && (mapString[cur_new.first][cur_new.second] == mapString[now.first][now.first]
+				|| mapString[cur_new.first][cur_new.second][0] == 'D') && !visited[cur_new.first][cur_new.second]) {
+				Q.push(cur_new);
+				visited[cur_new.first][cur_new.second] = 1;
+			}
+		}
+	}
+}
+
 std::string Map::generateProceduralMap(const int& w, const int& h) {
 	
 	width = w;
@@ -319,6 +378,8 @@ std::string Map::generateProceduralMap(const int& w, const int& h) {
 	// Find position for shop
 	putShopInGoodArea();
 
+	clearSpawnArea();
+
 	// Gettime sinch epoch in ms
 	long long ms_since_epoch = GeneralUtilities::get().getTimeSinceEpochInMs();
 
@@ -333,12 +394,4 @@ std::string Map::generateProceduralMap(const int& w, const int& h) {
 			MAP_OUTPUT << mapString[i][j] << ' ';
 
 	return output_dir;
-}
-
-bool Map::IsEnclosed(const int& x, const int& y) {
-	return (enclosed[x][y] == true);
-}
-
-bool Map::IsWall(const int& x, const int& y) {
-	return (mapString[x][y][0] != '.');
 }

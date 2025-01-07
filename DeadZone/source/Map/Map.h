@@ -56,17 +56,13 @@ public:
 	void updateDoorStatus(unsigned int id);
 
 	static void deleteInstance();
-
+	
 	static void putDoorsInEnclosedAreas();
 	static void putShopInGoodArea();
 	static std::string generateProceduralMap(const int& width, const int& height);
-
-	static bool IsEnclosed(const int& x, const int& y);
-	static bool IsWall(const int& x, const int& y);
+	static void clearSpawnArea();
 
 	// Getters
-	static int getHeight() { return height; }
-	static int getWidth() { return width; }
 	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
 	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
 	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
