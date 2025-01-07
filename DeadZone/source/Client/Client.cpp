@@ -253,7 +253,7 @@ void Client::handleReceivedPacket()
 	}
 
 	// zombies
-	if (jsonData.contains("zombies"))
+	if (jsonData.contains("zombies") && !Game::get().getIsServer()) // TODO: skip server
 	{
 		for (const auto& [zombieId, zombieData] : jsonData["zombies"].items())
 		{
