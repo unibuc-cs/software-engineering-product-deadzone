@@ -19,6 +19,15 @@ struct ReplicatedSound
 	ReplicatedSound(const std::string& name, bool paused);
 };
 
+struct ReplicatedCloseRangeDamage
+{
+	double damage;
+	double shortRangeAttackRadius;
+
+	// Constructor
+	ReplicatedCloseRangeDamage(const double damage, const double shortRangeAttackRadius);
+};
+
 class Server
 {
 private:
@@ -29,6 +38,7 @@ private:
 		std::shared_ptr<Bullet> bulletData;
 		std::shared_ptr<ReplicatedSound> soundData;
 		std::shared_ptr<unsigned int> openedDoorData;
+		std::shared_ptr<ReplicatedCloseRangeDamage> closeRangeDamage;
 		float lastTimeSentPing;
 		float lastTimeReceivedPing;
 		bool workingConnection;
@@ -41,6 +51,7 @@ private:
 			, remotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 			, bulletData(nullptr)
 			, soundData(nullptr)
+			, closeRangeDamage(nullptr)
 		{
 
 		}

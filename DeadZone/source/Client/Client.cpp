@@ -239,6 +239,19 @@ void Client::handleReceivedPacket()
 		}
 	}
 
+	// closeRangeDamages
+	if (jsonData.contains("closeRangeDamages"))
+	{
+		for (const auto& [clientKey, closeRangeDamageData] : jsonData["closeRangeDamages"].items())
+		{
+			Game::get().applyRemotePlayerCloseRangeDamage(
+				clientKey,
+				closeRangeDamageData["damage"],
+				closeRangeDamageData["shortRangeAttackRadius"]
+			);
+		}
+	}
+
 	// sounds
 	if (jsonData.contains("sounds"))
 	{
@@ -464,6 +477,16 @@ void Client::sendOpenedDoor(int id)
 	nlohmann::json jsonData;
 
 	jsonData["openedDoor"] = id;
+
+	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+}
+
+void Client::sendCloseRangeDamage(const double damage, const double shortRangeAttackRadius)
+{
+	nlohmann::json jsonData;
+
+	jsonData["closeRangeDamage"]["damage"] = damage;
+	jsonData["closeRangeDamage"]["shortRangeAttackRadius"] = shortRangeAttackRadius;
 
 	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 }

@@ -392,3 +392,52 @@ void Game::updateRemotePlayerStatuses(const std::string& clientKey, const std::v
         remotePlayers[clientKey]->updateStatus(statuses[indexStatus], indexStatus);
     }
 }
+
+void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, double damage, double shortRangeAttackRadius)
+{
+    // entities
+    std::vector<std::shared_ptr<Entity>>& entities = Game::get().getEntities();
+    for (int i = 0; i < entities.size(); ++i)
+    {
+        const bool enemyInRange = Weapon::applyCloseRangeDamage(
+            glm::vec2(remotePlayers[clientKey]->getX(), remotePlayers[clientKey]->getY()),
+            remotePlayers[clientKey]->getRotateAngle(),
+            glm::vec2(entities[i]->getX(), entities[i]->getY()),
+            shortRangeAttackRadius
+        );
+
+        if (std::dynamic_pointer_cast<Human>(entities[i]) && enemyInRange)
+        {
+            std::dynamic_pointer_cast<Human>(entities[i])->setHealth(std::max(0.0, std::dynamic_pointer_cast<Human>(entities[i])->getHealth() - damage));
+        }
+    }
+
+    // remoteZombies
+    for (auto& [remoteZombieId, remoteZombie] : WaveManager::get().getRemoteZombies())
+    {
+        const bool enemyInRange = Weapon::applyCloseRangeDamage(
+            glm::vec2(remotePlayers[clientKey]->getX(), remotePlayers[clientKey]->getY()),
+            remotePlayers[clientKey]->getRotateAngle(),
+            glm::vec2(remoteZombie->getX(), remoteZombie->getY()),
+            shortRangeAttackRadius
+        );
+
+        if (enemyInRange)
+        {
+            remoteZombie->setHealth(std::max(0.0, remoteZombie->getHealth() - damage));
+        }
+    }
+
+    // Player
+    const bool enemyInRange = Weapon::applyCloseRangeDamage(
+        glm::vec2(remotePlayers[clientKey]->getX(), remotePlayers[clientKey]->getY()),
+        remotePlayers[clientKey]->getRotateAngle(),
+        glm::vec2(Player::get().getX(), Player::get().getY()),
+        shortRangeAttackRadius
+    );
+
+    if (enemyInRange)
+    {
+        Player::get().setHealth(std::max(0.0, Player::get().getHealth() - damage));
+    }
+}

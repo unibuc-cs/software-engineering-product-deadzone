@@ -11,6 +11,7 @@
 #include "../Enemy/Enemy.h"
 #include "../Bullet/ThrownGrenade.h"
 #include "../../Client/Client.h"
+#include "../../WaveManager/WaveManager.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -101,6 +102,25 @@ void Weapon::onClick()
 				}
 			}
 
+			// remoteZombies
+			for (auto& [remoteZombieId, remoteZombie] : WaveManager::get().getRemoteZombies())
+			{
+				const bool enemyInRange = Weapon::applyCloseRangeDamage(
+					glm::vec2(Player::get().getX(), Player::get().getY()),
+					Player::get().getRotateAngle(),
+					glm::vec2(remoteZombie->getX(), remoteZombie->getY()),
+					shortRangeAttackRadius
+				);
+
+				if (enemyInRange)
+				{
+					remoteZombie->setHealth(std::max(0.0, remoteZombie->getHealth() - damage));
+				}
+			}
+
+			// send to server
+			Client::get().sendCloseRangeDamage(this->damage, this->shortRangeAttackRadius);
+
 			break;
 		}
 		case WeaponType::KNIFE:
@@ -123,6 +143,25 @@ void Weapon::onClick()
 					std::dynamic_pointer_cast<Human>(entities[i])->setHealth(std::max(0.0, std::dynamic_pointer_cast<Human>(entities[i])->getHealth() - this->damage));
 				}
 			}
+
+			// remoteZombies
+			for (auto& [remoteZombieId, remoteZombie] : WaveManager::get().getRemoteZombies())
+			{
+				const bool enemyInRange = Weapon::applyCloseRangeDamage(
+					glm::vec2(Player::get().getX(), Player::get().getY()),
+					Player::get().getRotateAngle(),
+					glm::vec2(remoteZombie->getX(), remoteZombie->getY()),
+					shortRangeAttackRadius
+				);
+
+				if (enemyInRange)
+				{
+					remoteZombie->setHealth(std::max(0.0, remoteZombie->getHealth() - damage));
+				}
+			}
+
+			// send to server
+			Client::get().sendCloseRangeDamage(this->damage, this->shortRangeAttackRadius);
 
 			int random_number = Random::randomInt(0, 3);
 			switch (random_number)
@@ -320,6 +359,20 @@ bool Weapon::recentlyShot() const
 	return GlobalClock::get().getCurrentTime() - this->timeSinceLastShot < this->fireRate;
 }
 
+
+bool Weapon::applyCloseRangeDamage(const glm::vec2 playerPosition, const double playerRotateAngle, const glm::vec2& enemyPosition, const double shortRangeAttackRadius)
+{
+	const double deltaXEntity = enemyPosition.x - playerPosition.x;
+	const double deltaYEntity = enemyPosition.y - playerPosition.y;
+	const double normalizedDeltaXEntity = deltaXEntity / glm::sqrt(deltaXEntity * deltaXEntity + deltaYEntity * deltaYEntity);
+	const double normalizedDeltaYEntity = deltaYEntity / glm::sqrt(deltaXEntity * deltaXEntity + deltaYEntity * deltaYEntity);
+	const double deltaXPlayerAngle = glm::cos(glm::radians(playerRotateAngle));
+	const double deltaYPlayerAngle = glm::sin(glm::radians(playerRotateAngle));
+
+	return normalizedDeltaXEntity * deltaXPlayerAngle + normalizedDeltaYEntity * deltaYPlayerAngle > glm::cos(glm::radians(Weapon::EPSILON_ANGLE))
+		&& (enemyPosition.x - playerPosition.x) * (enemyPosition.x - playerPosition.x)
+		 + (enemyPosition.y - playerPosition.y) * (enemyPosition.y - playerPosition.y) < shortRangeAttackRadius * shortRangeAttackRadius;
+}
 
 std::string Weapon::weaponTypeToString() {
 	switch (this->weaponType) {

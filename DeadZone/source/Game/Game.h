@@ -74,6 +74,7 @@ public:
 	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);
 	void updateRemotePlayerRotateAngle(const std::string& clientKey, double angle);
 	void updateRemotePlayerStatuses(const std::string& clientKey, const std::vector<AnimatedEntity::EntityStatus>& statuses);
+	void applyRemotePlayerCloseRangeDamage(const std::string& clientKey, double damage, double shortRangeAttackRadius);
 
 	inline bool getIsServer() const { return isServer; }
 };

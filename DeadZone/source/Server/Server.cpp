@@ -20,6 +20,13 @@ ReplicatedSound::ReplicatedSound(const std::string& name, bool paused)
 
 }
 
+ReplicatedCloseRangeDamage::ReplicatedCloseRangeDamage(const double damage, const double shortRangeAttackRadius)
+	: damage(damage)
+	, shortRangeAttackRadius(shortRangeAttackRadius)
+{
+
+}
+
 Server::Server()
 	: MAX_NUM_CLIENTS((1 << 5)), NUM_CHANNELS(2), TIME_WAITING_FOR_EVENTS_MS(0) // TODO: test ca sa proceseze mai rpd
 	, server(nullptr), address(), MINIMUM_PORT(10000), MAXIMUM_PORT(20000)
@@ -165,6 +172,15 @@ void Server::handleReceivedPacket()
 		{
 			connectedClients[clientKey].remotePlayerData.updateStatus(static_cast<AnimatedEntity::EntityStatus>(status.get<int>()), indexStatus++);
 		}
+	}
+
+	// closeRangeDamage
+	if (jsonData.contains("closeRangeDamage"))
+	{
+		connectedClients[clientKey].closeRangeDamage = std::make_shared<ReplicatedCloseRangeDamage>(
+			jsonData["closeRangeDamage"]["damage"].get<double>(),
+			jsonData["closeRangeDamage"]["shortRangeAttackRadius"].get<double>()
+		);
 	}
 
 	// bullet
@@ -394,6 +410,13 @@ void Server::update()
 					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
 				}
 
+				// closeRangeDamage
+				if (otherConnectedClient.second.closeRangeDamage.get())
+				{
+					jsonData["closeRangeDamages"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.closeRangeDamage->damage;
+					jsonData["closeRangeDamages"][otherConnectedClient.first]["shortRangeAttackRadius"] = otherConnectedClient.second.closeRangeDamage->shortRangeAttackRadius;
+				}
+
 				// sounds
 				if (otherConnectedClient.second.soundData.get())
 				{
@@ -414,6 +437,7 @@ void Server::update()
 		for (auto& connectedClient : this->connectedClients)
 		{
 			connectedClient.second.bulletData.reset(); // bulletData = nullptr
+			connectedClient.second.closeRangeDamage.reset(); // closeRangeDamage = nullptr
 			connectedClient.second.soundData.reset(); // soundData = nullptr
 			connectedClient.second.openedDoorData.reset(); // openedDoorData = nullptr
 		}
