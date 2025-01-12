@@ -244,7 +244,6 @@ void Map::putDoorsInEnclosedAreas() {
 					std::pair<int, int> cell = candidatesForDoor[k];
 					visited2[cell.first][cell.second] = 0;
 				}
-				std::cout << i << ' ' << j << ' ' << cnt << '\n';
 				if (cnt < 100) {
 					for (int k = 0; k < visitedCells.size(); k++) {
 						std::pair<int, int> cell = visitedCells[k];
@@ -297,10 +296,6 @@ void Map::putDoorsInEnclosedAreas() {
 					}
 				}
 			}
-	for (int i = 0; i < height; i++, std::cout << "\n")
-		for (int j = 0; j < width; j++)
-			std::cout << enclosed[i][j] << ' ';
-		
 }
 
 void Map::putShopInGoodArea() {
