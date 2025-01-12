@@ -177,11 +177,18 @@ void Map::updateDoorStatus(unsigned int id)
 
 void Map::putDoorsInEnclosedAreas() {
 	std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
-	const int di[4] = { -1, 0, 1, 0 };
-	const int dj[4] = { 0, 1, 0, -1 };
+	std::vector<std::vector<bool>> visited2(height, std::vector<bool>(width, 0));
+	const int di[8] = { -1, 0, 1, 0, 1, 1, -1, -1 };
+	const int dj[8] = { 0, 1, 0, -1, 1, -1, 1, -1 };
 
 	auto inside = [&](std::pair<int, int> cell) {
 		if (cell.first < height && cell.first >= 0 && cell.second < width && cell.second >= 0)
+			return 1;
+		return 0;
+		};
+
+	auto inside2 = [&](std::pair<int, int> cell) {
+		if (cell.first < height - 1 && cell.first >= 1 && cell.second < width - 1 && cell.second >= 1)
 			return 1;
 		return 0;
 		};
@@ -210,11 +217,34 @@ void Map::putDoorsInEnclosedAreas() {
 								visited[new_cell.first][new_cell.second] = 1;
 								visitedCells.push_back({ new_cell.first, new_cell.second });
 							}
-							else if (mapString[new_cell.first][new_cell.second][0] == 'M')
+							else if (mapString[new_cell.first][new_cell.second][0] == 'M') {
+								std::queue<std::pair<int, int>> queueForDoor;
+								queueForDoor.push(new_cell);
+								visited2[new_cell.first][new_cell.second] = 1;
 								candidatesForDoor.push_back({ new_cell.first, new_cell.second });
+								while (queueForDoor.size() > 0) {
+									std::pair<int, int> cell_for_door = queueForDoor.front();
+									queueForDoor.pop();
+									for (int k2 = 0; k2 < 8; k2++) {
+										std::pair<int, int> new_cell_for_door = cell_for_door;
+										new_cell_for_door.first += di[k2];
+										new_cell_for_door.second += dj[k2];
+										if (inside2(new_cell_for_door) && !visited2[new_cell_for_door.first][new_cell_for_door.second] && mapString[new_cell_for_door.first][new_cell_for_door.second] == mapString[new_cell.first][new_cell.second]) {
+											visited2[new_cell_for_door.first][new_cell_for_door.second] = 1;
+											candidatesForDoor.push_back({ new_cell_for_door.first, new_cell_for_door.second });
+											queueForDoor.push(new_cell_for_door);
+										}
+									}
+								}
+							}
 						}
 					}
 				}
+				for (int k = 0; k < candidatesForDoor.size(); k++) {
+					std::pair<int, int> cell = candidatesForDoor[k];
+					visited2[cell.first][cell.second] = 0;
+				}
+				std::cout << i << ' ' << j << ' ' << cnt << '\n';
 				if (cnt < 100) {
 					for (int k = 0; k < visitedCells.size(); k++) {
 						std::pair<int, int> cell = visitedCells[k];
@@ -223,13 +253,14 @@ void Map::putDoorsInEnclosedAreas() {
 					std::set<std::pair<int, int>> isCandidateForDoor;
 					for (int k = 0; k < candidatesForDoor.size(); k++) {
 						std::pair<int, int> cell = candidatesForDoor[k];
-						if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1)
+						if (cell.first > 1 && cell.first < height - 2 && cell.second > 1 && cell.second < width - 2)
 							isCandidateForDoor.insert(candidatesForDoor[k]);
 					}
+
 					bool findDoor = false;
 					for (int k = 0; k < candidatesForDoor.size(); k++) {
 						std::pair<int, int> cell = candidatesForDoor[k];
-						if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1) {
+						if (cell.first > 1 && cell.first < height - 2 && cell.second > 1 && cell.second < width - 2) {
 							// check to see if I can place it
 							if (isCandidateForDoor.count({ cell.first, cell.second - 1 }) && isCandidateForDoor.count({ cell.first, cell.second + 1 })
 								&& !isCandidateForDoor.count({ cell.first - 1, cell.second - 1 }) && !isCandidateForDoor.count({ cell.first - 1, cell.second + 1 }) && !isCandidateForDoor.count({ cell.first - 1, cell.second })
@@ -250,14 +281,26 @@ void Map::putDoorsInEnclosedAreas() {
 					if (findDoor == false) {
 						for (int k = 0; k < candidatesForDoor.size(); k++) {
 							std::pair<int, int> cell = candidatesForDoor[k];
-							if (cell.first > 0 && cell.first < height - 1 && cell.second > 0 && cell.second < width - 1) {
-								mapString[cell.first][cell.second] = ".0";
-								break;
+							if (cell.first > 1 && cell.first < height - 2 && cell.second > 1 && cell.second < width - 2) {
+								if ((!enclosed[cell.first - 1][cell.second] || !enclosed[cell.first + 1][cell.second])
+									&& !isCandidateForDoor.count({ cell.first - 1 , cell.second}) && !isCandidateForDoor.count({ cell.first + 1 , cell.second })) {
+									mapString[cell.first][cell.second] = ".0";
+									break;
+								}
+								if (!enclosed[cell.first][cell.second + 1] || !enclosed[cell.first][cell.second - 1]
+									&& !isCandidateForDoor.count({ cell.first , cell.second + 1 }) && !isCandidateForDoor.count({ cell.first , cell.second - 1 })) {
+									mapString[cell.first][cell.second] = ".0";
+									break;
+								}
 							}
 						}
 					}
 				}
 			}
+	for (int i = 0; i < height; i++, std::cout << "\n")
+		for (int j = 0; j < width; j++)
+			std::cout << enclosed[i][j] << ' ';
+		
 }
 
 void Map::putShopInGoodArea() {
@@ -300,8 +343,8 @@ void Map::clearSpawnArea() {
 	if (!enclosed[player_spawn_point.first][player_spawn_point.second] && mapString[player_spawn_point.first][player_spawn_point.second][0] == '.')
 		return;
 
-	const int di[4] = { -1, 0, 1, 0 };
-	const int dj[4] = { 0, 1, 0, -1 };
+	const int di[8] = { -1, 0, 1, 0, 1, 1, -1, -1 };
+	const int dj[8] = { 0, 1, 0, -1, 1, -1, 1, -1 };
 
 	auto inside = [&](std::pair<int, int> cell) {
 		if (cell.first < height && cell.first >= 0 && cell.second < width && cell.second >= 0)
@@ -343,7 +386,7 @@ void Map::clearSpawnArea() {
 		std::pair<int, int> cur = Q.front();
 		mapString[cur.first][cur.second] = ".0";
 		Q.pop();
-		for (int k = 0; k < 4; k++) {
+		for (int k = 0; k < 8; k++) {
 			std::pair<int, int> cur_new = { cur.first + di[k], cur.second + dj[k] };
 			if (inside(cur_new) && (mapString[cur_new.first][cur_new.second] == mapString[now.first][now.first]
 				|| mapString[cur_new.first][cur_new.second][0] == 'D') && !visited[cur_new.first][cur_new.second]) {
