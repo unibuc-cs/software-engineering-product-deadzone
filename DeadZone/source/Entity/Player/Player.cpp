@@ -682,7 +682,7 @@ void Player::save()
 	saveJSON["outfitColor"]["b"] = outfitColor.z;
 
 	std::ofstream saveFile("config/save.json");
-	saveFile << std::setw(4) << saveJSON << std::endl;
+	saveFile << saveJSON.dump(4) << std::endl;
 	saveFile.close();
 }
 
@@ -699,11 +699,14 @@ void Player::load()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	setOutfitColor(glm::vec3(
-		saveJSON["outfitColor"]["r"].get<double>(),
-		saveJSON["outfitColor"]["g"].get<double>(),
-		saveJSON["outfitColor"]["b"].get<double>()
-	));
+	if (saveJSON.contains("outfitColor"))
+	{
+		setOutfitColor(glm::vec3(
+			saveJSON["outfitColor"]["r"].get<double>(),
+			saveJSON["outfitColor"]["g"].get<double>(),
+			saveJSON["outfitColor"]["b"].get<double>()
+		));
+	}
 }
 
 void Player::enterShopButton()

@@ -47,7 +47,6 @@ JoinGameMenu::JoinGameMenu(double x, double y, double drawWidth, double drawHeig
 std::map<std::string, Button> JoinGameMenu::CreateButtons()
 {
 	std::ifstream saveFile("config/save.json");
-
 	if (!saveFile.is_open())
 	{
 		throw std::runtime_error("JoinGameMenu::CreateButtons: save.json not found");
@@ -57,12 +56,11 @@ std::map<std::string, Button> JoinGameMenu::CreateButtons()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	std::string PlayerName = saveJSON["clientName"].get<std::string>();
-	std::string ServerIP = saveJSON["joinServerAddress"].get<std::string>();
-	std::string ServerPort = saveJSON["joinServerPort"].get<std::string>();
+	std::string PlayerName = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "YourName";
+	std::string ServerIP = saveJSON.contains("joinServerAddress") ? saveJSON["joinServerAddress"].get<std::string>() : "localhost";
+	std::string ServerPort = saveJSON.contains("joinServerPort") ? saveJSON["joinServerPort"].get<std::string>() : "7777";
 
 	double InputFieldWidth = 600.0;
-
 
 	std::map<std::string, Button> rez{
 			  { "PlayerName", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Player Name:", 0, 1.0, "Antonio", true) }
@@ -149,7 +147,7 @@ void JoinGameMenu::DeleteLetter()
 
 void JoinGameMenu::JoinGame(Button& button)
 {
-	// TODO: validari input
+	// TODO: validari input de la butoane
 
 	std::ifstream readFile("config/save.json");
 	nlohmann::json saveJSON;
@@ -162,7 +160,7 @@ void JoinGameMenu::JoinGame(Button& button)
 	saveJSON["joinServerPort"] = buttons.getButtonByName("ServerPortInputField").getLabel();
 
 	std::ofstream saveFile("config/save.json");
-	saveFile << std::setw(4) << saveJSON << std::endl;
+	saveFile << saveJSON.dump(4) << std::endl;
 	saveFile.close();
 
 

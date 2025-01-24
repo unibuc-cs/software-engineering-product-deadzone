@@ -31,10 +31,24 @@
 #include "../Server/Server.h"
 
 Game::Game()
-    : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+    : MAX_NUM_DEAD_BODIES(100) // daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
     , isServer(false), isInMatch(false)
 {
     WindowManager::get();
+
+    // Create "save.json" file if it doesn't exist
+    std::ifstream readSaveFile("config/save.json");
+    if (!readSaveFile.is_open())
+    {
+        nlohmann::json saveJSON = nlohmann::json::object();
+        std::ofstream writeSaveFile("config/save.json");
+        writeSaveFile << saveJSON.dump(4) << std::endl;
+        writeSaveFile.close();
+    }
+    else
+    {
+        readSaveFile.close();
+    }
 }
 
 Game::~Game()
@@ -213,7 +227,6 @@ void Game::run()
             Client::get().update();
         }
         
-
         if (gameStatus == GameStatus::InGame)
         {
             // Update
@@ -455,25 +468,21 @@ void Game::establishConnection() {
     saveFile >> saveJSON;
     saveFile.close();
 
-    // Server
-    isServer = saveJSON["clientHasServer"].get<bool>();
-
     // Start server
+    isServer = saveJSON["clientHasServer"].get<bool>();
     if (isServer)
     {
         std::string serverPort = saveJSON["createServerPort"].get<std::string>();
-
         Server::get().start(serverPort);
     }
 
+    // Start Client
     if (isServer)
     {
-        // Start Client
         Client::get().start("localhost", std::atoi(saveJSON["createServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
     }
     else
     {
-        // Start Client
         Client::get().start(saveJSON["joinServerAddress"].get<std::string>(), std::atoi(saveJSON["joinServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
     }
 }

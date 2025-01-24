@@ -16,8 +16,6 @@
 #include "../JoinGameMenu/JoinGameMenu.h"
 #include "../../Game/Game.h"
 
-
-
 MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, const std::string& textureName2D) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
 	TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D),
@@ -44,15 +42,13 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 			readFile >> saveJSON;
 			readFile.close();
 
-			saveJSON["clientHasServer"] = true;
-			// TODO: createServerPort
+			saveJSON["clientName"] = "client";		// hard-coded
+			saveJSON["clientHasServer"] = true;		// hard-coded
+			saveJSON["createServerPort"] = "7777";	// hard-coded
 
 			std::ofstream saveFile("config/save.json");
-			saveFile << std::setw(4) << saveJSON << std::endl;
+			saveFile << saveJSON.dump(4) << std::endl;
 			saveFile.close();
-
-
-
 
 			Game::get().establishConnection();
 			Game::get().setIsInMatch(true);
@@ -78,7 +74,6 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 	
 	}
 	);
-
 }
 
 
@@ -99,7 +94,6 @@ void MainMenu::draw()
 	SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getTexture(this->textureName2D), glm::vec2(x, y), glm::vec2(drawWidth, drawHeight), 0);
 
 	buttons.draw();
-
 }
 
 double MainMenu::getButtonPosX() {
