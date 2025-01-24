@@ -81,7 +81,7 @@ void Server::ClientData::sendMessage(const std::string& messageToSend, bool& fai
 	else
 	{
 		failedToSendMessage = true;
-		std::cout << "Error: Client failed to send message" << std::endl;
+		std::cout << "Error: Server failed to send message" << std::endl;
 	}
 }
 
@@ -98,7 +98,7 @@ void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
 	}
 	else
 	{
-		std::cout << "Error: Client failed to send message" << std::endl;
+		std::cout << "Error: Server failed to send message" << std::endl;
 	}
 }
 

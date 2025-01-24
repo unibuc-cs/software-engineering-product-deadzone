@@ -38,6 +38,22 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 		},
 		{ "play", [](Button&) {
 
+			// TODO: move PlayButtonCreate
+			std::ifstream readFile("config/save.json");
+			nlohmann::json saveJSON;
+			readFile >> saveJSON;
+			readFile.close();
+
+			saveJSON["clientHasServer"] = true;
+			// TODO: createServerPort
+
+			std::ofstream saveFile("config/save.json");
+			saveFile << std::setw(4) << saveJSON << std::endl;
+			saveFile.close();
+
+
+
+
 			Game::get().establishConnection();
 			Game::get().setIsInMatch(true);
 

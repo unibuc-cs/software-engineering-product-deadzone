@@ -4,7 +4,6 @@
 #include <fstream>
 
 #include <nlohmann/json.hpp>
-#include <thread>
 
 #include "../WindowManager/WindowManager.h"
 #include "../ResourceManager/ResourceManager.h"
@@ -465,7 +464,6 @@ void Game::establishConnection() {
         std::string serverPort = saveJSON["createServerPort"].get<std::string>();
 
         Server::get().start(serverPort);
-
     }
 
     if (isServer)

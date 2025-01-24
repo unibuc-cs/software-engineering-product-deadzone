@@ -151,16 +151,17 @@ void JoinGameMenu::JoinGame(Button& button)
 {
 	// TODO: validari input
 
-	std::ofstream saveFile("config/save.json");
+	std::ifstream readFile("config/save.json");
 	nlohmann::json saveJSON;
+	readFile >> saveJSON;
+	readFile.close();
 
 	saveJSON["clientHasServer"] = false;
 	saveJSON["clientName"] = buttons.getButtonByName("PlayerNameInputField").getLabel();
-
 	saveJSON["joinServerAddress"] = buttons.getButtonByName("ServerIPInputField").getLabel();
-
 	saveJSON["joinServerPort"] = buttons.getButtonByName("ServerPortInputField").getLabel();
 
+	std::ofstream saveFile("config/save.json");
 	saveFile << std::setw(4) << saveJSON << std::endl;
 	saveFile.close();
 
