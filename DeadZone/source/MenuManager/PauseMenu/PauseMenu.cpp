@@ -4,6 +4,7 @@
 #include "../../ResourceManager/ResourceManager.h"
 
 #include <iostream>
+
 #include "../../Input/InputHandler.h"
 #include "../../Map/Map.h"
 #include "../../Entity/Player/Player.h"
@@ -15,8 +16,7 @@
 #include "../../WaveManager/WaveManager.h"
 #include "../AlertBox/AlertBox.h"
 #include "../ChangeSkinMenu/ChangeSkinMenu.h"
-
-
+#include "../../Client/Client.h"
 
 PauseMenu::PauseMenu(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, const std::string& textureName2D) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),

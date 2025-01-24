@@ -1,5 +1,4 @@
 {
-
   "shaders": {
     "sprite": {
       "vertex": "shaders/sprite.vert",

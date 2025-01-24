@@ -128,6 +128,11 @@ void WaveManager::bfsSearch()
 
 void WaveManager::update()
 {
+	if (!Map::get().getHasBeenLoaded())
+	{
+		return;
+	}
+
 	// killed zombies
 	for (auto it = remoteZombies.begin(); it != remoteZombies.end(); )
 	{

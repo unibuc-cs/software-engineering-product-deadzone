@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
+
 #include "../../Input/InputHandler.h"
 #include "../../Map/Map.h"
 #include "../../Entity/Player/Player.h"
@@ -42,7 +43,7 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 			readFile >> saveJSON;
 			readFile.close();
 
-			saveJSON["clientName"] = "client";		// hard-coded
+			saveJSON["clientName"] = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "client";
 			saveJSON["clientHasServer"] = true;		// hard-coded
 			saveJSON["createServerPort"] = "7777";	// hard-coded
 
