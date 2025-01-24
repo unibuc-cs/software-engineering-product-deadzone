@@ -33,6 +33,8 @@ protected:
 
 	glm::vec3 uniformColor;
 
+	bool hasFocus = false;
+
 public:
 
 	Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_ = "", double textOffsetX_ = 50, double textScale = 1.0, const std::string& font_ = "Antonio", bool textCenteredX = false, const glm::vec3& fontColor_ = glm::vec3{0.0, 0.0, 0.0}, const glm::vec3& uniformColor_ = glm::vec3{ -1.0, -1.0, -1.0 } );
@@ -65,4 +67,6 @@ public:
 
 	inline void setTextureNameForStatus(const Button::Status& status, const std::string& textureName) {	status_TextureNames[status] = textureName; }
 
+	inline bool getHasFocus() const { return this->hasFocus; }
+	inline void setHasFocus(bool hasFocus_) { this->hasFocus = hasFocus_; }
 };

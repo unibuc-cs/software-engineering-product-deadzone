@@ -672,12 +672,19 @@ void Player::modifyBullets(Weapon::WeaponType weaponType, int amount)
 
 void Player::save()
 {
-	std::ofstream saveFile("config/save.json");
+	std::ifstream readFile("config/save.json");
+	
 	nlohmann::json saveJSON;
+
+	readFile >> saveJSON;
+
+	readFile.close();
 
 	saveJSON["outfitColor"]["r"] = outfitColor.x;
 	saveJSON["outfitColor"]["g"] = outfitColor.y;
 	saveJSON["outfitColor"]["b"] = outfitColor.z;
+
+	std::ofstream saveFile("config/save.json");
 
 	saveFile << std::setw(4) << saveJSON << std::endl;
 	saveFile.close();

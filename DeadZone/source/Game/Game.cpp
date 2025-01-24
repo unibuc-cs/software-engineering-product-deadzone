@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include <nlohmann/json.hpp>
+#include <thread>
 
 #include "../WindowManager/WindowManager.h"
 #include "../ResourceManager/ResourceManager.h"
@@ -28,10 +29,11 @@
 #include "../Entity/Explosion/Explosion.h"
 
 #include "../Client/Client.h"
+#include "../Server/Server.h"
 
 Game::Game()
     : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
-    , isServer(false)
+    , isServer(false), isInMatch(false)
 {
     WindowManager::get();
 }
@@ -55,13 +57,7 @@ void Game::loadResources()
     nlohmann::json gameJSON;
     gameFile >> gameJSON;
     gameFile.close();
-
-    // Server
-    isServer = gameJSON["clientHasServer"].get<bool>();
-
-    // Start Client
-    Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
-
+    
     // Load Shaders
     try
     {
@@ -206,8 +202,18 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
-        // Client
-        Client::get().update();
+        if (isInMatch) 
+        {
+            // Server
+            if (isServer)
+            {
+                Server::get().update();
+            }
+
+            // Client
+            Client::get().update();
+        }
+        
 
         if (gameStatus == GameStatus::InGame)
         {
@@ -439,5 +445,37 @@ void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, doubl
     if (enemyInRange)
     {
         Player::get().setHealth(std::max(0.0, Player::get().getHealth() - damage));
+    }
+}
+
+void Game::establishConnection() {
+
+    // Load JSON
+    std::ifstream saveFile("config/save.json");
+    nlohmann::json saveJSON;
+    saveFile >> saveJSON;
+    saveFile.close();
+
+    // Server
+    isServer = saveJSON["clientHasServer"].get<bool>();
+
+    // Start server
+    if (isServer)
+    {
+        std::string serverPort = saveJSON["createServerPort"].get<std::string>();
+
+        Server::get().start(serverPort);
+
+    }
+
+    if (isServer)
+    {
+        // Start Client
+        Client::get().start("localhost", std::atoi(saveJSON["createServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
+    }
+    else
+    {
+        // Start Client
+        Client::get().start(saveJSON["joinServerAddress"].get<std::string>(), std::atoi(saveJSON["joinServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
     }
 }

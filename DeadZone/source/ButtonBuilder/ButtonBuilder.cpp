@@ -13,6 +13,11 @@ std::map<Button::Status, std::string> ButtonBuilder::buttonTextures0()
 	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, { Button::Status::HOVERED, "button0Hovered" }, { Button::Status::CLICKED, "button0Hovered" }};
 }
 
+std::map<Button::Status, std::string> ButtonBuilder::OneTextureForAllStates()
+{
+	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, { Button::Status::HOVERED, "button0Normal" }, { Button::Status::CLICKED, "button0Normal" }};
+}
+
 Button ButtonBuilder::backButton(double x, double y)
 {
 	return Button(x, y, 40, 40, 0, 0, 40, 40, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "back"}, { Button::Status::HOVERED, "backHovered" }, { Button::Status::CLICKED, "backHovered" }}, "");

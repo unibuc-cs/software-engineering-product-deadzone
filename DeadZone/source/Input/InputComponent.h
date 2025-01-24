@@ -28,6 +28,12 @@ public:
 	void replaceScroll(const std::function<void(double, double)>& func);
 
 	void clear();
+	inline void clearKeyFunctionCallbacks() { keyFunctionCallbacks.clear();}
+	inline void clearMouseFunctionCallbacks() { keyFunctionCallbacks.clear(); }
+	inline void clearScrollFunctionCallbacks() { keyFunctionCallbacks.clear(); }
+
+	void bindKey(int key, const InputEvent& keyEvent, const std::function<void()>& func);
+
 private:
 	// [key][keyEvent] = vector<> functions
 	std::map<int, std::map<int, std::vector<std::function<void()>>>> keyFunctionCallbacks;

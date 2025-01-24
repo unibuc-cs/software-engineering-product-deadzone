@@ -13,6 +13,8 @@
 #include "../../ButtonBuilder/ButtonBuilder.h"
 #include "../ChangeSkinMenu/ChangeSkinMenu.h"
 #include "../../SoundManager/SoundManager.h"
+#include "../JoinGameMenu/JoinGameMenu.h"
+#include "../../Game/Game.h"
 
 
 
@@ -21,9 +23,10 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 	TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D),
 	MenuBase(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D, drawWidth * 0.3, drawHeight * 0.1),
 	buttons(std::map<std::string, Button>{
-		{ "quit", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
+		{ "quit", Button(getButtonPosX(), getButtonPosY(3), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
 		{ "play", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play", 0, 1.0, "Antonio", true) },
-		{ "Change skin", Button(getButtonPosX(), getButtonPosY(1), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Change skin", 0, 1.0, "Antonio", true) }
+		{ "Change skin", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Change skin", 0, 1.0, "Antonio", true) },
+		{ "joinGame", Button(getButtonPosX(), getButtonPosY(1), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Join Game", 0, 1.0, "Antonio", true) }
 })
 {	
 	buttons.setFunctions(
@@ -34,37 +37,22 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 			"quit", [](Button&){glfwSetWindowShouldClose(WindowManager::get().getWindow(), true);}
 		},
 		{ "play", [](Button&) {
+
+			Game::get().establishConnection();
+			Game::get().setIsInMatch(true);
+
 			// MainMenu::get().isInMenu = false;
 			MenuManager::get().pop();
 			InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
 
-			if (Map::get().getHasBeenLoaded() == false)
-				try
-				{
-					// TODO: map primim direct de la server acum
-					// TODO: delete
-					//std::ifstream gameFile("config/game.json");
-					//nlohmann::json gameJSON;
-					//gameFile >> gameJSON;
-					//gameFile.close();
-
-					//std::string file = gameJSON["map"].get<std::string>();
-
-					//Map::get().readMapFromFile(file);
-				}
-				catch (const std::runtime_error& err)
-				{
-					std::cout << "ERROR::MAP: " << err.what() << std::endl;
-				}
-				catch (...)
-				{
-					std::cout << "ERROR::MAP: other error" << std::endl;
-				}
-
-
 			Player::get().setupPlayerInputComponent();
 
 		}
+		},
+		{
+			"joinGame", [](Button&) {
+				MenuManager::get().push(JoinGameMenu::get());
+			}
 		},
 		{
 			"Change skin", [](Button&) {

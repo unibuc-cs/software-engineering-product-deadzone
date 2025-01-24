@@ -1,8 +1,4 @@
 {
-  "clientHasServer": true,
-  "clientName": "client0",
-  "serverAddress": "localhost",
-  "serverPort": "7777",
 
   "shaders": {
     "sprite": {

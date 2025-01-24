@@ -39,6 +39,7 @@ private:
 	const int MAX_NUM_DEAD_BODIES;
 
 	bool isServer;
+	bool isInMatch;
 
 public:
 	enum class GameStatus
@@ -77,5 +78,9 @@ public:
 	void applyRemotePlayerCloseRangeDamage(const std::string& clientKey, double damage, double shortRangeAttackRadius);
 
 	inline bool getIsServer() const { return isServer; }
+	void establishConnection();
+
+	inline bool getIsInMatch() const { return isInMatch; }
+	inline void setIsInMatch(bool value) { isInMatch = value; }
 };
 
