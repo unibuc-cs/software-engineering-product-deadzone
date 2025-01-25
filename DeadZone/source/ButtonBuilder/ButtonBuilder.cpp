@@ -18,6 +18,11 @@ std::map<Button::Status, std::string> ButtonBuilder::OneTextureForAllStates()
 	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, { Button::Status::HOVERED, "button0Normal" }, { Button::Status::CLICKED, "button0Normal" }};
 }
 
+std::map<Button::Status, std::string> ButtonBuilder::OneTextureForAllStatesThinMargins()
+{
+	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "textBoxThinMargins"}, { Button::Status::HOVERED, "textBoxThinMargins" }, { Button::Status::CLICKED, "textBoxThinMargins" }};
+}
+
 std::map<Button::InputStatus, std::string> ButtonBuilder::inputFieldTextures0()
 {
 	return std::map<Button::InputStatus, std::string>{{Button::InputStatus::DEFAULT, "inputFieldDefault"}, { Button::InputStatus::FOCUSED, "inputFieldFocused" }, { Button::InputStatus::INVALID_INPUT, "inputFieldInvalidInput" }};

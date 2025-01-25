@@ -222,6 +222,10 @@
     "inputFieldInvalidInput": {
       "file": "resources/textures/menus/inputFieldInvalidInput.png",
       "alpha": true
+    },
+    "textBoxThinMargins": {
+      "file": "resources/textures/menus/textBoxThinMargins.png",
+      "alpha": true
     }
   },
 

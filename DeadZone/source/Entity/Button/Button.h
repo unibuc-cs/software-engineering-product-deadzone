@@ -35,6 +35,7 @@ protected:
 	double textScale;
 	std::string font;
 	glm::vec3 fontColor;
+	bool textCenteredX;
 
 	void updateTexture();
 	void updateTextureNonInteractive();
@@ -53,7 +54,7 @@ public:
 
 	Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight,
 			const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_ = "", double textOffsetX_ = 50,
-			double textScale = 1.0, const std::string& font_ = "Antonio", bool textCenteredX = false, const glm::vec3& fontColor_ = glm::vec3{ 0.0, 0.0, 0.0 },
+			double textScale = 1.0, const std::string& font_ = "Antonio", bool textCenteredX_ = false, const glm::vec3& fontColor_ = glm::vec3{ 0.0, 0.0, 0.0 },
 			const glm::vec3& uniformColor_ = glm::vec3{ -1.0, -1.0, -1.0 }, bool isInteractive_ = true, 
 			const std::map<Button::InputStatus, std::string> inputStatus_TextureNames_ = {});
 	Button();

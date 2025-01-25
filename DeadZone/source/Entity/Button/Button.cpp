@@ -10,7 +10,7 @@ Button::Button():Entity(0,0,0,0,0,0), CollidableEntity(0,0,0,0,0,0,0,0), Textura
 
 Button::Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight,
 		const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_, double textOffsetX_, double textScale_,
-		const std::string& font_, bool textCenteredX, const glm::vec3& fontColor_, const glm::vec3& uniformColor_, bool isInteractive_, 
+		const std::string& font_, bool textCenteredX_, const glm::vec3& fontColor_, const glm::vec3& uniformColor_, bool isInteractive_, 
 		const std::map<Button::InputStatus, std::string> inputStatus_TextureNames_) :
 
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
@@ -21,6 +21,7 @@ Button::Button(double x, double y, double drawWidth, double drawHeight, double r
 	textOffsetX(textOffsetX_),
 	textScale(textScale_),
 	font(font_),
+	textCenteredX(textCenteredX_),
 	fontColor(fontColor_),
 	uniformColor(uniformColor_),
 	isInteractive(isInteractive_),
@@ -61,6 +62,11 @@ void Button::update() { }
 
 void Button::draw()
 {
+	if (textCenteredX)
+	{
+		textOffsetX = (drawWidth - TextRenderer::get().getTextWidth(ResourceManager::getFont(font), textScale, label)) / 2.0;
+	}
+
 	updateTexture();
 	// std::cout << TexturableEntity::getTextureName2D() << "\n";
 	// TexturableEntity::draw();
@@ -89,6 +95,11 @@ void Button::draw()
 
 void Button::draw(double x_, double y_, double width_, double height_)
 {
+	if (textCenteredX)
+	{
+		textOffsetX = (drawWidth - TextRenderer::get().getTextWidth(ResourceManager::getFont(font), textScale, label)) / 2.0;
+	}
+
 	double xForTexture = x - WindowManager::get().getWindowWidth() / 2.0 + drawWidth / 2.0;
 	double yForTexture = WindowManager::get().getWindowHeight() / 2.0 - y - drawHeight / 2.0;
 
