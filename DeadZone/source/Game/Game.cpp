@@ -63,6 +63,7 @@ Game::~Game()
 		this->isServerRunningMutex.unlock();
 
 		this->serverThread->join();
+		this->serverThread = nullptr;
 	}
 
 	Server::get().stop();
@@ -527,5 +528,6 @@ void Game::stopConnection()
 		this->isServerRunningMutex.unlock();
 
 		this->serverThread->join();
+		this->serverThread = nullptr;
 	}
 }
