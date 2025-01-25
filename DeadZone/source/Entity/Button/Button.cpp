@@ -8,7 +8,11 @@
 Button::Button():Entity(0,0,0,0,0,0), CollidableEntity(0,0,0,0,0,0,0,0), TexturableEntity(0, 0, 0, 0, 0, 0, ""), label(""), textOffsetX(50), textScale(1.0){
 }
 
-Button::Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_, double textOffsetX_, double textScale_, const std::string& font_, bool textCenteredX, const glm::vec3& fontColor_, const glm::vec3& uniformColor_) :
+Button::Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight,
+		const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_, double textOffsetX_, double textScale_,
+		const std::string& font_, bool textCenteredX, const glm::vec3& fontColor_, const glm::vec3& uniformColor_, bool isInteractive_, 
+		const std::map<Button::InputStatus, std::string> inputStatus_TextureNames_) :
+
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
 	CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight),
 	TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, ""),
@@ -18,13 +22,26 @@ Button::Button(double x, double y, double drawWidth, double drawHeight, double r
 	textScale(textScale_),
 	font(font_),
 	fontColor(fontColor_),
-	uniformColor(uniformColor_)
+	uniformColor(uniformColor_),
+	isInteractive(isInteractive_),
+	inputStatus_TextureNames(inputStatus_TextureNames_)
 {
-	auto default_texture = status_TextureNames.find(Button::Status::DEFAULT);
-	if (default_texture != status_TextureNames.end())
-		TexturableEntity::setTextureName2D(default_texture->second);
+	if (isInteractive) {
+		auto default_texture = status_TextureNames.find(Button::Status::DEFAULT);
+		if (default_texture != status_TextureNames.end())
+			TexturableEntity::setTextureName2D(default_texture->second);
+		else
+			std::cout << "Button constructor: no default texture\n";
+	} 
 	else
-		std::cout << "Button constructor: no default texture\n";
+	{
+		auto default_texture = inputStatus_TextureNames.find(Button::InputStatus::DEFAULT);
+		if (default_texture != inputStatus_TextureNames.end())
+			TexturableEntity::setTextureName2D(default_texture->second);
+		else
+			std::cout << "Button constructor: no default texture for non interactive button\n";
+	}
+	
 
 	if (textCenteredX)
 	{
@@ -98,8 +115,23 @@ void Button::draw(double x_, double y_, double width_, double height_)
 
 void Button::updateTexture()
 {
+	if (!isInteractive)
+		return;
+
 	auto default_texture = status_TextureNames.find(status);
 	if (default_texture != status_TextureNames.end())
+		TexturableEntity::setTextureName2D(default_texture->second);
+	else
+		std::cout << "Button setTexture: no texture for specified status\n";
+}
+
+void Button::updateTextureNonInteractive()
+{
+	if (isInteractive)
+		return;
+
+	auto default_texture = inputStatus_TextureNames.find(inputStatus);
+	if (default_texture != inputStatus_TextureNames.end())
 		TexturableEntity::setTextureName2D(default_texture->second);
 	else
 		std::cout << "Button setTexture: no texture for specified status\n";
@@ -121,6 +153,35 @@ void Button::setClicked()
 {
 	status = Button::Status::CLICKED;
 	updateTexture();
+}
+
+void Button::setFocused()
+{
+	this->setPreviousInputStatus(this->inputStatus);
+	this->setInputStatus(Button::InputStatus::FOCUSED);
+
+	updateTextureNonInteractive();
+}
+
+void Button::setUnfocused()
+{
+	this->setInputStatus(this->previousInputStatus);
+
+	updateTextureNonInteractive();
+}
+
+void Button::setInvalidInputStatusAndPreviousInputStatus()
+{
+	this->setPreviousInputStatus(Button::InputStatus::INVALID_INPUT);
+	this->setInputStatus(Button::InputStatus::INVALID_INPUT);
+	updateTextureNonInteractive();
+}
+
+void Button::setDefaultInputStatusAndPreviousInputStatus()
+{
+	this->setPreviousInputStatus(Button::InputStatus::DEFAULT);
+	this->setInputStatus(Button::InputStatus::DEFAULT);
+	updateTextureNonInteractive();
 }
 
 void Button::setFontColor(const glm::vec3& fontColor_)

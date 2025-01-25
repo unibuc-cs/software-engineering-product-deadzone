@@ -210,6 +210,18 @@
     "skinCardSelected": {
       "file": "resources/textures/menus/skinCardSelected.png",
       "alpha": true
+    },
+    "inputFieldDefault": {
+      "file": "resources/textures/menus/inputFieldDefault.png",
+      "alpha": true
+    },
+    "inputFieldFocused": {
+      "file": "resources/textures/menus/inputFieldFocused.png",
+      "alpha": true
+    },
+    "inputFieldInvalidInput": {
+      "file": "resources/textures/menus/inputFieldInvalidInput.png",
+      "alpha": true
     }
   },
 

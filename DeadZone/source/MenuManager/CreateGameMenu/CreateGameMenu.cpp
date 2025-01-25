@@ -66,7 +66,7 @@ std::map<std::string, Button> CreateGameMenu::CreateButtons()
 
 	std::map<std::string, Button> rez{
 			  { "PlayerName", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Player Name:", 0, 1.0, "Antonio", true) }
-			, { "PlayerNameInputField", Button(getButtonPosX(), getButtonPosY(1), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), PlayerName, 0, 1.0, "Antonio", true) }
+			, { "PlayerNameInputField", Button(getButtonPosX(), getButtonPosY(1), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), PlayerName, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0()) }
 			, { "ServerIP", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Server IP:", 0, 1.0, "Antonio", true) }
 			, { "ServerIPInputField", Button(getButtonPosX(), getButtonPosY(3), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerIP, 0, 1.0, "Antonio", true) }
 			, { "ServerPort", Button(getButtonPosX(), getButtonPosY(4), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Server Port:", 0, 1.0, "Antonio", true) }

@@ -44,11 +44,16 @@ void ButtonGroup::onClick()
 		{
 			// buttonIsHovered[i.first] = false;
 			i->second.setHasFocus(true);
+			
+			i->second.setFocused();
+
 			callClickFunction(i->first, i->second);
 		}
 		else
 		{
 			i->second.setHasFocus(false);
+
+			i->second.setUnfocused();
 		}
 	}
 

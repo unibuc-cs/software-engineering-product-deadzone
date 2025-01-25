@@ -65,11 +65,11 @@ std::map<std::string, Button> JoinGameMenu::CreateButtons()
 
 	std::map<std::string, Button> rez{
 			  { "PlayerName", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Player Name:", 0, 1.0, "Antonio", true) }
-			, { "PlayerNameInputField", Button(getButtonPosX(), getButtonPosY(1), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), PlayerName, 0, 1.0, "Antonio", true) }
+			, { "PlayerNameInputField", Button(getButtonPosX(), getButtonPosY(1), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), PlayerName, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0()) }
 			, { "ServerIP", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Server IP:", 0, 1.0, "Antonio", true) }
-			, { "ServerIPInputField", Button(getButtonPosX(), getButtonPosY(3), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerIP, 0, 1.0, "Antonio", true) }
+			, { "ServerIPInputField", Button(getButtonPosX(), getButtonPosY(3), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerIP, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0()) }
 			, { "ServerPort", Button(getButtonPosX(), getButtonPosY(4), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Server Port:", 0, 1.0, "Antonio", true) }
-			, { "ServerPortInputField", Button(getButtonPosX(), getButtonPosY(5), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerPort, 0, 1.0, "Antonio", true) }
+			, { "ServerPortInputField", Button(getButtonPosX(), getButtonPosY(5), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerPort, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0())  }
 			, { "Play", Button(getButtonPosX() + 200, getButtonPosY(7), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play", 0, 1.0, "Antonio", true) }
 	};
 
@@ -152,17 +152,33 @@ void JoinGameMenu::JoinGame(Button& button)
 	std::string serverIP = trim(buttons.getButtonByName("ServerIPInputField").getLabel());
 	std::string serverPort = trim(buttons.getButtonByName("ServerPortInputField").getLabel());
 
+	bool formIsValid = true;
+
 	if (!validateIP(serverIP))
 	{
 		std::cout << "IP nevalid\n";
-
-		return;
+		buttons.getButtonByName("ServerIPInputField").setInvalidInputStatusAndPreviousInputStatus();
+		formIsValid = false;
+	}
+	else
+	{
+		buttons.getButtonByName("ServerIPInputField").setDefaultInputStatusAndPreviousInputStatus();
 	}
 
 	if (!validatePort(serverPort))
 	{
 		std::cout << "Port nevalid\n";
+		buttons.getButtonByName("ServerPortInputField").setInvalidInputStatusAndPreviousInputStatus();
 
+		formIsValid = false;
+	}
+	else
+	{
+		buttons.getButtonByName("ServerPortInputField").setDefaultInputStatusAndPreviousInputStatus();
+	}
+
+	if (!formIsValid)
+	{
 		return;
 	}
 

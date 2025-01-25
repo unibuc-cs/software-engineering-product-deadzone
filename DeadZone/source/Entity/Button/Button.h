@@ -18,6 +18,13 @@ public:
 		CLICKED = 2
 	};
 
+	static enum class InputStatus
+	{
+		DEFAULT = 0,
+		FOCUSED = 1,
+		INVALID_INPUT = 2
+	};
+
 protected:
 
 	std::string label;
@@ -30,14 +37,25 @@ protected:
 	glm::vec3 fontColor;
 
 	void updateTexture();
+	void updateTextureNonInteractive();
 
 	glm::vec3 uniformColor;
 
 	bool hasFocus = false;
 
+	bool isInteractive = true;
+
+	std::map<Button::InputStatus, std::string> inputStatus_TextureNames;
+	InputStatus inputStatus = Button::InputStatus::DEFAULT;
+	InputStatus previousInputStatus = Button::InputStatus::DEFAULT;
+
 public:
 
-	Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_ = "", double textOffsetX_ = 50, double textScale = 1.0, const std::string& font_ = "Antonio", bool textCenteredX = false, const glm::vec3& fontColor_ = glm::vec3{0.0, 0.0, 0.0}, const glm::vec3& uniformColor_ = glm::vec3{ -1.0, -1.0, -1.0 } );
+	Button(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight,
+			const std::map<Button::Status, std::string>& status_TextureNames_, const std::string& label_ = "", double textOffsetX_ = 50,
+			double textScale = 1.0, const std::string& font_ = "Antonio", bool textCenteredX = false, const glm::vec3& fontColor_ = glm::vec3{ 0.0, 0.0, 0.0 },
+			const glm::vec3& uniformColor_ = glm::vec3{ -1.0, -1.0, -1.0 }, bool isInteractive_ = true, 
+			const std::map<Button::InputStatus, std::string> inputStatus_TextureNames_ = {});
 	Button();
 	virtual ~Button();
 
@@ -63,10 +81,22 @@ public:
 	void setHovered();
 	void setClicked();
 
+	void setFocused();
+	void setUnfocused();
+
+	void setInvalidInputStatusAndPreviousInputStatus();
+	void setDefaultInputStatusAndPreviousInputStatus();
+
 	void setFontColor(const glm::vec3& fontColor_);
 
 	inline void setTextureNameForStatus(const Button::Status& status, const std::string& textureName) {	status_TextureNames[status] = textureName; }
 
 	inline bool getHasFocus() const { return this->hasFocus; }
 	inline void setHasFocus(bool hasFocus_) { this->hasFocus = hasFocus_; }
+
+	inline Button::InputStatus getInputStatus() const { return inputStatus; }
+	inline Button::InputStatus getPreviousInputStatus() const { return previousInputStatus; }
+
+	inline void setInputStatus(Button::InputStatus value) { this->inputStatus = value; }
+	inline void setPreviousInputStatus(Button::InputStatus value) { if (value == Button::InputStatus::FOCUSED) return; this->previousInputStatus = value; }
 };
