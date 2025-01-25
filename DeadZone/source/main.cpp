@@ -33,9 +33,6 @@ int main()
         std::cout << "Unexpected error" << std::endl;
     }
 
-    // TODO: delete
-    Server::get().stop();
-
 	return 0;
 }
 

@@ -32,7 +32,7 @@
 
 Game::Game()
     : MAX_NUM_DEAD_BODIES(100) // daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
-    , isServer(false), isInMatch(false)
+	, isServer(false), isInMatch(false), isServerRunning(false)
 {
     WindowManager::get();
 
@@ -55,6 +55,17 @@ Game::~Game()
 {
     // cleanup
     Client::get().stop();
+
+	if (this->serverThread)
+	{
+        this->isServerRunningMutex.lock();
+		this->isServerRunning = false;
+		this->isServerRunningMutex.unlock();
+
+		this->serverThread->join();
+	}
+
+	Server::get().stop();
 }
 
 Game& Game::get()
@@ -216,11 +227,7 @@ void Game::run()
     {
         if (isInMatch) 
         {
-            // Server
-            if (isServer)
-            {
-                Server::get().update();
-            }
+			// Serverul e pe un thread separat
 
             // Client
             Client::get().update();
@@ -459,7 +466,8 @@ void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, doubl
     }
 }
 
-void Game::establishConnection() {
+void Game::establishConnection()
+{
 
     // Load JSON
     std::ifstream saveFile("config/save.json");
@@ -472,7 +480,29 @@ void Game::establishConnection() {
     if (isServer)
     {
         std::string serverPort = saveJSON["createServerPort"].get<std::string>();
-        Server::get().start(serverPort);
+
+        //Server::get().start(serverPort);
+
+		// Game::stopConnection(); // nu ar trebui sa fie necesar
+
+		this->isServerRunning = true;
+		this->serverThread = std::make_shared<std::thread>([this, serverPort]()
+		{
+			Server::get().start(serverPort);
+
+			this->isServerRunningMutex.lock();
+			while (this->isServerRunning)
+			{
+				this->isServerRunningMutex.unlock();
+
+				Server::get().update();
+
+				this->isServerRunningMutex.lock();
+			}
+			this->isServerRunningMutex.unlock();
+
+			Server::get().stop();
+		});
     }
 
     // Start Client
@@ -484,4 +514,18 @@ void Game::establishConnection() {
     {
         Client::get().start(saveJSON["joinServerAddress"].get<std::string>(), std::atoi(saveJSON["joinServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
     }
+}
+
+void Game::stopConnection()
+{
+	Client::get().stop();
+
+	if (this->serverThread)
+	{
+		this->isServerRunningMutex.lock();
+		this->isServerRunning = false;
+		this->isServerRunningMutex.unlock();
+
+		this->serverThread->join();
+	}
 }

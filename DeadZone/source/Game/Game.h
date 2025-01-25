@@ -6,6 +6,9 @@
 #include <unordered_map>
 #include <queue>
 
+#include <thread>
+#include <mutex>
+
 #include "../Entity/Entity.h"
 #include "../Entity/DeadBody/DeadBody.h"
 #include "../Entity/RemotePlayer/RemotePlayer.h"
@@ -40,6 +43,10 @@ private:
 
 	bool isServer;
 	bool isInMatch;
+
+	std::shared_ptr<std::thread> serverThread;
+	std::mutex isServerRunningMutex;
+	bool isServerRunning;
 
 public:
 	enum class GameStatus
@@ -79,6 +86,7 @@ public:
 
 	inline bool getIsServer() const { return isServer; }
 	void establishConnection();
+	void stopConnection();
 
 	inline bool getIsInMatch() const { return isInMatch; }
 	inline void setIsInMatch(bool value) { isInMatch = value; }
