@@ -33,7 +33,10 @@ CreateGameMenu::CreateGameMenu(double x, double y, double drawWidth, double draw
 			"back", ButtonBuilder::backButtonClickFunction
 		},
 		{
-			"Play", [this](Button& button) {CreateGame(button);}
+			"PlaySurvival", [this](Button& button) {CreateGame(button);}
+		},
+		{
+			"PlayTeamDeathMatch", [this](Button& button) {CreateGame(button);}
 		}
 	};
 
@@ -63,6 +66,7 @@ std::map<std::string, Button> CreateGameMenu::CreateButtons()
 
 	double InputFieldWidth = 600.0;
 
+	double StartGameButtonsWidth = buttonWidth + 100;
 
 	std::map<std::string, Button> rez{
 			  { "PlayerName", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Player Name:", 0, 1.0, "Antonio", true) }
@@ -71,7 +75,8 @@ std::map<std::string, Button> CreateGameMenu::CreateButtons()
 			, { "ServerIPInputField", Button(getButtonPosX(), getButtonPosY(3), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerIP, 0, 1.0, "Antonio", true) }
 			, { "ServerPort", Button(getButtonPosX(), getButtonPosY(4), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Server Port:", 0, 1.0, "Antonio", true) }
 			, { "ServerPortInputField", Button(getButtonPosX(), getButtonPosY(5), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerPort, 0, 1.0, "Antonio", true) }
-			, { "Play", Button(getButtonPosX() + 200, getButtonPosY(7), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play", 0, 1.0, "Antonio", true) }
+			, { "PlaySurvival", Button(getButtonPosX(), getButtonPosY(7), StartGameButtonsWidth, buttonHeight, 0, 0, StartGameButtonsWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play Survival", 0, 1.0, "Antonio", true) }
+			, { "PlayTeamDeathMatch", Button(getButtonPosX() + StartGameButtonsWidth + 50, getButtonPosY(7), StartGameButtonsWidth, buttonHeight, 0, 0, StartGameButtonsWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play Team Deathmatch ", 0, 1.0, "Antonio", true) }
 	};
 
 	return rez;
