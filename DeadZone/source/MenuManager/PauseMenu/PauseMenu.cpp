@@ -120,6 +120,8 @@ void PauseMenu::playMenu()
 
 void PauseMenu::quit(Button&)
 {
+	Game::get().stopConnection();
+
 	Game::get().clear();
 	Game::get().setIsInMatch(false);
 
