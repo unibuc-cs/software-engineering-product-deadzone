@@ -33,5 +33,7 @@ public:
 	static void hoverAnyButton(Button& button);
 	static void hoverLostAnyButton(Button& button);
 
+	virtual void init();
+
 };
 

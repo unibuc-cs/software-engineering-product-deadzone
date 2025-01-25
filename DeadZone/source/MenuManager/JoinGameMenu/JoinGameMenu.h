@@ -38,4 +38,10 @@ public:
 	void setupInputComponent() override;
 	void playMenu() override;
 
+	void init() override;
+
+	static bool validateIP(const std::string& IP);
+	static bool validatePort(const std::string& port);
+
+	static std::string trim(const std::string& str);
 };

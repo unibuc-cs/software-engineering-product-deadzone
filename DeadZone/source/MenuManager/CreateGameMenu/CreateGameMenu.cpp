@@ -1,6 +1,5 @@
-#include "JoinGameMenu.h"
+#include "CreateGameMenu.h"
 
-#include <sstream>
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -17,7 +16,7 @@
 
 
 
-JoinGameMenu::JoinGameMenu(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, const std::string& textureName2D) :
+CreateGameMenu::CreateGameMenu(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, const std::string& textureName2D) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
 	TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D),
 	MenuBase(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D, drawWidth / 4.0, drawHeight / 12.0)
@@ -34,7 +33,7 @@ JoinGameMenu::JoinGameMenu(double x, double y, double drawWidth, double drawHeig
 			"back", ButtonBuilder::backButtonClickFunction
 		},
 		{
-			"Play", [this](Button& button) {JoinGame(button);}
+			"Play", [this](Button& button) {CreateGame(button);}
 		}
 	};
 
@@ -45,23 +44,25 @@ JoinGameMenu::JoinGameMenu(double x, double y, double drawWidth, double drawHeig
 	);
 }
 
-std::map<std::string, Button> JoinGameMenu::CreateButtons()
+std::map<std::string, Button> CreateGameMenu::CreateButtons()
 {
 	std::ifstream saveFile("config/save.json");
+
 	if (!saveFile.is_open())
 	{
-		throw std::runtime_error("JoinGameMenu::CreateButtons: save.json not found");
+		throw std::runtime_error("CreateGameMenu::CreateButtons: save.json not found");
 	}
 
 	nlohmann::json saveJSON;
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	std::string PlayerName = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "YourName";
-	std::string ServerIP = saveJSON.contains("joinServerAddress") ? saveJSON["joinServerAddress"].get<std::string>() : "localhost";
-	std::string ServerPort = saveJSON.contains("joinServerPort") ? saveJSON["joinServerPort"].get<std::string>() : "7777";
+	std::string PlayerName = saveJSON["clientName"].get<std::string>();
+	std::string ServerIP = "localhost";
+	std::string ServerPort = saveJSON["createServerPort"].get<std::string>();
 
 	double InputFieldWidth = 600.0;
+
 
 	std::map<std::string, Button> rez{
 			  { "PlayerName", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Player Name:", 0, 1.0, "Antonio", true) }
@@ -76,15 +77,38 @@ std::map<std::string, Button> JoinGameMenu::CreateButtons()
 	return rez;
 }
 
-double JoinGameMenu::getButtonPosX() {
+double CreateGameMenu::getButtonPosX() {
 	return getButtonCoordsX() + buttonOffsetX;
 }
 
-double JoinGameMenu::getButtonPosY(int index) {
+double CreateGameMenu::getButtonPosY(int index) {
 	return getButtonCoordsY() + buttonOffsetY + index * (buttonHeight + spaceAfterButton);
 }
 
-JoinGameMenu& JoinGameMenu::get()
+void CreateGameMenu::init()
+{
+	std::ifstream saveFile("config/save.json");
+
+	if (!saveFile.is_open())
+	{
+		throw std::runtime_error("JoinGameMenu::init: save.json not found");
+	}
+
+	nlohmann::json saveJSON;
+	saveFile >> saveJSON;
+	saveFile.close();
+
+	std::string PlayerName = saveJSON["clientName"].get<std::string>();
+	std::string ServerIP = "localhost";
+	std::string ServerPort = saveJSON["createServerPort"].get<std::string>();
+
+	buttons.getButtonByName("PlayerNameInputField").setLabel(PlayerName);
+	buttons.getButtonByName("ServerIPInputField").setLabel(ServerIP);
+	buttons.getButtonByName("ServerPortInputField").setLabel(ServerPort);
+
+}
+
+CreateGameMenu& CreateGameMenu::get()
 {
 	double dW = WindowManager::get().getWindowWidth() * 0.8;
 	double dH = WindowManager::get().getWindowHeight() * 0.9;
@@ -92,90 +116,61 @@ JoinGameMenu& JoinGameMenu::get()
 	double y = (-WindowManager::get().getWindowHeight() + dH) / 2.0;
 
 
-	static JoinGameMenu instance(x, y, dW, dH, 0, 0, "menuScreen0");
+	static CreateGameMenu instance(x, y, dW, dH, 0, 0, "menuScreen0");
 	return instance;
 }
 
-void JoinGameMenu::draw()
+void CreateGameMenu::draw()
 {
 	SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getTexture(this->textureName2D), glm::vec2(x, y), glm::vec2(drawWidth, drawHeight), 0);
 
 	buttons.draw();
 }
 
-void JoinGameMenu::AddLetter(char letter)
+void CreateGameMenu::AddLetter(char letter)
 {
 	std::string buttonName = "";
 
-	if(letter >= 'A' && letter <= 'Z')
+	if (letter >= 'A' && letter <= 'Z')
 		letter = letter + ('a' - 'A');
 
 	if (buttons.getButtonByName("PlayerNameInputField").getHasFocus())
 		buttonName = "PlayerNameInputField";
 
-	if (buttons.getButtonByName("ServerIPInputField").getHasFocus())
-		buttonName = "ServerIPInputField";
-
-	if (buttons.getButtonByName("ServerPortInputField").getHasFocus())
-		buttonName = "ServerPortInputField";
-
 	// std::cout << "ButtonName:" << buttonName << "end\n";
-	if(buttonName != "")
+	if (buttonName != "")
 		buttons.getButtonByName(buttonName).setLabel(buttons.getButtonByName(buttonName).getLabel() + std::string(1, letter));
 }
 
-void JoinGameMenu::DeleteLetter()
+void CreateGameMenu::DeleteLetter()
 {
 	std::string buttonName = "";
 
 	if (buttons.getButtonByName("PlayerNameInputField").getHasFocus())
 		buttonName = "PlayerNameInputField";
 
-	if (buttons.getButtonByName("ServerIPInputField").getHasFocus())
-		buttonName = "ServerIPInputField";
+	std::string newLabel = "";
+	if(buttonName != "")
+		newLabel = buttons.getButtonByName(buttonName).getLabel();
 
-	if (buttons.getButtonByName("ServerPortInputField").getHasFocus())
-		buttonName = "ServerPortInputField";
-
-	std::string newLabel = buttons.getButtonByName(buttonName).getLabel();
-
-	if(!newLabel.empty())
+	if (!newLabel.empty())
 		newLabel.pop_back();
 
 	if (buttonName != "")
 		buttons.getButtonByName(buttonName).setLabel(newLabel);
 }
 
-void JoinGameMenu::JoinGame(Button& button)
+void CreateGameMenu::CreateGame(Button& button)
 {
-	// input validation
-	std::string serverIP = trim(buttons.getButtonByName("ServerIPInputField").getLabel());
-	std::string serverPort = trim(buttons.getButtonByName("ServerPortInputField").getLabel());
-
-	if (!validateIP(serverIP))
-	{
-		std::cout << "IP nevalid\n";
-
-		return;
-	}
-
-	if (!validatePort(serverPort))
-	{
-		std::cout << "Port nevalid\n";
-
-		return;
-	}
-
+	// TODO: validari input -- aici nu ar fi nevoie, ca e doar player name
 
 	std::ifstream readFile("config/save.json");
 	nlohmann::json saveJSON;
 	readFile >> saveJSON;
 	readFile.close();
 
-	saveJSON["clientHasServer"] = false;
+	saveJSON["clientHasServer"] = true;
 	saveJSON["clientName"] = buttons.getButtonByName("PlayerNameInputField").getLabel();
-	saveJSON["joinServerAddress"] = serverIP;
-	saveJSON["joinServerPort"] = serverPort;
 
 	std::ofstream saveFile("config/save.json");
 	saveFile << std::setw(4) << saveJSON << std::endl;
@@ -193,7 +188,7 @@ void JoinGameMenu::JoinGame(Button& button)
 	Player::get().setupPlayerInputComponent();
 }
 
-void JoinGameMenu::setupInputComponent()
+void CreateGameMenu::setupInputComponent()
 {
 	InputHandler::getMenuInputComponent().clearKeyFunctionCallbacks(); // TODO: e necesar?
 
@@ -212,11 +207,11 @@ void JoinGameMenu::setupInputComponent()
 	InputHandler::getMenuInputComponent().bindKey(GLFW_KEY_COMMA, InputEvent::IE_Pressed, [this]() {this->AddLetter(GLFW_KEY_COMMA);});
 	InputHandler::getMenuInputComponent().bindKey(GLFW_KEY_PERIOD, InputEvent::IE_Pressed, [this]() {this->AddLetter(GLFW_KEY_PERIOD);});
 	InputHandler::getMenuInputComponent().bindKey(GLFW_KEY_SPACE, InputEvent::IE_Pressed, [this]() {this->AddLetter(GLFW_KEY_SPACE);});
-	
+
 	InputHandler::getMenuInputComponent().bindKey(GLFW_KEY_BACKSPACE, InputEvent::IE_Pressed, [this]() {this->DeleteLetter();});
 }
 
-void JoinGameMenu::playMenu()
+void CreateGameMenu::playMenu()
 {
 	SoundManager::get().resume("soundtrack");
 
@@ -248,91 +243,4 @@ void JoinGameMenu::playMenu()
 	}
 
 	SoundManager::get().pause("soundtrack");
-}
-
-void JoinGameMenu::init()
-{
-	std::ifstream saveFile("config/save.json");
-
-	if (!saveFile.is_open())
-	{
-		throw std::runtime_error("JoinGameMenu::init: save.json not found");
-	}
-
-	nlohmann::json saveJSON;
-	saveFile >> saveJSON;
-	saveFile.close();
-
-	std::string PlayerName = saveJSON["clientName"].get<std::string>();
-	std::string ServerIP = saveJSON["joinServerAddress"].get<std::string>();
-	std::string ServerPort = saveJSON["joinServerPort"].get<std::string>();
-
-	buttons.getButtonByName("PlayerNameInputField").setLabel(PlayerName);
-	buttons.getButtonByName("ServerIPInputField").setLabel(ServerIP);
-	buttons.getButtonByName("ServerPortInputField").setLabel(ServerPort);
-
-}
-
-bool JoinGameMenu::validateIP(const std::string& IP)
-{
-	if (IP.size() > 15)
-		return false;
-
-	std::istringstream stream(IP);
-	std::string part;
-	int octetCount = 0;
-
-	while (std::getline(stream, part, '.'))
-	{
-		if (part.empty() || part.size() > 3)
-			return false;
-
-		for (char c : part)
-		{
-			if (!std::isdigit(c))
-				return false;
-		}
-
-		if (part.size() > 1 && part[0] == '0')
-			return false;
-
-		int num = std::stoi(part);
-		if (num < 0 || num > 255)
-			return false;
-
-		octetCount++;
-	}
-
-	return octetCount == 4;
-}
-
-bool JoinGameMenu::validatePort(const std::string& port)
-{
-	if (port.empty()) {
-		return false;
-	}
-
-	for (char c : port) {
-		if (!std::isdigit(c)) {
-			return false;
-		}
-	}
-
-	int portNum = std::stoi(port);
-
-	return portNum >= 1 && portNum <= 65535;
-}
-
-std::string JoinGameMenu::trim(const std::string& str) {
-	auto start = str.begin();
-	while (start != str.end() && std::isspace(*start)) {
-		++start;
-	}
-
-	auto end = str.end();
-	while (end != start && std::isspace(*(end - 1))) {
-		--end;
-	}
-
-	return std::string(start, end);
 }

@@ -16,6 +16,7 @@
 #include "../../SoundManager/SoundManager.h"
 #include "../JoinGameMenu/JoinGameMenu.h"
 #include "../../Game/Game.h"
+#include "../CreateGameMenu/CreateGameMenu.h"
 
 MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, const std::string& textureName2D) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
@@ -23,43 +24,20 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 	MenuBase(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D, drawWidth * 0.3, drawHeight * 0.1),
 	buttons(std::map<std::string, Button>{
 		{ "quit", Button(getButtonPosX(), getButtonPosY(3), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
-		{ "play", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play", 0, 1.0, "Antonio", true) },
+		{ "createGame", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Create Game", 0, 1.0, "Antonio", true) },
 		{ "Change skin", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Change skin", 0, 1.0, "Antonio", true) },
 		{ "joinGame", Button(getButtonPosX(), getButtonPosY(1), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Join Game", 0, 1.0, "Antonio", true) }
 })
-{	
+{
 	buttons.setFunctions(
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), MainMenu::hoverAnyButton }},
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), MainMenu::hoverLostAnyButton }},
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), [](Button&) {} },
 		{
-			"quit", [](Button&){glfwSetWindowShouldClose(WindowManager::get().getWindow(), true);}
+			"quit", [](Button&) {glfwSetWindowShouldClose(WindowManager::get().getWindow(), true);}
 		},
-		{ "play", [](Button&) {
-
-			// TODO: move PlayButtonCreate
-			std::ifstream readFile("config/save.json");
-			nlohmann::json saveJSON;
-			readFile >> saveJSON;
-			readFile.close();
-
-			saveJSON["clientName"] = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "client";
-			saveJSON["clientHasServer"] = true;		// hard-coded
-			saveJSON["createServerPort"] = "7777";	// hard-coded
-
-			std::ofstream saveFile("config/save.json");
-			saveFile << saveJSON.dump(4) << std::endl;
-			saveFile.close();
-
-			Game::get().establishConnection();
-			Game::get().setIsInMatch(true);
-
-			// MainMenu::get().isInMenu = false;
-			MenuManager::get().pop();
-			InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
-
-			Player::get().setupPlayerInputComponent();
-
+		{ "createGame", [](Button&) {
+			MenuManager::get().push(CreateGameMenu::get());
 		}
 		},
 		{
@@ -72,9 +50,10 @@ MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, doub
 				MenuManager::get().push(ChangeSkinMenu::get());
 			}
 		}
-	
+
 	}
 	);
+
 }
 
 
