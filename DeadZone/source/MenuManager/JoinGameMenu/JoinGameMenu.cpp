@@ -293,6 +293,9 @@ void JoinGameMenu::init()
 	buttons.getButtonByName("ServerIPInputField").setLabel(ServerIP);
 	buttons.getButtonByName("ServerPortInputField").setLabel(ServerPort);
 
+
+	buttons.getButtonByName("ServerIPInputField").setDefaultInputStatusAndPreviousInputStatus();
+	buttons.getButtonByName("ServerPortInputField").setDefaultInputStatusAndPreviousInputStatus();
 }
 
 bool JoinGameMenu::validateIP(const std::string& IP)
