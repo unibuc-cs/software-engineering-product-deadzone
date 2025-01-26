@@ -238,6 +238,17 @@ void JoinGameMenu::setupInputComponent()
 	InputHandler::getMenuInputComponent().bindKey(GLFW_KEY_BACKSPACE, InputEvent::IE_Pressed, [this]() {this->DeleteLetter();});
 }
 
+void JoinGameMenu::setIsInMenu(bool _isInMenu)
+{
+	bool temp_isInMenu = isInMenu;
+	MenuBase::setIsInMenu(_isInMenu);
+	if (temp_isInMenu == false && isInMenu == true)
+		SoundManager::get().resume("soundtrack");
+	else
+		if (temp_isInMenu == true && isInMenu == false)
+			SoundManager::get().pause("soundtrack");
+}
+
 void JoinGameMenu::playMenu()
 {
 	SoundManager::get().resume("soundtrack");

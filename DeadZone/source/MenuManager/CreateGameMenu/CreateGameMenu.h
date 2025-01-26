@@ -36,6 +36,7 @@ public:
 	void draw();
 
 	void setupInputComponent() override;
+	void setIsInMenu(bool _isInMenu) override;
 	void playMenu() override;
 
 	void init() override;
