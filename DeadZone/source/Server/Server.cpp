@@ -321,6 +321,9 @@ void Server::update()
 			case ENET_EVENT_TYPE_CONNECT:
 				std::cout << "Server: Client connected" << std::endl;
 				break;
+			case ENET_EVENT_TYPE_DISCONNECT:
+				this->connectedClients.erase(this->getClientKey(this->eNetEvent.peer->address));
+				break;
 			case ENET_EVENT_TYPE_RECEIVE:
 				this->handleReceivedPacket();
 				break;
