@@ -319,7 +319,7 @@ void Map::putShopInGoodArea() {
 		}
 	std::pair<int, int> positionForShop;
 	if (shopPrefered.size() > 0) {
-		int ind = Random::randomInt(1, static_cast<int>(shopAnyway.size())) - 1;
+		int ind = Random::randomInt(1, static_cast<int>(shopPrefered.size())) - 1;
 		positionForShop = shopPrefered[ind];
 	}
 	else {
