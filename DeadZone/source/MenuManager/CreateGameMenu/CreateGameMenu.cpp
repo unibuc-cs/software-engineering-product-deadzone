@@ -60,9 +60,9 @@ std::map<std::string, Button> CreateGameMenu::CreateButtons()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	std::string PlayerName = saveJSON["clientName"].get<std::string>();
+	std::string PlayerName = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "YourName";
 	std::string ServerIP = "localhost";
-	std::string ServerPort = saveJSON["createServerPort"].get<std::string>();
+	std::string ServerPort = saveJSON.contains("createServerPort") ? saveJSON["createServerPort"].get<std::string>() : "7777";
 
 	double InputFieldWidth = 600.0;
 
@@ -103,14 +103,13 @@ void CreateGameMenu::init()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	std::string PlayerName = saveJSON["clientName"].get<std::string>();
+	std::string PlayerName = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "YourName";
 	std::string ServerIP = "localhost";
-	std::string ServerPort = saveJSON["createServerPort"].get<std::string>();
+	std::string ServerPort = saveJSON.contains("createServerPort") ? saveJSON["createServerPort"].get<std::string>() : "7777";
 
 	buttons.getButtonByName("PlayerNameInputField").setLabel(PlayerName);
 	buttons.getButtonByName("ServerIPInputField").setLabel(ServerIP);
 	buttons.getButtonByName("ServerPortInputField").setLabel(ServerPort);
-
 }
 
 CreateGameMenu& CreateGameMenu::get()
@@ -176,6 +175,7 @@ void CreateGameMenu::CreateGame(Button& button)
 
 	saveJSON["clientHasServer"] = true;
 	saveJSON["clientName"] = buttons.getButtonByName("PlayerNameInputField").getLabel();
+	saveJSON["createServerPort"] = "7777";
 
 	std::ofstream saveFile("config/save.json");
 	saveFile << std::setw(4) << saveJSON << std::endl;

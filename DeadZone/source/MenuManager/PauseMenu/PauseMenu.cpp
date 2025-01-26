@@ -75,25 +75,11 @@ void PauseMenu::setGameInfoInMenu()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	std::string PlayerName = "";
-	std::string ServerIP = "";
-	std::string ServerPort = "";
-
-	bool clientHasServer = saveJSON.contains("clientHasServer") ? saveJSON["clientHasServer"].get<bool>() : true; // TODO: e ok true daca nu exista campul in json?
-
-	PlayerName = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "YourName";
-	if (clientHasServer)
-	{
-		ServerIP = "localhost";
-		ServerPort = saveJSON.contains("createServerPort") ? saveJSON["createServerPort"].get<std::string>() : "7777";
-	}
-	else
-	{
-		ServerIP = saveJSON.contains("joinServerAddress") ? saveJSON["joinServerAddress"].get<std::string>() : "localhost";
-		ServerPort = saveJSON.contains("joinServerPort") ? saveJSON["joinServerPort"].get<std::string>() : "7777";
-	}
+	bool clientHasServer = saveJSON.contains("clientHasServer");
+	std::string PlayerName = saveJSON["clientName"].get<std::string>();
+	std::string ServerIP = clientHasServer ? "localhost" : saveJSON["joinServerAddress"].get<std::string>();
+	std::string ServerPort = clientHasServer ? saveJSON["createServerPort"].get<std::string>() : saveJSON["joinServerPort"].get<std::string>();
 	
-
 	std::string gameInfo = "Player Name: " + PlayerName + ";    Server Ip: " + ServerIP + ";    Server Port: " + ServerPort;
 	buttons.getButtonByName("gameInfo").setLabel(gameInfo);
 }

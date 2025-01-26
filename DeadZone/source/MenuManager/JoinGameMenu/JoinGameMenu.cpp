@@ -296,14 +296,13 @@ void JoinGameMenu::init()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	std::string PlayerName = saveJSON["clientName"].get<std::string>();
-	std::string ServerIP = saveJSON["joinServerAddress"].get<std::string>();
-	std::string ServerPort = saveJSON["joinServerPort"].get<std::string>();
+	std::string PlayerName = saveJSON.contains("clientName") ? saveJSON["clientName"].get<std::string>() : "YourName";
+	std::string ServerIP = saveJSON.contains("joinServerAddress") ? saveJSON["joinServerAddress"].get<std::string>() : "localhost";
+	std::string ServerPort = saveJSON.contains("joinServerPort") ? saveJSON["joinServerPort"].get<std::string>() : "7777";
 
 	buttons.getButtonByName("PlayerNameInputField").setLabel(PlayerName);
 	buttons.getButtonByName("ServerIPInputField").setLabel(ServerIP);
 	buttons.getButtonByName("ServerPortInputField").setLabel(ServerPort);
-
 
 	buttons.getButtonByName("ServerIPInputField").setDefaultInputStatusAndPreviousInputStatus();
 	buttons.getButtonByName("ServerPortInputField").setDefaultInputStatusAndPreviousInputStatus();

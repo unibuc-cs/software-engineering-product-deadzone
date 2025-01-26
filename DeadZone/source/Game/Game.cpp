@@ -469,7 +469,6 @@ void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, doubl
 
 void Game::establishConnection()
 {
-
     // Load JSON
     std::ifstream saveFile("config/save.json");
     nlohmann::json saveJSON;
