@@ -188,7 +188,6 @@ void JoinGameMenu::JoinGame(Button& button)
 		return;
 	}
 
-
 	std::ifstream readFile("config/save.json");
 	nlohmann::json saveJSON;
 	readFile >> saveJSON;
@@ -198,11 +197,11 @@ void JoinGameMenu::JoinGame(Button& button)
 	saveJSON["clientName"] = buttons.getButtonByName("PlayerNameInputField").getLabel();
 	saveJSON["joinServerAddress"] = serverIP;
 	saveJSON["joinServerPort"] = serverPort;
+	saveJSON["gameMode"] = button.getLabel();
 
 	std::ofstream saveFile("config/save.json");
 	saveFile << std::setw(4) << saveJSON << std::endl;
 	saveFile.close();
-
 
 
 	Game::get().establishConnection();

@@ -268,7 +268,7 @@ void Game::run()
         }
 
         // Wave Manager
-        if (MenuManager::get().size() == 0)
+        if (MenuManager::get().size() == 0 && gameMode == GameMode::Survival)
         {
             WaveManager::get().update();
             WaveManager::get().draw();

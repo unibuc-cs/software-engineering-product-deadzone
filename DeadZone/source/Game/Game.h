@@ -55,8 +55,15 @@ public:
 		InMenu
 	};
 
+	enum class GameMode
+	{
+		Survival,
+		TeamDeathMatch
+	};
+
 private:
 	GameStatus gameStatus = GameStatus::InMenu;
+	GameMode gameMode = GameMode::TeamDeathMatch;
 
 public:
 	static Game& get();
@@ -73,6 +80,9 @@ public:
 
 	inline GameStatus getGameStatus() const { return gameStatus; }
 	inline void setGameStatus(const GameStatus& gameStatus) { this->gameStatus = gameStatus; }
+
+	inline void setGameMode(const GameMode& gameMode) { this->gameMode = gameMode; }
+	inline GameMode getGameMode() const { return gameMode; }
 
 	inline std::unordered_map<std::string, std::shared_ptr<RemotePlayer>> getRemotePlayers() const { return remotePlayers; }
 

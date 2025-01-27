@@ -176,6 +176,7 @@ void CreateGameMenu::CreateGame(Button& button)
 	saveJSON["clientHasServer"] = true;
 	saveJSON["clientName"] = buttons.getButtonByName("PlayerNameInputField").getLabel();
 	saveJSON["createServerPort"] = "7777";
+	saveJSON["gameMode"] = button.getLabel();
 
 	std::ofstream saveFile("config/save.json");
 	saveFile << std::setw(4) << saveJSON << std::endl;
