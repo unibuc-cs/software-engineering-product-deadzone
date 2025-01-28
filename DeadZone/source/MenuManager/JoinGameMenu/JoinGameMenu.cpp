@@ -34,10 +34,7 @@ JoinGameMenu::JoinGameMenu(double x, double y, double drawWidth, double drawHeig
 			"back", ButtonBuilder::backButtonClickFunction
 		},
 		{
-			"PlaySurvival", [this](Button& button) {JoinGame(button);}
-		},
-		{
-			"PlayTeamDeathMatch", [this](Button& button) {JoinGame(button);}
+			"Play", [this](Button& button) {JoinGame(button);}
 		}
 	};
 
