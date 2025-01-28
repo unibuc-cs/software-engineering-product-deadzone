@@ -66,8 +66,6 @@ std::map<std::string, Button> JoinGameMenu::CreateButtons()
 
 	double InputFieldWidth = 600.0;
 
-	double StartGameButtonsWidth = buttonWidth + 100;
-
 	std::map<std::string, Button> rez{
 			  { "PlayerName", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Player Name:", 0, 1.0, "Antonio", true) }
 			, { "PlayerNameInputField", Button(getButtonPosX(), getButtonPosY(1), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), PlayerName, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0()) }
@@ -75,8 +73,7 @@ std::map<std::string, Button> JoinGameMenu::CreateButtons()
 			, { "ServerIPInputField", Button(getButtonPosX(), getButtonPosY(3), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerIP, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0()) }
 			, { "ServerPort", Button(getButtonPosX(), getButtonPosY(4), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), "Server Port:", 0, 1.0, "Antonio", true) }
 			, { "ServerPortInputField", Button(getButtonPosX(), getButtonPosY(5), InputFieldWidth, buttonHeight, 0, 0, InputFieldWidth, buttonHeight, ButtonBuilder::OneTextureForAllStates(), ServerPort, 0, 1.0, "Antonio", true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0, -1.0, -1.0), false, ButtonBuilder::inputFieldTextures0())  }
-			, { "PlaySurvival", Button(getButtonPosX(), getButtonPosY(7), StartGameButtonsWidth, buttonHeight, 0, 0, StartGameButtonsWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play Survival", 0, 1.0, "Antonio", true) }
-			, { "PlayTeamDeathMatch", Button(getButtonPosX() + StartGameButtonsWidth + 50, getButtonPosY(7), StartGameButtonsWidth, buttonHeight, 0, 0, StartGameButtonsWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play Team Deathmatch ", 0, 1.0, "Antonio", true) }
+			, { "Play", Button(getButtonPosX() + 200, getButtonPosY(7), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play", 0, 1.0, "Antonio", true) }
 	};
 
 	return rez;
@@ -197,7 +194,6 @@ void JoinGameMenu::JoinGame(Button& button)
 	saveJSON["clientName"] = buttons.getButtonByName("PlayerNameInputField").getLabel();
 	saveJSON["joinServerAddress"] = serverIP;
 	saveJSON["joinServerPort"] = serverPort;
-	saveJSON["gameMode"] = button.getLabel();
 
 	std::ofstream saveFile("config/save.json");
 	saveFile << std::setw(4) << saveJSON << std::endl;

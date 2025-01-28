@@ -32,7 +32,7 @@
 
 Game::Game()
     : MAX_NUM_DEAD_BODIES(100) // daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
-	, isServer(false), isInMatch(false), isServerRunning(false)
+	, isServer(false), isInMatch(false), hasGameMode(false), isServerRunning(false)
 {
     WindowManager::get();
 
@@ -53,7 +53,7 @@ Game::Game()
 
 Game::~Game()
 {
-    Game::stopConnection();
+
 }
 
 Game& Game::get()
@@ -176,9 +176,6 @@ void Game::loadResources()
         std::cout << "ERROR::FONT: other error" << std::endl;
     }
 
-    // Load player save file
-    Player::get().load();
-
     // Configure Shaders
     glm::mat4 projection = glm::ortho(-0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), 0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), -0.5f * static_cast<float>(WindowManager::get().getWindowHeight()), 0.5f * static_cast<float>(WindowManager::get().getWindowHeight()));
     ResourceManager::getShader("sprite").use().setInteger("sprite", 0);
@@ -211,17 +208,25 @@ void Game::run()
 
     Player::get().setTeam(1);
     sizeTeam1++;
+
     // Setup Input
     InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
-        if (isInMatch) 
+        if (isInMatch)
         {
 			// Serverul e pe un thread separat
 
             // Client
             Client::get().update();
+
+            // wait
+            if (!Map::get().getHasBeenLoaded())
+            {
+                Client::get().update();
+                continue;
+            }
         }
         
         if (gameStatus == GameStatus::InGame)
@@ -232,8 +237,10 @@ void Game::run()
             Player::get().update();
             this->updateEntities();
 
-            if (this->gameMode == GameMode::TeamDeathMatch) Player::get().setOutfitColor(colorTeam1);
-
+            if (this->gameMode == GameMode::TeamDeathMatch)
+            {
+                Player::get().setOutfitColor(colorTeam1);
+            }
 
             // Collision System
             CollisionManager::get().handleCollisions(this->entities);
@@ -290,8 +297,8 @@ void Game::run()
         glfwPollEvents();
     }
 
-    // Save player file
-    Player::get().save();
+    // Stop Multiplayer
+    Game::stopConnection();
 }
 
 void Game::updateEntities()
@@ -393,10 +400,20 @@ void Game::updateRemotePlayerClientName(const std::string& clientKey, const std:
 
 void Game::updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color)
 {
-    if (this->gameMode == GameMode::Survival) remotePlayers[clientKey]->setOutfitColor(color);
-    else {
-        if(remotePlayers[clientKey]->getTeam() == 1) remotePlayers[clientKey]->setOutfitColor(this->colorTeam1);
-        else remotePlayers[clientKey]->setOutfitColor(this->colorTeam2);
+    if (this->gameMode == GameMode::Survival)
+    {
+        remotePlayers[clientKey]->setOutfitColor(color);
+    }
+    else
+    {
+        if (remotePlayers[clientKey]->getTeam() == 1)
+        {
+            remotePlayers[clientKey]->setOutfitColor(this->colorTeam1);
+        }
+        else
+        {
+            remotePlayers[clientKey]->setOutfitColor(this->colorTeam2);
+        }
     }
 }
 

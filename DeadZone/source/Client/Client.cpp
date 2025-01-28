@@ -302,6 +302,13 @@ void Client::handleReceivedPacket()
 		Map::get().readMapFromBuffer(jsonData["map"].get<std::vector<std::vector<std::string>>>());
 	}
 
+	// game mode
+	if (jsonData.contains("gameMode") && !Game::get().getHasGameMode())
+	{
+		Game::get().setGameMode(static_cast<Game::GameMode>(jsonData["gameMode"].get<unsigned int>()));
+		Game::get().setHasGameMode(true);
+	}
+
 	// waveNumber
 	if (jsonData.contains("waveNumber"))
 	{
@@ -336,8 +343,16 @@ void Client::update()
 	if (!Map::get().getHasBeenLoaded())
 	{
 		nlohmann::json jsonData;
-
 		jsonData["map"] = true;
+
+		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+	}
+
+	// game mode
+	if (!Game::get().getHasGameMode())
+	{
+		nlohmann::json jsonData;
+		jsonData["gameMode"] = true;
 
 		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}
