@@ -347,6 +347,12 @@ void Map::clearSpawnArea() {
 		return 0;
 		};
 
+	auto inside2 = [&](std::pair<int, int> cell) {
+		if (cell.first < height - 1 && cell.first >= 1 && cell.second < width - 1 && cell.second >= 1)
+			return 1;
+		return 0;
+		};
+
 	std::pair<int, int> now;
 	if (enclosed[player_spawn_point.first][player_spawn_point.second]) {
 		std::queue<std::pair<int, int>> Q;
@@ -363,7 +369,7 @@ void Map::clearSpawnArea() {
 					Q.push(cur_new);
 					visited[cur_new.first][cur_new.second] = 1;
 				}
-				if (inside(cur_new) && (mapString[cur_new.first][cur_new.second][0] == 'M')) {
+				if (inside2(cur_new) && (mapString[cur_new.first][cur_new.second][0] == 'M')) {
 					canStop = 1;
 					now = cur_new;
 					break;
@@ -383,7 +389,7 @@ void Map::clearSpawnArea() {
 		Q.pop();
 		for (int k = 0; k < 8; k++) {
 			std::pair<int, int> cur_new = { cur.first + di[k], cur.second + dj[k] };
-			if (inside(cur_new) && (mapString[cur_new.first][cur_new.second] == mapString[now.first][now.first]
+			if (inside2(cur_new) && (mapString[cur_new.first][cur_new.second] == mapString[now.first][now.first]
 				|| mapString[cur_new.first][cur_new.second][0] == 'D') && !visited[cur_new.first][cur_new.second]) {
 				Q.push(cur_new);
 				visited[cur_new.first][cur_new.second] = 1;
