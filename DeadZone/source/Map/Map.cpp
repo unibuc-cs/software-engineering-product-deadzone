@@ -353,8 +353,8 @@ void Map::clearSpawnArea() {
 		return 0;
 		};
 
-	std::pair<int, int> now;
-	if (enclosed[player_spawn_point.first][player_spawn_point.second]) {
+	std::pair<int, int> now = player_spawn_point;
+	if (enclosed[now.first][now.second]) {
 		std::queue<std::pair<int, int>> Q;
 		std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
 		Q.push(now);
@@ -377,7 +377,6 @@ void Map::clearSpawnArea() {
 			}
 		}
 	}
-	else now = player_spawn_point;
 
 	std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
 	std::queue<std::pair<int, int>> Q;
