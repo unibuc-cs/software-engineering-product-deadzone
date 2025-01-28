@@ -211,8 +211,6 @@ void Game::run()
 
     Player::get().setTeam(1);
     sizeTeam1++;
-    if (this->gameMode == GameMode::TeamDeathMatch) Player::get().setOutfitColor(colorTeam1);
-
     // Setup Input
     InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 
@@ -233,6 +231,9 @@ void Game::run()
             Camera::get().update();
             Player::get().update();
             this->updateEntities();
+
+            if (this->gameMode == GameMode::TeamDeathMatch) Player::get().setOutfitColor(colorTeam1);
+
 
             // Collision System
             CollisionManager::get().handleCollisions(this->entities);

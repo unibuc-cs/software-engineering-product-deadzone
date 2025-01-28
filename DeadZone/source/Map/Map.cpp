@@ -389,7 +389,7 @@ void Map::clearSpawnArea() {
 		Q.pop();
 		for (int k = 0; k < 8; k++) {
 			std::pair<int, int> cur_new = { cur.first + di[k], cur.second + dj[k] };
-			if (inside2(cur_new) && (mapString[cur_new.first][cur_new.second] == mapString[now.first][now.first]
+			if (inside2(cur_new) && (mapString[cur_new.first][cur_new.second][0] == 'M'
 				|| mapString[cur_new.first][cur_new.second][0] == 'D') && !visited[cur_new.first][cur_new.second]) {
 				Q.push(cur_new);
 				visited[cur_new.first][cur_new.second] = 1;
