@@ -12,7 +12,6 @@
 #include <sstream>
 #include <set>
 
-
 ReplicatedSound::ReplicatedSound(const std::string& name, bool paused)
 	: name(name)
 	, paused(paused)
@@ -239,6 +238,12 @@ void Server::handleReceivedPacket()
 		sendMap(clientKey);
 	}
 
+	// game mode
+	if (jsonData.contains("gameMode"))
+	{
+		sendGameMode(clientKey);
+	}
+
 	// TODO: de pus in if-uri? excluzand "ping"
 	updateClients = true;
 
@@ -284,6 +289,17 @@ void Server::generateMap()
 	}
 
 	in.close();
+}
+
+void Server::loadGameMode()
+{
+	// Load JSON
+	std::ifstream saveFile("config/save.json");
+	nlohmann::json saveJSON;
+	saveFile >> saveJSON;
+	saveFile.close();
+
+	gameMode = saveJSON.contains("gameMode") ? saveJSON["gameMode"].get<unsigned int>() : 0;
 }
 
 void Server::update()
@@ -488,6 +504,16 @@ void Server::sendMap(const std::string& clientKey)
 {
 	nlohmann::json jsonData;
 	jsonData["map"] = map;
+
+	connectedClients[clientKey].sendMessageUnsafe(jsonData.dump());
+}
+
+void Server::sendGameMode(const std::string& clientKey)
+{
+	loadGameMode();
+
+	nlohmann::json jsonData;
+	jsonData["gameMode"] = gameMode;
 
 	connectedClients[clientKey].sendMessageUnsafe(jsonData.dump());
 }

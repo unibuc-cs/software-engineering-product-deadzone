@@ -84,7 +84,10 @@ std::map<std::string, Button> ChangeSkinMenu::loadMenuItems()
 
 void ChangeSkinMenu::select(int id)
 {
+	// Save player outfit color
 	Player::get().setOutfitColor(skinColors[id]);
+	Player::get().save();
+
 	try {
 		Button& buttonClicked = buttons.getButtonByName(std::to_string(id+1) + "_0_card");
 		buttonClicked.setTextureNameForStatus(Button::Status::DEFAULT, "skinCardSelected");

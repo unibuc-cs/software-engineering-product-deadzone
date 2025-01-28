@@ -112,6 +112,9 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 	bulletPrices[Weapon::WeaponType::M4] = 75;
 	bulletPrices[Weapon::WeaponType::MINIGUN] = 50;
 	bulletPrices[Weapon::WeaponType::GRENADE] = 200;
+
+	// Load player save.json
+	load();
 }
 
 Player& Player::get()

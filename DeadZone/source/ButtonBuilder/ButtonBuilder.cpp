@@ -33,7 +33,8 @@ Button ButtonBuilder::backButton(double x, double y)
 	return Button(x, y, 40, 40, 0, 0, 40, 40, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "back"}, { Button::Status::HOVERED, "backHovered" }, { Button::Status::CLICKED, "backHovered" }}, "");
 }
 
-void ButtonBuilder::backButtonClickFunction(Button& button) {
+void ButtonBuilder::backButtonClickFunction(Button& button)
+{
 	MenuManager::get().top().setIsInMenu(false);
 	MenuManager::get().pop();
 }

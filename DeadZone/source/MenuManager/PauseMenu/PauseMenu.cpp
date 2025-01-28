@@ -156,6 +156,7 @@ void PauseMenu::quit(Button&)
 
 	Game::get().clear();
 	Game::get().setIsInMatch(false);
+	Game::get().setHasGameMode(false);
 
 	WaveManager::deleteInstance();
 	Player::deleteInstance();

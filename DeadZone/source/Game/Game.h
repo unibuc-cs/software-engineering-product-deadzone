@@ -43,6 +43,7 @@ private:
 
 	bool isServer;
 	bool isInMatch;
+	bool hasGameMode;
 
 	std::shared_ptr<std::thread> serverThread;
 	std::mutex isServerRunningMutex;
@@ -58,10 +59,10 @@ public:
 		InMenu
 	};
 
-	enum class GameMode
+	enum class GameMode : unsigned int
 	{
-		Survival,
-		TeamDeathMatch
+		Survival = 0,
+		TeamDeathMatch = 1
 	};
 
 private:
@@ -101,7 +102,11 @@ public:
 	void establishConnection();
 	void stopConnection();
 
+	// Getters / Setters
 	inline bool getIsInMatch() const { return isInMatch; }
 	inline void setIsInMatch(bool value) { isInMatch = value; }
+
+	inline bool getHasGameMode() const { return hasGameMode; }
+	inline void setHasGameMode(bool value) { hasGameMode = value; }
 };
 
