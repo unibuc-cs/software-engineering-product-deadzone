@@ -637,7 +637,7 @@ void Player::draw()
 		};
 		std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
 
-		Game::get().addDeadBody(std::make_shared<DeadBody>(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0, outfitColor));
+		// Game::get().addDeadBody(std::make_shared<DeadBody>(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0, outfitColor));
 
 		// this->setDeleteEntity(true);
 		
@@ -647,6 +647,7 @@ void Player::draw()
 			InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 		}
 
+		updateStatus(AnimatedEntity::EntityStatus::DEAD_HUMAN, 0);
 		this->hasDied = true;
 	}
 	else if (this->isWalking)

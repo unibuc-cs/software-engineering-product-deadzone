@@ -2,7 +2,10 @@
 
 #include <glm/glm.hpp>
 
+#include <memory>
+
 #include "../Human/Human.h"
+#include "../DeadBody/DeadBody.h"
 
 class RemotePlayer : public virtual Human
 {
@@ -30,4 +33,6 @@ private:
 	std::string clientName;
 	glm::vec3 outfitColor;
 	int team;
+
+	std::shared_ptr<DeadBody> deadBody;
 };
