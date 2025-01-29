@@ -12,6 +12,9 @@
 #include <sstream>
 #include <set>
 
+const glm::vec3 Server::COLOR_TEAM_1 = glm::vec3(0.0f, 0.0f, 1.0f);
+const glm::vec3 Server::COLOR_TEAM_2 = glm::vec3(1.0f, 0.0f, 0.0f);
+
 ReplicatedSound::ReplicatedSound(const std::string& name, bool paused)
 	: name(name)
 	, paused(paused)
@@ -33,11 +36,13 @@ Server::Server()
 	, succesfullyCreated(false), lastTimeTriedCreation(0.0f), RETRY_CREATION_DELTA_TIME(1.0f)
 	, TIME_BETWEEN_PINGS(10000.0f), MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST(500000.0f) // TODO: test ca sa nu mai trimit prea multe request-uri
 	, updateClients(false)
+	, sizeTeam1(0), sizeTeam2(0)
 {
 	this->address.host = ENET_HOST_ANY;
 	this->address.port = 0;
 
 	generateMap();
+	loadGameMode();
 }
 
 Server::~Server()
@@ -126,6 +131,23 @@ void Server::handleReceivedPacket()
 			clientKey, ClientData()
 			});
 		this->connectedClients.find(clientKey)->second.peer = this->eNetEvent.peer;
+
+		// deathmatch
+		if (gameMode == 1)
+		{
+			if (sizeTeam1 <= sizeTeam2)
+			{
+				++sizeTeam1;
+				connectedClients[clientKey].remotePlayerData.setOutfitColor(COLOR_TEAM_1);
+				connectedClients[clientKey].remotePlayerData.setTeam(1);
+			}
+			else
+			{
+				++sizeTeam2;
+				connectedClients[clientKey].remotePlayerData.setOutfitColor(COLOR_TEAM_2);
+				connectedClients[clientKey].remotePlayerData.setTeam(2);
+			}
+		}
 	}
 	this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
@@ -146,7 +168,7 @@ void Server::handleReceivedPacket()
 	{
 		connectedClients[clientKey].remotePlayerData.setClientName(jsonData["clientName"].get<std::string>());
 	}
-	if (jsonData.contains("outfitColor"))
+	if (jsonData.contains("outfitColor") && gameMode == 0) // 0 == Survival
 	{
 		glm::vec3 outfitColor = glm::vec3(
 			jsonData["outfitColor"]["x"].get<double>(),
@@ -391,6 +413,21 @@ void Server::update()
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 
+	// Update self
+	for (auto& connectedClient : this->connectedClients)
+	{
+		if (connectedClient.second.updateSelf)
+		{
+			nlohmann::json jsonData;
+			jsonData["player"]["outfitColor"]["x"] = connectedClient.second.remotePlayerData.getOutfitColor().x;
+			jsonData["player"]["outfitColor"]["y"] = connectedClient.second.remotePlayerData.getOutfitColor().y;
+			jsonData["player"]["outfitColor"]["z"] = connectedClient.second.remotePlayerData.getOutfitColor().z;
+
+			connectedClient.second.sendMessageUnsafe(jsonData.dump());
+			connectedClient.second.updateSelf = false;
+		}
+	}
+
 	// Mai vedem daca ne ramasese ceva de trimis la vreun client ce a esuat
 	if (updateClients)
 	{
@@ -507,6 +544,10 @@ void Server::stop()
 	this->lastTimeTriedCreation = 0.0f;
 
 	this->connectedClients.clear();
+
+	// Deathmatch
+	sizeTeam1 = 0;
+	sizeTeam2 = 0;
 }
 
 void Server::sendMap(const std::string& clientKey)
@@ -558,6 +599,15 @@ void Server::sendNumFinishedWaves(int number)
 
 void Server::disconnectPlayer(const std::string& clientKey)
 {
+	if (connectedClients[clientKey].remotePlayerData.getTeam() == 1)
+	{
+		--sizeTeam1;
+	}
+	else
+	{
+		--sizeTeam2;
+	}
+
 	// enet_peer_disconnect(connectedClients[clientKey].peer, 0);
 	connectedClients.erase(clientKey);
 

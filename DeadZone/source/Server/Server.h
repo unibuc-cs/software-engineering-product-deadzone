@@ -42,16 +42,19 @@ private:
 		float lastTimeSentPing;
 		float lastTimeReceivedPing;
 		bool workingConnection;
+		bool updateSelf;
 
 		ClientData()
 			: peer(nullptr)
-			, lastTimeSentPing(0.0f)
-			, lastTimeReceivedPing(0.0f)
-			, workingConnection(false)
 			, remotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 			, bulletData(nullptr)
 			, soundData(nullptr)
+			, openedDoorData(nullptr)
 			, closeRangeDamage(nullptr)
+			, lastTimeSentPing(0.0f)
+			, lastTimeReceivedPing(0.0f)
+			, workingConnection(false)
+			, updateSelf(true)
 		{
 
 		}
@@ -90,6 +93,12 @@ private:
 	std::map<std::string, ClientData> connectedClients;
 	std::vector<std::vector<std::string>> map;
 	unsigned int gameMode;
+
+	// Deathmatch metadata
+	int sizeTeam1;
+	int sizeTeam2;
+	static const glm::vec3 COLOR_TEAM_1;
+	static const glm::vec3 COLOR_TEAM_2;
 
 	// Atentie aici la unicitatea cheii
 	inline std::string getClientKey(const ENetAddress& address) const { return std::to_string(address.host) + ":" + std::to_string(address.port); }

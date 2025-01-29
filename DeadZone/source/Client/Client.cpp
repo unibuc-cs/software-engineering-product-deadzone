@@ -322,6 +322,16 @@ void Client::handleReceivedPacket()
 		Game::get().removeRemotePlayer(jsonData["disconnectClient"].get<std::string>());
 	}
 
+	// self
+	if (jsonData.contains("player"))
+	{
+		Player::get().setOutfitColor(glm::vec3(
+			jsonData["player"]["outfitColor"]["x"].get<double>(),
+			jsonData["player"]["outfitColor"]["y"].get<double>(),
+			jsonData["player"]["outfitColor"]["z"].get<double>()
+		));
+	}
+
 	enet_packet_destroy(this->eNetEvent.packet);
 }
 

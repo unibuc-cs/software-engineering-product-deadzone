@@ -26,7 +26,7 @@ public:
 	// Setters
 	inline void setClientName(const std::string& name) { clientName = name; }
 	inline void setOutfitColor(const glm::vec3& color) { outfitColor = color; }
-	inline int getTeam() { return team; }
+	inline int getTeam() const { return team; }
 	inline void setTeam(int _team) { team = _team; }
 
 private:

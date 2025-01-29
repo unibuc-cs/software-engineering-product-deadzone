@@ -48,9 +48,6 @@ private:
 	std::shared_ptr<std::thread> serverThread;
 	std::mutex isServerRunningMutex;
 	bool isServerRunning;
-	int sizeTeam1 = 0, sizeTeam2 = 0;
-	const glm::vec3 colorTeam1 = glm::vec3(0.0f, 0.0f, 1.0f);
-	const glm::vec3 colorTeam2 = glm::vec3(1.0f, 0.0f, 0.0f);
 
 public:
 	enum class GameStatus

@@ -204,10 +204,6 @@ void Game::run()
 
     // MainMenu::get().setupMainMenuInputComponent();
     MenuManager::get().push(MainMenu::get());
-    
-
-    Player::get().setTeam(1);
-    sizeTeam1++;
 
     // Setup Input
     InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
@@ -239,11 +235,6 @@ void Game::run()
             Camera::get().update();
             Player::get().update();
             this->updateEntities();
-
-            if (this->gameMode == GameMode::TeamDeathMatch)
-            {
-                Player::get().setOutfitColor(colorTeam1);
-            }
 
             // Collision System
             CollisionManager::get().handleCollisions(this->entities);
@@ -376,11 +367,6 @@ void Game::addDeadBody(std::shared_ptr<DeadBody> const deadBody)
 void Game::addRemotePlayer(const std::string& clientKey, std::shared_ptr<RemotePlayer> const remotePlayer)
 {
     this->remotePlayers[clientKey] = remotePlayer;
-    if (this->gameMode == GameMode::Survival) this->remotePlayers[clientKey]->setTeam(1), sizeTeam1++;
-    else {
-        if(this->sizeTeam1 < this->sizeTeam2) this->remotePlayers[clientKey]->setTeam(1), sizeTeam1++;
-        else this->remotePlayers[clientKey]->setTeam(2), sizeTeam2++;
-    }
 }
 
 void Game::spawnRemotePlayer(const std::string& clientKey)
@@ -405,21 +391,7 @@ void Game::updateRemotePlayerClientName(const std::string& clientKey, const std:
 
 void Game::updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color)
 {
-    if (this->gameMode == GameMode::Survival)
-    {
-        remotePlayers[clientKey]->setOutfitColor(color);
-    }
-    else
-    {
-        if (remotePlayers[clientKey]->getTeam() == 1)
-        {
-            remotePlayers[clientKey]->setOutfitColor(this->colorTeam1);
-        }
-        else
-        {
-            remotePlayers[clientKey]->setOutfitColor(this->colorTeam2);
-        }
-    }
+    remotePlayers[clientKey]->setOutfitColor(color);
 }
 
 void Game::updateRemotePlayerPosition(const std::string& clientKey, double x, double y)
