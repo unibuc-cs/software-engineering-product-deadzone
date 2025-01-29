@@ -67,5 +67,6 @@ public:
 	inline std::vector<std::shared_ptr<Door>>& getDoors() { return this->doors; }
 	inline std::vector < std::shared_ptr<Shop>>& getShops() { return this->shops; }
 	bool getHasBeenLoaded() const { return mapLoaded; }
+	static std::pair<int, int> getRandomAccesiblePosition();
 };
 

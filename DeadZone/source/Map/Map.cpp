@@ -397,6 +397,16 @@ void Map::clearSpawnArea() {
 	}
 }
 
+std::pair<int, int> Map::getRandomAccesiblePosition() {
+	std::vector<std::pair<int, int>> accesiblePositions;
+	for (int i = 0; i < height; i++)
+		for (int j = 0; j < width; j++)
+			if (mapString[i][j][0] == '.' && !enclosed[i][j])
+				accesiblePositions.push_back({ i, j });
+	int ind = Random::randomInt(1, static_cast<int>(accesiblePositions.size())) - 1;
+	return accesiblePositions[ind];
+}
+
 std::string Map::generateProceduralMap(const int& w, const int& h) {
 	
 	width = w;
