@@ -208,17 +208,17 @@ void Weapon::onClick()
 		{
 		case WeaponType::REVOLVER:
 			SoundManager::get().play("revolver_01", false);
-			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 10.0, 0.3, 0.3, "bullet0", this->damage);
+			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 10.0, 0.3, 0.3, "bullet0", this->damage, "player");
 			break;
 
 		case WeaponType::SHOTGUN:
 			SoundManager::get().play("shotgun_01", false);
-			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 10.0, 0.3, 0.3, "bullet1", this->damage);
+			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 10.0, 0.3, 0.3, "bullet1", this->damage, "player");
 			break;
 
 		case WeaponType::AK47:
 			SoundManager::get().play("ak47_01", false);
-			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 20.0, 0.3, 0.3, "bullet3", this->damage);
+			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 20.0, 0.3, 0.3, "bullet3", this->damage, "player");
 			break;
 
 		case WeaponType::M4:
@@ -246,13 +246,13 @@ void Weapon::onClick()
 				break;
 			}
 
-			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 20.0, 0.3, 0.3, "bullet3", this->damage);
+			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 20.0, 0.3, 0.3, "bullet3", this->damage, "player");
 		}
 			break;
 
 		case WeaponType::MINIGUN:
 			SoundManager::get().play("minigun_01", false);
-			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 20.0, 0.3, 0.3, "bullet0", this->damage);
+			bullet = std::make_shared<Bullet>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 20.0, 0.3, 0.3, "bullet0", this->damage, "player");
 			break;
 
 		case WeaponType::GRENADE:
@@ -272,7 +272,7 @@ void Weapon::onClick()
 				break;
 			}
 
-			bullet = std::make_shared<ThrownGrenade>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 3.0, 0.3, 0.3, "grenade0", 0.0, 1.0, this->damage, 15.0, 1.0); // durata aruncare grenada, damage, scale explozie si durata explozie (ultimii 4 parametrii)
+			bullet = std::make_shared<ThrownGrenade>(static_cast<double>(bulletLocation.x), static_cast<double>(bulletLocation.y), 0.3, 0.3, Player::get().getRotateAngle(), 3.0, 0.3, 0.3, "grenade0", 0.0, "player", 1.0, this->damage, 15.0, 1.0); // durata aruncare grenada, damage, scale explozie si durata explozie (ultimii 4 parametrii)
 
 			if (this->numBullets == 0)
 			{

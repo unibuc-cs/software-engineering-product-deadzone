@@ -178,6 +178,9 @@ void Client::handleReceivedPacket()
 			// clientName
 			Game::get().updateRemotePlayerClientName(clientKey, playerData["clientName"].get<std::string>());
 
+			// team
+			Game::get().updateRemotePlayerTeam(clientKey, playerData["team"].get<int>());
+
 			// outfitColor
 			glm::vec3 outfitColor = glm::vec3(
 				playerData["outfitColor"]["x"].get<double>(),
@@ -218,6 +221,7 @@ void Client::handleReceivedPacket()
 					0.3, 0.3,
 					bulletData["textureName2D"].get<std::string>(),
 					0.0,
+					clientKey,
 					1.0,
 					bulletData["damage"].get<double>(),
 					15.0,
@@ -233,7 +237,8 @@ void Client::handleReceivedPacket()
 					bulletData["speed"].get<double>(),
 					0.3, 0.3,
 					bulletData["textureName2D"].get<std::string>(),
-					bulletData["damage"].get<double>()
+					bulletData["damage"].get<double>(),
+					clientKey
 				));
 			}
 		}
@@ -325,6 +330,8 @@ void Client::handleReceivedPacket()
 	// self
 	if (jsonData.contains("player"))
 	{
+		Player::get().setTeam(jsonData["player"]["team"].get<int>());
+
 		Player::get().setOutfitColor(glm::vec3(
 			jsonData["player"]["outfitColor"]["x"].get<double>(),
 			jsonData["player"]["outfitColor"]["y"].get<double>(),

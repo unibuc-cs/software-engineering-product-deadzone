@@ -389,6 +389,11 @@ void Game::updateRemotePlayerClientName(const std::string& clientKey, const std:
     remotePlayers[clientKey]->setClientName(name);
 }
 
+void Game::updateRemotePlayerTeam(const std::string& clientKey, int newTeam)
+{
+    remotePlayers[clientKey]->setTeam(newTeam);
+}
+
 void Game::updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color)
 {
     remotePlayers[clientKey]->setOutfitColor(color);
@@ -460,6 +465,17 @@ void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, doubl
     {
         Player::get().setHealth(std::max(0.0, Player::get().getHealth() - damage));
     }
+}
+
+int Game::getRemotePlayerTeam(const std::string& clientKey)
+{
+    if (remotePlayers.find(clientKey) == remotePlayers.end())
+    {
+        std::cout << "Could not find the remote player - " << clientKey << std::endl;
+        return -1;
+    }
+
+    return remotePlayers[clientKey]->getTeam();
 }
 
 void Game::establishConnection()

@@ -39,7 +39,7 @@ void Human::onCollide(CollidableEntity& other, glm::vec2 overlap)
 		}
 	}
 	else if (dynamic_cast<Bullet*>(&other) != nullptr)
-	{
+	{	
 		if (overlap.x < overlap.y)
 		{
 			if (this->x < other.getX())

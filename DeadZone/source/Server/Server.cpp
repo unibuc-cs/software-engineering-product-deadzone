@@ -218,6 +218,7 @@ void Server::handleReceivedPacket()
 				0.3, 0.3,
 				jsonData["bullet"]["textureName2D"].get<std::string>(),
 				0.0,
+				clientKey,
 				1.0,
 				jsonData["bullet"]["damage"].get<double>(),
 				15.0,
@@ -233,7 +234,8 @@ void Server::handleReceivedPacket()
 				jsonData["bullet"]["speed"].get<double>(),
 				0.3, 0.3,
 				jsonData["bullet"]["textureName2D"].get<std::string>(),
-				jsonData["bullet"]["damage"].get<double>()
+				jsonData["bullet"]["damage"].get<double>(),
+				clientKey
 			);
 		}
 	}
@@ -419,6 +421,7 @@ void Server::update()
 		if (connectedClient.second.updateSelf)
 		{
 			nlohmann::json jsonData;
+			jsonData["player"]["team"] = connectedClient.second.remotePlayerData.getTeam();
 			jsonData["player"]["outfitColor"]["x"] = connectedClient.second.remotePlayerData.getOutfitColor().x;
 			jsonData["player"]["outfitColor"]["y"] = connectedClient.second.remotePlayerData.getOutfitColor().y;
 			jsonData["player"]["outfitColor"]["z"] = connectedClient.second.remotePlayerData.getOutfitColor().z;
@@ -449,6 +452,7 @@ void Server::update()
 
 				// remotePlayers
 				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.remotePlayerData.getClientName();
+				jsonData["remotePlayers"][otherConnectedClient.first]["team"] = otherConnectedClient.second.remotePlayerData.getTeam();
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["x"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().x;
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["y"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().y;
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["z"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().z;

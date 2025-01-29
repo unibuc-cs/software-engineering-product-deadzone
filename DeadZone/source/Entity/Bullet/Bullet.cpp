@@ -7,10 +7,11 @@
 #include "../../GlobalClock/GlobalClock.h"
 #include "BulletBlast.h"
 
-Bullet::Bullet(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::string& textureName2D, double damage) 
+Bullet::Bullet(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::string& textureName2D, double damage, const std::string& owner)
 	: Entity(x, y, drawWidth, drawHeight, rotateAngle, speed)
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
-	, TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D), damage(damage)
+	, TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D)
+	, damage(damage), owner(owner)
 {
 
 }

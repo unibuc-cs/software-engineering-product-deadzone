@@ -90,11 +90,14 @@ public:
 	void spawnRemotePlayer(const std::string& clientKey);
 	void removeRemotePlayer(const std::string& clientKey);
 	void updateRemotePlayerClientName(const std::string& clientKey, const std::string& name);
+	void updateRemotePlayerTeam(const std::string& clientKey, int newTeam);
 	void updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color);
 	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);
 	void updateRemotePlayerRotateAngle(const std::string& clientKey, double angle);
 	void updateRemotePlayerStatuses(const std::string& clientKey, const std::vector<AnimatedEntity::EntityStatus>& statuses);
 	void applyRemotePlayerCloseRangeDamage(const std::string& clientKey, double damage, double shortRangeAttackRadius);
+
+	int getRemotePlayerTeam(const std::string& clientKey);
 
 	inline bool getIsServer() const { return isServer; }
 	void establishConnection();

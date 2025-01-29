@@ -145,7 +145,7 @@ public:
 	inline std::map<Weapon::WeaponType, double> getBulletPrices() const { return this->bulletPrices; }
 	inline double getBulletPrice(Weapon::WeaponType weaponType) { return this->bulletPrices[weaponType]; }
 
-	inline int getTeam() { return team; }
+	inline int getTeam() const { return team; }
 	inline void setTeam(int _team) { team = _team; }
 
 	static void deleteInstance();
