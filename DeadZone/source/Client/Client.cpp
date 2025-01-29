@@ -438,8 +438,6 @@ void Client::stop()
 {
 	if (this->serverPeer != nullptr)
 		enet_peer_disconnect(this->serverPeer, 0);
-	//if (this->client != nullptr)
-	//	enet_host_flush(this->client);
 	if (this->client != nullptr)
 		enet_host_destroy(this->client);
 
@@ -523,4 +521,6 @@ void Client::sendDisconnect()
 	{
 		this->sendMessage(jsonData.dump(), failure, this->lastTimeSentPing);
 	}
+
+	enet_host_flush(this->client);
 }
