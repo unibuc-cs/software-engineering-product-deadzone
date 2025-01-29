@@ -558,7 +558,7 @@ void Server::sendNumFinishedWaves(int number)
 
 void Server::disconnectPlayer(const std::string& clientKey)
 {
-	enet_peer_disconnect(connectedClients[clientKey].peer, 0);
+	// enet_peer_disconnect(connectedClients[clientKey].peer, 0);
 	connectedClients.erase(clientKey);
 
 	// Broadcast

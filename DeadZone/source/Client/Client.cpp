@@ -513,14 +513,12 @@ void Client::sendCloseRangeDamage(const double damage, const double shortRangeAt
 
 void Client::sendDisconnect()
 {
-	nlohmann::json jsonData;
-	jsonData["disconnect"] = true;
-
-	bool failure = true;
-	while (failure)
+	if (succesfullyConnected)
 	{
-		this->sendMessage(jsonData.dump(), failure, this->lastTimeSentPing);
-	}
+		nlohmann::json jsonData;
+		jsonData["disconnect"] = true;
 
-	enet_host_flush(this->client);
+		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+		enet_host_flush(this->client);
+	}
 }
