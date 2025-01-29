@@ -116,12 +116,12 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 	// Load player save.json
 	load();
 
-	//if (Map::get().getHasBeenLoaded())
-	//{
-	//	const std::pair<int, int> pos = Map::getRandomAccesiblePosition();
-	//	this->x = pos.first + 0.5f;
-	//	this->y = pos.second - 0.5f;
-	//}
+	if (Map::get().getHasBeenLoaded())
+	{
+		const std::pair<int, int> pos = Map::getRandomAccesiblePosition();
+		this->y = pos.first + 0.5f;
+		this->x = pos.second + 0.5f;
+	}
 }
 
 Player& Player::get()
