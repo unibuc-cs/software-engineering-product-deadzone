@@ -315,6 +315,13 @@ void Client::handleReceivedPacket()
 		WaveManager::get().setNumFinishedWaves(jsonData["waveNumber"].get<int>());
 	}
 
+	// disconnectClient
+	if (jsonData.contains("disconnectClient"))
+	{
+		std::cout << "CLIENT: disconnect " << jsonData["disconnectClient"].get<std::string>() << std::endl;
+		Game::get().removeRemotePlayer(jsonData["disconnectClient"].get<std::string>());
+	}
+
 	enet_packet_destroy(this->eNetEvent.packet);
 }
 
@@ -504,4 +511,16 @@ void Client::sendCloseRangeDamage(const double damage, const double shortRangeAt
 	jsonData["closeRangeDamage"]["shortRangeAttackRadius"] = shortRangeAttackRadius;
 
 	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+}
+
+void Client::sendDisconnect()
+{
+	nlohmann::json jsonData;
+	jsonData["disconnect"] = true;
+
+	bool failure = true;
+	while (failure)
+	{
+		this->sendMessage(jsonData.dump(), failure, this->lastTimeSentPing);
+	}
 }

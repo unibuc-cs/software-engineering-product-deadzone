@@ -57,6 +57,7 @@ public:
 	void sendSound(const std::string& name, bool paused);
 	void sendOpenedDoor(int id);
 	void sendCloseRangeDamage(const double damage, const double shortRangeAttackRadius);
+	void sendDisconnect();
 
 	// Getters
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }

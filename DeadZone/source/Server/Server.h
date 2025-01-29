@@ -113,5 +113,6 @@ public:
 	void sendGameMode(const std::string& clientKey);
 	void sendZombiesData(const std::unordered_map<std::string, std::shared_ptr<Enemy>>& remoteZombies);
 	void sendNumFinishedWaves(int number);
+	void disconnectPlayer(const std::string& clientKey);
 };
 

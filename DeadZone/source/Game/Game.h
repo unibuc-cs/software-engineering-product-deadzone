@@ -91,6 +91,7 @@ public:
 	inline std::unordered_map<std::string, std::shared_ptr<RemotePlayer>> getRemotePlayers() const { return remotePlayers; }
 
 	void spawnRemotePlayer(const std::string& clientKey);
+	void removeRemotePlayer(const std::string& clientKey);
 	void updateRemotePlayerClientName(const std::string& clientKey, const std::string& name);
 	void updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color);
 	void updateRemotePlayerPosition(const std::string& clientKey, double x, double y);

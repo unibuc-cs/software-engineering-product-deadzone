@@ -393,6 +393,11 @@ void Game::spawnRemotePlayer(const std::string& clientKey)
     addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
 }
 
+void Game::removeRemotePlayer(const std::string& clientKey)
+{
+    remotePlayers.erase(clientKey);
+}
+
 void Game::updateRemotePlayerClientName(const std::string& clientKey, const std::string& name)
 {
     remotePlayers[clientKey]->setClientName(name);
@@ -536,6 +541,7 @@ void Game::establishConnection()
 
 void Game::stopConnection()
 {
+    Client::get().sendDisconnect();
 	Client::get().stop();
 
 	if (this->serverThread)
@@ -546,7 +552,7 @@ void Game::stopConnection()
 
 		this->serverThread->join();
 		this->serverThread = nullptr;
-	}
 
-    Server::get().stop();
+        Server::get().stop();
+	}
 }

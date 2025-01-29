@@ -244,6 +244,12 @@ void Server::handleReceivedPacket()
 		sendGameMode(clientKey);
 	}
 
+	// disconnect
+	if (jsonData.contains("disconnect"))
+	{
+		disconnectPlayer(clientKey);
+	}
+
 	// TODO: de pus in if-uri? excluzand "ping"
 	updateClients = true;
 
@@ -337,12 +343,15 @@ void Server::update()
 			case ENET_EVENT_TYPE_CONNECT:
 				std::cout << "Server: Client connected" << std::endl;
 				break;
+
 			case ENET_EVENT_TYPE_DISCONNECT:
-				this->connectedClients.erase(this->getClientKey(this->eNetEvent.peer->address));
+				disconnectPlayer(this->getClientKey(this->eNetEvent.peer->address));
 				break;
+
 			case ENET_EVENT_TYPE_RECEIVE:
 				this->handleReceivedPacket();
 				break;
+
 			default:
 				std::cout << "Warning: Server received unrecognized event type" << std::endl;
 				break;
@@ -542,6 +551,20 @@ void Server::sendNumFinishedWaves(int number)
 	jsonData["waveNumber"] = number;
 
 	for (auto& connectedClient : this->connectedClients)
+	{
+		connectedClient.second.sendMessageUnsafe(jsonData.dump());
+	}
+}
+
+void Server::disconnectPlayer(const std::string& clientKey)
+{
+	enet_peer_disconnect(connectedClients[clientKey].peer, 0);
+	connectedClients.erase(clientKey);
+
+	// Broadcast
+	nlohmann::json jsonData;
+	jsonData["disconnectClient"] = clientKey;
+	for (auto& connectedClient : connectedClients)
 	{
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
