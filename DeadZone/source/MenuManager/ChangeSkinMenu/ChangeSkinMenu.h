@@ -43,4 +43,8 @@ public:
 
 	virtual double getCardPosX();
 	virtual double getCardPosY(int index);
+
+	void init() override;
+
+	static bool compareGlmVec3(const glm::vec3& u, const glm::vec3& v);
 };

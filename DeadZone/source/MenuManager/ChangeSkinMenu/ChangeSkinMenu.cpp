@@ -148,6 +148,27 @@ double ChangeSkinMenu::getCardPosY(int index) {
 	return getButtonCoordsY() + buttonOffsetY + index * (buttonHeight + spaceAfterButton);
 }
 
+void ChangeSkinMenu::init()
+{
+	glm::vec3 outfitColor = Player::get().getOutfitColor();
+
+	for (int i = 0;i < skinColors.size(); i++)
+	{
+		if (compareGlmVec3(outfitColor, skinColors[i]))
+		{
+			this->select(i);
+			break;
+		}
+	}
+}
+
+bool ChangeSkinMenu::compareGlmVec3(const glm::vec3& u, const glm::vec3& v)
+{
+	float epsilon = 0.001;
+
+	return abs(u.x - v.x) < epsilon && abs(u.y - v.y) < epsilon && abs(u.z - v.z) < epsilon;
+}
+
 void ChangeSkinMenu::draw()
 {
 	SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getTexture(this->textureName2D), glm::vec2(x, y), glm::vec2(drawWidth, drawHeight), 0);

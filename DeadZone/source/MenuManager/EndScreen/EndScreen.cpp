@@ -7,6 +7,7 @@
 #include "../../HUD/HUDManager.h"
 #include "../../Entity/Player/Player.h"
 #include "../MenuManager.h"
+#include "../../WaveManager/WaveManager.h"
 
 
 EndScreen* EndScreen::instance = NULL;
@@ -55,7 +56,9 @@ EndScreen& EndScreen::getCenteredEndScreen(const std::string& msg, const std::st
 
 void EndScreen::RespawnFunction(Button& button)
 {
+	Player::deleteInstance();
 
+	MenuManager::get().clear();
 }
 
 void EndScreen::draw()
