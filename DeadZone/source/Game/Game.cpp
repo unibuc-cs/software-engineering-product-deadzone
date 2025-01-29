@@ -214,15 +214,18 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
+        // Update/Tick
+        GlobalClock::get().updateTime();
+
         if (isInMatch)
         {
-			// Serverul e pe un thread separat
+            // Serverul e pe un thread separat
 
             // Client
             Client::get().update();
 
             // wait
-            if (!Map::get().getHasBeenLoaded())
+            if (!Map::get().getHasBeenLoaded() && !getHasGameMode())
             {
                 Client::get().update();
                 continue;
@@ -286,9 +289,6 @@ void Game::run()
             WaveManager::get().update();
             WaveManager::get().draw();
         }
-
-        // Update/Tick
-        GlobalClock::get().updateTime();
 
         // Swap the screen buffers
         glfwSwapBuffers(WindowManager::get().getWindow());
