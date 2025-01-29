@@ -59,6 +59,8 @@ void EndScreen::RespawnFunction(Button& button)
 	Player::deleteInstance();
 
 	MenuManager::get().clear();
+
+	Player::get().setupPlayerInputComponent();
 }
 
 void EndScreen::draw()

@@ -24,9 +24,8 @@ PauseMenu::PauseMenu(double x, double y, double drawWidth, double drawHeight, do
 	TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D),
 	MenuBase(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D, drawWidth * 0.4, drawHeight * 0.1),
 	buttons(std::map<std::string, Button>{
-		{ "quit", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
 		{ "continue", Button(getButtonPosX(), getButtonPosY(1), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Continue", 0, 1.0, "Antonio", true) },
-		{ "save", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Save", 0, 1.0, "Antonio", true) },
+		{ "quit", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
 		{ "back", ButtonBuilder::backButton(getButtonCoordsX(), getButtonCoordsY())},
 		{ "gameInfo", Button(getButtonPosX() - buttonOffsetX, getButtonPosY(4), this->drawWidth, buttonHeight, 0, 0, this->drawWidth, buttonHeight, ButtonBuilder::OneTextureForAllStatesThinMargins(), "ServerIp: , ServerPort: , ", 0, 0.7, "Antonio", true) }
 	})
