@@ -56,11 +56,15 @@ EndScreen& EndScreen::getCenteredEndScreen(const std::string& msg, const std::st
 
 void EndScreen::RespawnFunction(Button& button)
 {
+	const glm::vec3 currentOutfitColor = Player::get().getOutfitColor();
+	const int currentTeam = Player::get().getTeam();
 	Player::deleteInstance();
 
 	MenuManager::get().clear();
 
 	Player::get().setupPlayerInputComponent();
+	Player::get().setOutfitColor(currentOutfitColor);
+	Player::get().setTeam(currentTeam);
 }
 
 void EndScreen::draw()

@@ -115,6 +115,13 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 
 	// Load player save.json
 	load();
+
+	//if (Map::get().getHasBeenLoaded())
+	//{
+	//	const std::pair<int, int> pos = Map::getRandomAccesiblePosition();
+	//	this->x = pos.first + 0.5f;
+	//	this->y = pos.second - 0.5f;
+	//}
 }
 
 Player& Player::get()
@@ -703,7 +710,7 @@ void Player::load()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	if (saveJSON.contains("outfitColor"))
+	if (saveJSON.contains("outfitColor") && Game::get().getGameMode() != Game::GameMode::TeamDeathMatch)
 	{
 		setOutfitColor(glm::vec3(
 			saveJSON["outfitColor"]["r"].get<double>(),
