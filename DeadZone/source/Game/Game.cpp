@@ -21,6 +21,7 @@
 #include "../HUD/HUDManager.h"
 #include "../MenuManager/MainMenu/MainMenu.h"
 #include "../MenuManager/PauseMenu/PauseMenu.h"
+#include "../MenuManager/EndScreen/EndScreen.h"
 #include "../SoundManager/SoundManager.h"
 #include "../MenuManager/MenuManager.h"
 #include "../WaveManager/WaveManager.h"
@@ -228,7 +229,9 @@ void Game::run()
             }
         }
         
-        if (gameStatus == GameStatus::InGame)
+        if (gameStatus == GameStatus::InGame 
+            || dynamic_cast<PauseMenu*>(&MenuManager::get().top())
+            || dynamic_cast<EndScreen*>(&MenuManager::get().top()))
         {
             // Update
             Map::get().update();
@@ -264,6 +267,17 @@ void Game::run()
         // HUD
         HUDManager::get().draw();
 
+        // Wave Manager
+        if ((MenuManager::get().size() == 0
+            || dynamic_cast<PauseMenu*>(&MenuManager::get().top())
+            || dynamic_cast<EndScreen*>(&MenuManager::get().top())) 
+            && gameMode == GameMode::Survival)
+        {
+            WaveManager::get().update();
+            WaveManager::get().draw();
+        }
+
+        // Menu manager
         if (gameStatus == GameStatus::InMenu)
         {
             // Main Menu
@@ -272,13 +286,6 @@ void Game::run()
                 MenuManager::get().play();
             }
             catch (noMenuOpened& err) {}
-        }
-
-        // Wave Manager
-        if (MenuManager::get().size() == 0 && gameMode == GameMode::Survival)
-        {
-            WaveManager::get().update();
-            WaveManager::get().draw();
         }
 
         // Swap the screen buffers

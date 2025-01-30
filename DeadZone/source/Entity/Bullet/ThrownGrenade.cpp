@@ -88,7 +88,7 @@ void ThrownGrenade::update()
 		Game::get().addEntityForNextFrame(std::make_shared<Explosion>(this->x, this->y,
 			this->originalDrawWidth * this->explosionScale, this->originalDrawHeight * this->explosionScale,
 			randomExplosionAngle, 0.0, this->originalCollideWidth * this->explosionScale, this->originalCollideHeight * this->explosionScale,
-			m, v, this->explosionDuration, this->explosionDamage));
+			m, v, this->explosionDuration, this->explosionDamage, this->owner));
 
 		this->setDeleteEntity(true);
 	}
