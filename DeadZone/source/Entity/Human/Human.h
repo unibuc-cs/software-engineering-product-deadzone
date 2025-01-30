@@ -15,9 +15,10 @@ protected:
 
 public:
 
-	double getHealth() const { return this->health; }
-	double getHealthCap() const { return this->healthCap; }
-	void setHealth(double health) { this->health = health; }
+	inline double getHealth() const { return this->health; }
+	inline double getHealthCap() const { return this->healthCap; }
+	inline void setHealth(double health) { this->health = health; }
+	void applyDamage(double appliedDamage);
 
 	Human(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double health, double armor);
 	virtual ~Human();

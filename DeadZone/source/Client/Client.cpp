@@ -24,6 +24,7 @@ Client::Client()
 	, lastTimeSentPing(0.0f)
 	, clientName("")
 	, workingServerConnection(false)
+	, shouldDisconnect(false)
 	, lastRemotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 {
 
@@ -422,6 +423,12 @@ void Client::update()
 			case ENET_EVENT_TYPE_RECEIVE:
 				this->handleReceivedPacket();
 				break;
+
+			case ENET_EVENT_TYPE_DISCONNECT:
+				std::cout << "LOST SERVER CONNECTION" << std::endl;
+				shouldDisconnect = true;
+				break;
+
 			default:
 				std::cout << "Warning: Client received unrecognized event type" << std::endl;
 				break;
@@ -480,6 +487,8 @@ void Client::stop()
 	this->clientName = "";
 
 	this->workingServerConnection = false;
+
+	shouldDisconnect = false;
 }
 
 void Client::sendBullet(const std::shared_ptr<Bullet>& const entity)

@@ -291,6 +291,24 @@ void Game::run()
             catch (noMenuOpened& err) {}
         }
 
+        if (Client::get().getShouldDisconnect())
+        {
+            Game::get().stopConnection();
+
+            Game::get().clear();
+            Game::get().setIsInMatch(false);
+            Game::get().setHasGameMode(false);
+
+            WaveManager::deleteInstance();
+            Player::deleteInstance();
+            Map::deleteInstance();
+
+            MenuManager::get().clear();
+
+            MenuManager::get().push(MainMenu::get());
+            InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
+        }
+
         // Swap the screen buffers
         glfwSwapBuffers(WindowManager::get().getWindow());
        
@@ -471,9 +489,18 @@ void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, doubl
         shortRangeAttackRadius
     );
 
-    if (enemyInRange)
+    if (enemyInRange 
+        && (gameMode == GameMode::Survival 
+            || Player::get().getTeam() != getRemotePlayerTeam(clientKey)))
     {
-        Player::get().setHealth(std::max(0.0, Player::get().getHealth() - damage));
+        bool notDeadBefore = !Player::get().isDead();
+
+        Player::get().applyDamage(damage);
+
+        if (Player::get().isDead() && notDeadBefore)
+        {
+            Client::get().sendConfirmedKill(clientKey);
+        }
     }
 }
 
