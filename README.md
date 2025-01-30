@@ -15,8 +15,12 @@ Ciobanu Dragos ($351$) <br/>
 
 ### Links
 - [Documentatie](https://github.com/unibuc-cs/software-engineering-product-deadzone/wiki/Documentatie)
-
 - [Backlog](https://github.com/orgs/unibuc-cs/projects/29)
+
+<br/>
+
+- [Demo Metode de Dezvoltare Software](https://www.youtube.com/watch?v=Z8xyivNPW1I)
+- [Demo Inginerie Software](https://www.youtube.com/watch?v=mby02kktbOI)
 
 <br/> <br/>
 
