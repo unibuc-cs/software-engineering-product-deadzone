@@ -476,7 +476,7 @@ void Server::update()
 					jsonData["bullets"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.bulletData.get()->getRotateAngle();
 					jsonData["bullets"][otherConnectedClient.first]["speed"] = otherConnectedClient.second.bulletData.get()->getSpeed();
 					jsonData["bullets"][otherConnectedClient.first]["textureName2D"] = otherConnectedClient.second.bulletData.get()->getTextureName2D();
-					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
+					jsonData["bullets"][otherConnectedClient.first]["damage"] = std::dynamic_pointer_cast<ThrownGrenade>(otherConnectedClient.second.bulletData)->getExplosionDamage();
 				}
 
 				// closeRangeDamage

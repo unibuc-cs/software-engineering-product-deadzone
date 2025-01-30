@@ -485,14 +485,13 @@ void Client::sendBullet(const std::shared_ptr<Bullet>& const entity)
 	}
 
 	nlohmann::json jsonData;
-
 	jsonData["bullet"]["isThrownGrenade"] = isThrownGrenade;
 	jsonData["bullet"]["x"] = entity->getX();
 	jsonData["bullet"]["y"] = entity->getY();
 	jsonData["bullet"]["rotateAngle"] = entity->getRotateAngle();
 	jsonData["bullet"]["speed"] = entity->getSpeed();
-	jsonData["bullet"]["textureName2D"] = entity->getTextureName2D();
-	jsonData["bullet"]["damage"] = entity->getDamage();
+	jsonData["bullet"]["textureName2D"] = entity->getTextureName2D();	
+	jsonData["bullet"]["damage"] = isThrownGrenade ? std::dynamic_pointer_cast<ThrownGrenade>(entity)->getExplosionDamage() : entity->getDamage();
 
 	// TODO: trimite si ceilalti parametrii daca vrem sa avem mai multi modificatori
 

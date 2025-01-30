@@ -27,4 +27,7 @@ public:
 	virtual void update() override;
 
 	virtual void onCollide(CollidableEntity& other, glm::vec2 overlap) override;
+
+	// Getters
+	double getExplosionDamage() const { return explosionDamage; }
 };
