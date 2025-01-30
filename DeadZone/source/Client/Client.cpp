@@ -84,6 +84,8 @@ void Client::sendMessage(const std::string& messageToSend, bool& failedToSendMes
 		failedToSendMessage = true;
 		std::cout << "Error: Client failed to send message" << std::endl;
 	}
+
+	enet_host_flush(this->client);
 }
 
 void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhenMessageSent)
@@ -108,6 +110,8 @@ void Client::sendMessageUnsafe(const std::string& messageToSend, float& timeWhen
 	{
 		std::cout << "Error: Client failed to send message" << std::endl;
 	}
+
+	enet_host_flush(this->client);
 }
 
 bool Client::shouldSendRemotePlayerData()

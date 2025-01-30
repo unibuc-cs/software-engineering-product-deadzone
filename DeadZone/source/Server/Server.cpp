@@ -88,6 +88,8 @@ void Server::ClientData::sendMessage(const std::string& messageToSend, bool& fai
 		failedToSendMessage = true;
 		std::cout << "Error: Server failed to send message" << std::endl;
 	}
+
+	enet_host_flush(this->peer->host);
 }
 
 void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
@@ -105,6 +107,8 @@ void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
 	{
 		std::cout << "Error: Server failed to send message" << std::endl;
 	}
+
+	enet_host_flush(this->peer->host);
 }
 
 void Server::handleReceivedPacket()
