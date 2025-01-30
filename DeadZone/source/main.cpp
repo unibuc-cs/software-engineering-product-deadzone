@@ -5,11 +5,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <thread>
 #include <exception>
 
 #include <enet/enet.h>
-#include <nlohmann/json.hpp>
 
 #include "Server/Server.h"
 
@@ -21,33 +19,6 @@ int main()
         std::cout << "Error: An error occurred while initializing ENet" << std::endl;
     }
     atexit(enet_deinitialize);
-
-    // Load JSON
-    std::ifstream gameFile("config/game.json");
-    nlohmann::json gameJSON;
-    gameFile >> gameJSON;
-    gameFile.close();
-
-    // TODO: doar test @Teodor
-    // Start server
-    if (gameJSON["clientHasServer"].get<bool>())
-    {
-        std::string serverPort = gameJSON["serverPort"].get<std::string>();
-
-        std::thread serverThread([serverPort] {
-            Server::get().start(serverPort);
-            
-            while (true) // TODO: ceva mecanism de stop
-            {
-                Server::get().update();
-            }
-
-            // TODO: delete
-            Server::get().stop();
-        });
-
-        serverThread.detach();
-    }
 
     try
     {
@@ -61,9 +32,6 @@ int main()
     {
         std::cout << "Unexpected error" << std::endl;
     }
-
-    // TODO: delete
-    Server::get().stop();
 
 	return 0;
 }

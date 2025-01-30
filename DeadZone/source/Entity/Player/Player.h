@@ -95,6 +95,7 @@ private:
 	static std::shared_ptr<Player> instance;
 
 	bool hasDied = false;
+	int team;
 
 private:
 	static std::pair<double, double> getPlayerSpawnPoint();
@@ -114,6 +115,7 @@ public:
 	inline int getGold() const { return this->gold; }
 	inline int getGoldCap() const { return this->goldCap; }
 
+	inline void addGold(int gold) { this->gold += gold; }
 	inline void setGold(int gold) { this->gold = gold; }
 
 	inline bool getInteractUsed() const { return this->interactUsed; }
@@ -143,6 +145,9 @@ public:
 
 	inline std::map<Weapon::WeaponType, double> getBulletPrices() const { return this->bulletPrices; }
 	inline double getBulletPrice(Weapon::WeaponType weaponType) { return this->bulletPrices[weaponType]; }
+
+	inline int getTeam() const { return team; }
+	inline void setTeam(int _team) { team = _team; }
 
 	static void deleteInstance();
 

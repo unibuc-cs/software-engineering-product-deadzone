@@ -84,7 +84,10 @@ std::map<std::string, Button> ChangeSkinMenu::loadMenuItems()
 
 void ChangeSkinMenu::select(int id)
 {
+	// Save player outfit color
 	Player::get().setOutfitColor(skinColors[id]);
+	Player::get().save();
+
 	try {
 		Button& buttonClicked = buttons.getButtonByName(std::to_string(id+1) + "_0_card");
 		buttonClicked.setTextureNameForStatus(Button::Status::DEFAULT, "skinCardSelected");
@@ -143,6 +146,27 @@ double ChangeSkinMenu::getCardPosX() {
 
 double ChangeSkinMenu::getCardPosY(int index) {
 	return getButtonCoordsY() + buttonOffsetY + index * (buttonHeight + spaceAfterButton);
+}
+
+void ChangeSkinMenu::init()
+{
+	glm::vec3 outfitColor = Player::get().getOutfitColor();
+
+	for (int i = 0;i < skinColors.size(); i++)
+	{
+		if (compareGlmVec3(outfitColor, skinColors[i]))
+		{
+			this->select(i);
+			break;
+		}
+	}
+}
+
+bool ChangeSkinMenu::compareGlmVec3(const glm::vec3& u, const glm::vec3& v)
+{
+	float epsilon = 0.001;
+
+	return abs(u.x - v.x) < epsilon && abs(u.y - v.y) < epsilon && abs(u.z - v.z) < epsilon;
 }
 
 void ChangeSkinMenu::draw()

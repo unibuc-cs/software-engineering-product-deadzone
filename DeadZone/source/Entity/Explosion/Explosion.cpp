@@ -5,11 +5,12 @@
 #include "../Human/Human.h"
 #include "../Player/Player.h"
 
-Explosion::Explosion(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double explosionDuration, double explosionDamage)
+Explosion::Explosion(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::map<AnimatedEntity::EntityStatus, std::string>& animationsName2D, const std::vector<EntityStatus>& statuses, double explosionDuration, double explosionDamage, const std::string& owner)
 	: Entity(x, y, drawWidth, drawHeight, rotateAngle, speed)
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
 	, AnimatedEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, animationsName2D, statuses)
 	, explosionStarted(GlobalClock::get().getCurrentTime()), explosionDuration(explosionDuration), explosionDamage(explosionDamage)
+	, owner(owner)
 {
 
 }

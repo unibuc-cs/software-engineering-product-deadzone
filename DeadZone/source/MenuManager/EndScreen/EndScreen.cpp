@@ -7,6 +7,7 @@
 #include "../../HUD/HUDManager.h"
 #include "../../Entity/Player/Player.h"
 #include "../MenuManager.h"
+#include "../../WaveManager/WaveManager.h"
 
 
 EndScreen* EndScreen::instance = NULL;
@@ -17,10 +18,9 @@ EndScreen::EndScreen(double x, double y, double drawWidth, double drawHeight, do
 	MenuBase(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D, drawWidth * 0.4, drawHeight * 0.1),
 	msg(msg_),
 	buttons(std::map<std::string, Button>{
-		// { "back", ButtonBuilder::backButton(getButtonCoordsX(), getButtonCoordsY()) },
 		{ "card", Button(getButtonCoordsX(), getButtonCoordsY() + drawHeight * 0.2, drawWidth, drawHeight * 0.6, 0, 0, drawWidth, drawHeight * 0.8, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "noBackground"}, { Button::Status::HOVERED, "noBackground" }, { Button::Status::CLICKED, "noBackground" }}, msg, 0, 1.0, "Antonio", true) },
-		{ "singleButton", Button(getButtonCoordsX() + drawWidth * (2 / 5.0), getButtonCoordsY() + drawHeight * 0.8, drawWidth * (1 / 5.0), drawHeight * 0.15, 0, 0, drawWidth * (1 / 5.0),  drawHeight * 0.2, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, {Button::Status::HOVERED, "button0Hovered"}, {Button::Status::CLICKED, "button0Hovered"}}, buttonLabel_, 0, 1.5, "Antonio", true) }
-			//Button(getButtonCoordsX(), getButtonCoordsY(), 20, 20, 0, 0, 20, 20, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, ".0"}, { Button::Status::HOVERED, ".1" }, { Button::Status::CLICKED, ".2" }}, "")}
+		{ "backToMainMenu", Button(getButtonCoordsX() + drawWidth * (0.7 / 10.0), getButtonCoordsY() + drawHeight * 0.8, drawWidth * (1 / 3.0), drawHeight * 0.15, 0, 0, drawWidth * (1 / 3.0),  drawHeight * 0.15, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, {Button::Status::HOVERED, "button0Hovered"}, {Button::Status::CLICKED, "button0Hovered"}}, buttonLabel_, 0, 1.0, "Antonio", true) },
+		{ "respawn", Button(getButtonCoordsX() + drawWidth * (3 / 5.0), getButtonCoordsY() + drawHeight * 0.8, drawWidth * (1 / 3.0), drawHeight * 0.15, 0, 0, drawWidth * (1 / 3.0),  drawHeight * 0.15, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, {Button::Status::HOVERED, "button0Hovered"}, {Button::Status::CLICKED, "button0Hovered"}}, "Respawn", 0, 1.0, "Antonio", true)}
 })
 {
 	isInMenu = false;
@@ -30,7 +30,10 @@ EndScreen::EndScreen(double x, double y, double drawWidth, double drawHeight, do
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), EndScreen::hoverLostAnyButton }, { "card", [](Button&) {} }},
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), [](Button&) {} },
 		{
-			"singleButton", funcForButton_
+			"backToMainMenu", funcForButton_
+		},
+		{
+			"respawn", EndScreen::RespawnFunction
 		}
 	}
 	);
@@ -49,6 +52,19 @@ EndScreen& EndScreen::getCenteredEndScreen(const std::string& msg, const std::st
 
 	instance = new EndScreen(x, y, width, height, 0, 0, ".0", msg, buttonLabel_, funcForButton_);
 	return *instance;
+}
+
+void EndScreen::RespawnFunction(Button& button)
+{
+	const glm::vec3 currentOutfitColor = Player::get().getOutfitColor();
+	const int currentTeam = Player::get().getTeam();
+	Player::deleteInstance();
+
+	MenuManager::get().clear();
+
+	Player::get().setupPlayerInputComponent();
+	Player::get().setOutfitColor(currentOutfitColor);
+	Player::get().setTeam(currentTeam);
 }
 
 void EndScreen::draw()

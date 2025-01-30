@@ -78,3 +78,13 @@ void InputComponent::clear()
 	mouseFunctionCallbacks.clear();
 	scrollFunctionCallbacks.clear();
 }
+
+void InputComponent::bindKey(int key, const InputEvent& keyEvent, const std::function<void()>& func)
+{
+	std::ifstream inputFile("config/input.json");
+	nlohmann::json inputJSON;
+	inputFile >> inputJSON;
+	inputFile.close();
+
+	keyFunctionCallbacks[key][static_cast<int>(keyEvent)].push_back(func);
+}

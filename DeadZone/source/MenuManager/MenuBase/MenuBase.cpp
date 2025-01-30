@@ -54,3 +54,7 @@ void MenuBase::hoverLostAnyButton(Button& button)
 	button.setLabel(initCap(button.getLabel()));
 	button.setFontColor(glm::vec3(0.0, 0.0, 0.0));
 }
+
+void MenuBase::init()
+{
+}

@@ -12,6 +12,9 @@
 #include <sstream>
 #include <set>
 
+const glm::vec3 Server::COLOR_TEAM_1 = glm::vec3(0.0f, 0.0f, 1.0f);
+const glm::vec3 Server::COLOR_TEAM_2 = glm::vec3(1.0f, 0.0f, 0.0f);
+const int Server::GOLD_PER_KILL = 100;
 
 ReplicatedSound::ReplicatedSound(const std::string& name, bool paused)
 	: name(name)
@@ -34,11 +37,13 @@ Server::Server()
 	, succesfullyCreated(false), lastTimeTriedCreation(0.0f), RETRY_CREATION_DELTA_TIME(1.0f)
 	, TIME_BETWEEN_PINGS(10000.0f), MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST(500000.0f) // TODO: test ca sa nu mai trimit prea multe request-uri
 	, updateClients(false)
+	, sizeTeam1(0), sizeTeam2(0)
 {
 	this->address.host = ENET_HOST_ANY;
 	this->address.port = 0;
 
 	generateMap();
+	loadGameMode();
 }
 
 Server::~Server()
@@ -81,7 +86,7 @@ void Server::ClientData::sendMessage(const std::string& messageToSend, bool& fai
 	else
 	{
 		failedToSendMessage = true;
-		std::cout << "Error: Client failed to send message" << std::endl;
+		std::cout << "Error: Server failed to send message" << std::endl;
 	}
 }
 
@@ -98,7 +103,7 @@ void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
 	}
 	else
 	{
-		std::cout << "Error: Client failed to send message" << std::endl;
+		std::cout << "Error: Server failed to send message" << std::endl;
 	}
 }
 
@@ -127,6 +132,23 @@ void Server::handleReceivedPacket()
 			clientKey, ClientData()
 			});
 		this->connectedClients.find(clientKey)->second.peer = this->eNetEvent.peer;
+
+		// deathmatch
+		if (gameMode == 1)
+		{
+			if (sizeTeam1 <= sizeTeam2)
+			{
+				++sizeTeam1;
+				connectedClients[clientKey].remotePlayerData.setOutfitColor(COLOR_TEAM_1);
+				connectedClients[clientKey].remotePlayerData.setTeam(1);
+			}
+			else
+			{
+				++sizeTeam2;
+				connectedClients[clientKey].remotePlayerData.setOutfitColor(COLOR_TEAM_2);
+				connectedClients[clientKey].remotePlayerData.setTeam(2);
+			}
+		}
 	}
 	this->connectedClients.find(clientKey)->second.lastTimeReceivedPing = GlobalClock::get().getCurrentTime();
 
@@ -147,7 +169,7 @@ void Server::handleReceivedPacket()
 	{
 		connectedClients[clientKey].remotePlayerData.setClientName(jsonData["clientName"].get<std::string>());
 	}
-	if (jsonData.contains("outfitColor"))
+	if (jsonData.contains("outfitColor") && gameMode == 0) // 0 == Survival
 	{
 		glm::vec3 outfitColor = glm::vec3(
 			jsonData["outfitColor"]["x"].get<double>(),
@@ -197,6 +219,7 @@ void Server::handleReceivedPacket()
 				0.3, 0.3,
 				jsonData["bullet"]["textureName2D"].get<std::string>(),
 				0.0,
+				clientKey,
 				1.0,
 				jsonData["bullet"]["damage"].get<double>(),
 				15.0,
@@ -212,7 +235,8 @@ void Server::handleReceivedPacket()
 				jsonData["bullet"]["speed"].get<double>(),
 				0.3, 0.3,
 				jsonData["bullet"]["textureName2D"].get<std::string>(),
-				jsonData["bullet"]["damage"].get<double>()
+				jsonData["bullet"]["damage"].get<double>(),
+				clientKey
 			);
 		}
 	}
@@ -237,6 +261,31 @@ void Server::handleReceivedPacket()
 	{
 		// trimite map catre clientul nou
 		sendMap(clientKey);
+	}
+
+	// game mode
+	if (jsonData.contains("gameMode"))
+	{
+		sendGameMode(clientKey);
+	}
+
+	// disconnect
+	if (jsonData.contains("disconnect"))
+	{
+		disconnectPlayer(clientKey);
+	}
+
+	if (jsonData.contains("confirmedKill"))
+	{
+		std::string clientKeyKiller = jsonData["confirmedKill"].get<std::string>();
+
+		if (connectedClients.find(clientKeyKiller) != connectedClients.end())
+		{
+			nlohmann::json killJsonData;
+			killJsonData["goldRewarded"] = GOLD_PER_KILL;
+
+			connectedClients[clientKeyKiller].sendMessageUnsafe(killJsonData.dump());
+		}
 	}
 
 	// TODO: de pus in if-uri? excluzand "ping"
@@ -286,6 +335,17 @@ void Server::generateMap()
 	in.close();
 }
 
+void Server::loadGameMode()
+{
+	// Load JSON
+	std::ifstream saveFile("config/save.json");
+	nlohmann::json saveJSON;
+	saveFile >> saveJSON;
+	saveFile.close();
+
+	gameMode = saveJSON.contains("gameMode") ? saveJSON["gameMode"].get<unsigned int>() : 0;
+}
+
 void Server::update()
 {
 	if (!this->succesfullyCreated)
@@ -321,9 +381,15 @@ void Server::update()
 			case ENET_EVENT_TYPE_CONNECT:
 				std::cout << "Server: Client connected" << std::endl;
 				break;
+
+			case ENET_EVENT_TYPE_DISCONNECT:
+				disconnectPlayer(this->getClientKey(this->eNetEvent.peer->address));
+				break;
+
 			case ENET_EVENT_TYPE_RECEIVE:
 				this->handleReceivedPacket();
 				break;
+
 			default:
 				std::cout << "Warning: Server received unrecognized event type" << std::endl;
 				break;
@@ -363,6 +429,22 @@ void Server::update()
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}
 
+	// Update self
+	for (auto& connectedClient : this->connectedClients)
+	{
+		if (connectedClient.second.updateSelf)
+		{
+			nlohmann::json jsonData;
+			jsonData["player"]["team"] = connectedClient.second.remotePlayerData.getTeam();
+			jsonData["player"]["outfitColor"]["x"] = connectedClient.second.remotePlayerData.getOutfitColor().x;
+			jsonData["player"]["outfitColor"]["y"] = connectedClient.second.remotePlayerData.getOutfitColor().y;
+			jsonData["player"]["outfitColor"]["z"] = connectedClient.second.remotePlayerData.getOutfitColor().z;
+
+			connectedClient.second.sendMessageUnsafe(jsonData.dump());
+			connectedClient.second.updateSelf = false;
+		}
+	}
+
 	// Mai vedem daca ne ramasese ceva de trimis la vreun client ce a esuat
 	if (updateClients)
 	{
@@ -384,6 +466,7 @@ void Server::update()
 
 				// remotePlayers
 				jsonData["remotePlayers"][otherConnectedClient.first]["clientName"] = otherConnectedClient.second.remotePlayerData.getClientName();
+				jsonData["remotePlayers"][otherConnectedClient.first]["team"] = otherConnectedClient.second.remotePlayerData.getTeam();
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["x"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().x;
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["y"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().y;
 				jsonData["remotePlayers"][otherConnectedClient.first]["outfitColor"]["z"] = otherConnectedClient.second.remotePlayerData.getOutfitColor().z;
@@ -407,7 +490,7 @@ void Server::update()
 					jsonData["bullets"][otherConnectedClient.first]["rotateAngle"] = otherConnectedClient.second.bulletData.get()->getRotateAngle();
 					jsonData["bullets"][otherConnectedClient.first]["speed"] = otherConnectedClient.second.bulletData.get()->getSpeed();
 					jsonData["bullets"][otherConnectedClient.first]["textureName2D"] = otherConnectedClient.second.bulletData.get()->getTextureName2D();
-					jsonData["bullets"][otherConnectedClient.first]["damage"] = otherConnectedClient.second.bulletData.get()->getDamage();
+					jsonData["bullets"][otherConnectedClient.first]["damage"] = isThrownGrenade ? std::dynamic_pointer_cast<ThrownGrenade>(otherConnectedClient.second.bulletData)->getExplosionDamage() : otherConnectedClient.second.bulletData.get()->getDamage();
 				}
 
 				// closeRangeDamage
@@ -479,12 +562,26 @@ void Server::stop()
 	this->lastTimeTriedCreation = 0.0f;
 
 	this->connectedClients.clear();
+
+	// Deathmatch
+	sizeTeam1 = 0;
+	sizeTeam2 = 0;
 }
 
 void Server::sendMap(const std::string& clientKey)
 {
 	nlohmann::json jsonData;
 	jsonData["map"] = map;
+
+	connectedClients[clientKey].sendMessageUnsafe(jsonData.dump());
+}
+
+void Server::sendGameMode(const std::string& clientKey)
+{
+	loadGameMode();
+
+	nlohmann::json jsonData;
+	jsonData["gameMode"] = gameMode;
 
 	connectedClients[clientKey].sendMessageUnsafe(jsonData.dump());
 }
@@ -513,6 +610,29 @@ void Server::sendNumFinishedWaves(int number)
 	jsonData["waveNumber"] = number;
 
 	for (auto& connectedClient : this->connectedClients)
+	{
+		connectedClient.second.sendMessageUnsafe(jsonData.dump());
+	}
+}
+
+void Server::disconnectPlayer(const std::string& clientKey)
+{
+	if (connectedClients[clientKey].remotePlayerData.getTeam() == 1)
+	{
+		--sizeTeam1;
+	}
+	else
+	{
+		--sizeTeam2;
+	}
+
+	// enet_peer_disconnect(connectedClients[clientKey].peer, 0);
+	connectedClients.erase(clientKey);
+
+	// Broadcast
+	nlohmann::json jsonData;
+	jsonData["disconnectClient"] = clientKey;
+	for (auto& connectedClient : connectedClients)
 	{
 		connectedClient.second.sendMessageUnsafe(jsonData.dump());
 	}

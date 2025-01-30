@@ -15,11 +15,11 @@
 
 const double ThrownGrenade::maximumSizeIncreaseAnimation = 3.0;
 
-ThrownGrenade::ThrownGrenade(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::string& textureName2D, double damage, double timeUntilExplosion, double explosionDamage, double explosionScale, double explosionDuration)
+ThrownGrenade::ThrownGrenade(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, double collideWidth, double collideHeight, const std::string& textureName2D, double damage, const std::string& owner, double timeUntilExplosion, double explosionDamage, double explosionScale, double explosionDuration)
 	: Entity(x, y, drawWidth, drawHeight, rotateAngle, speed)
 	, CollidableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight)
 	, TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D)
-	, Bullet(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, textureName2D, damage)
+	, Bullet(x, y, drawWidth, drawHeight, rotateAngle, speed, collideWidth, collideHeight, textureName2D, damage, owner)
 	, timeUntilExplosion(timeUntilExplosion), explosionDamage(explosionDamage), timeThrown(GlobalClock::get().getCurrentTime())
 	, originalDrawWidth(drawWidth), originalDrawHeight(drawHeight), originalCollideWidth(collideWidth), originalCollideHeight(collideHeight)
 	, explosionScale(explosionScale), explosionDuration(explosionDuration)
@@ -88,7 +88,7 @@ void ThrownGrenade::update()
 		Game::get().addEntityForNextFrame(std::make_shared<Explosion>(this->x, this->y,
 			this->originalDrawWidth * this->explosionScale, this->originalDrawHeight * this->explosionScale,
 			randomExplosionAngle, 0.0, this->originalCollideWidth * this->explosionScale, this->originalCollideHeight * this->explosionScale,
-			m, v, this->explosionDuration, this->explosionDamage));
+			m, v, this->explosionDuration, this->explosionDamage, this->owner));
 
 		this->setDeleteEntity(true);
 	}

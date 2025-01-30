@@ -9,6 +9,7 @@
 #include "../Entity/Enemy/Enemy.h"
 #include "../Entity/Bullet/ThrownGrenade.h"
 #include "../Entity/Explosion/Explosion.h"
+#include "../Client/Client.h"
 
 #include <iostream>
 #include <memory>
@@ -94,12 +95,113 @@ void CollisionManager::handleCollisions(std::vector<std::shared_ptr<Entity>>& en
 			if (!std::dynamic_pointer_cast<CollidableEntity>(entities[i])->getCollisionActive())
 				continue;
 
+			if (std::dynamic_pointer_cast<Bullet>(entities[i]) || std::dynamic_pointer_cast<Explosion>(entities[i]))
+			{
+				continue;
+			}
+
 			glm::vec2 overlap = Player::get().isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]));
 
 			if (overlap.x > 0.0 && overlap.y > 0.0)
 			{
 				Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
 				std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+			}
+		}
+
+		// Player vs. Bullets
+		for (int i = 0; i < entities.size(); ++i)
+		{
+			if (std::dynamic_pointer_cast<Bullet>(entities[i]) == nullptr)
+			{
+				continue;
+			}
+
+			if (Game::get().getGameMode() == Game::GameMode::TeamDeathMatch)
+			{
+				if (std::dynamic_pointer_cast<Bullet>(entities[i])->getOwner() != "player")
+				{
+					std::string bulletOwner = std::dynamic_pointer_cast<Bullet>(entities[i])->getOwner();
+					int bulletTeam = Game::get().getRemotePlayerTeam(bulletOwner);
+
+					glm::vec2 overlap = Player::get().isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]));
+					if (overlap.x > 0.0 && overlap.y > 0.0)
+					{
+						if (Player::get().getTeam() != bulletTeam)
+						{
+							bool notDeadBefore = !Player::get().isDead();
+
+							Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
+							std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+
+							if (Player::get().isDead() && notDeadBefore)
+							{
+								Client::get().sendConfirmedKill(bulletOwner);
+							}
+						}
+						else
+						{
+							// Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
+							std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+						}
+					}
+				}
+			}
+			else
+			{
+				glm::vec2 overlap = Player::get().isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]));
+				if (overlap.x > 0.0 && overlap.y > 0.0)
+				{
+					Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
+					std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+				}
+			}
+		}
+
+		// Player vs. Explosions
+		for (int i = 0; i < entities.size(); ++i)
+		{
+			if (std::dynamic_pointer_cast<Explosion>(entities[i]) == nullptr)
+			{
+				continue;
+			}
+
+			if (Game::get().getGameMode() == Game::GameMode::TeamDeathMatch
+				&& std::dynamic_pointer_cast<Explosion>(entities[i])->getOwner() != "player")
+			{
+				std::string explosionOwner = std::dynamic_pointer_cast<Explosion>(entities[i])->getOwner();
+				int explosionTeam = Game::get().getRemotePlayerTeam(explosionOwner);
+
+				glm::vec2 overlap = Player::get().isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]));
+				if (overlap.x > 0.0 && overlap.y > 0.0)
+				{
+					if (Player::get().getTeam() != explosionTeam)
+					{
+						bool notDeadBefore = !Player::get().isDead();
+
+						Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
+						std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+
+						if (Player::get().isDead() && notDeadBefore)
+						{
+							Client::get().sendConfirmedKill(explosionOwner);
+						}
+					}
+					else
+					{
+						// Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
+						std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+					}
+				}
+			}
+			else
+			{
+				glm::vec2 overlap = Player::get().isInCollision(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]));
+				if (overlap.x > 0.0 && overlap.y > 0.0)
+				{
+					Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
+					std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+				}
 			}
 		}
 	}

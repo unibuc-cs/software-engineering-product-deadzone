@@ -21,6 +21,8 @@
 #include "../HUD/HUDManager.h"
 #include "../MenuManager/MainMenu/MainMenu.h"
 #include "../MenuManager/PauseMenu/PauseMenu.h"
+#include "../MenuManager/EndScreen/EndScreen.h"
+#include "../MenuManager/ShopMenu/ShopMenu.h"
 #include "../SoundManager/SoundManager.h"
 #include "../MenuManager/MenuManager.h"
 #include "../WaveManager/WaveManager.h"
@@ -28,18 +30,32 @@
 #include "../Entity/Explosion/Explosion.h"
 
 #include "../Client/Client.h"
+#include "../Server/Server.h"
 
 Game::Game()
-    : MAX_NUM_DEAD_BODIES(100) //daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
-    , isServer(false)
+    : MAX_NUM_DEAD_BODIES(100) // daca sunt 100 de dead body-uri pe jos atunci incepem sa stergem in ordinea cronologica
+	, isServer(false), isInMatch(false), hasGameMode(false), isServerRunning(false)
 {
     WindowManager::get();
+
+    // Create "save.json" file if it doesn't exist
+    std::ifstream readSaveFile("config/save.json");
+    if (!readSaveFile.is_open())
+    {
+        nlohmann::json saveJSON = nlohmann::json::object();
+        std::ofstream writeSaveFile("config/save.json");
+        writeSaveFile << saveJSON.dump(4) << std::endl;
+        writeSaveFile.close();
+    }
+    else
+    {
+        readSaveFile.close();
+    }
 }
 
 Game::~Game()
 {
-    // cleanup
-    Client::get().stop();
+
 }
 
 Game& Game::get()
@@ -55,13 +71,7 @@ void Game::loadResources()
     nlohmann::json gameJSON;
     gameFile >> gameJSON;
     gameFile.close();
-
-    // Server
-    isServer = gameJSON["clientHasServer"].get<bool>();
-
-    // Start Client
-    Client::get().start(gameJSON["serverAddress"].get<std::string>(), std::atoi(gameJSON["serverPort"].get<std::string>().c_str()), gameJSON["clientName"].get<std::string>());
-
+    
     // Load Shaders
     try
     {
@@ -86,7 +96,6 @@ void Game::loadResources()
     {
         std::cout << "ERROR::SHADER: other error" << std::endl;
     }
-
 
     // Load Textures
     try
@@ -169,9 +178,6 @@ void Game::loadResources()
         std::cout << "ERROR::FONT: other error" << std::endl;
     }
 
-    // Load player save file
-    Player::get().load();
-
     // Configure Shaders
     glm::mat4 projection = glm::ortho(-0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), 0.5f * static_cast<float>(WindowManager::get().getWindowWidth()), -0.5f * static_cast<float>(WindowManager::get().getWindowHeight()), 0.5f * static_cast<float>(WindowManager::get().getWindowHeight()));
     ResourceManager::getShader("sprite").use().setInteger("sprite", 0);
@@ -206,10 +212,28 @@ void Game::run()
 
     while (!glfwWindowShouldClose(WindowManager::get().getWindow()))
     {
-        // Client
-        Client::get().update();
+        // Update/Tick
+        GlobalClock::get().updateTime();
 
-        if (gameStatus == GameStatus::InGame)
+        if (isInMatch)
+        {
+            // Serverul e pe un thread separat
+
+            // Client
+            Client::get().update();
+
+            // wait
+            if (!Map::get().getHasBeenLoaded() && !getHasGameMode())
+            {
+                Client::get().update();
+                continue;
+            }
+        }
+        
+        if (gameStatus == GameStatus::InGame 
+            || dynamic_cast<PauseMenu*>(&MenuManager::get().top())
+            || dynamic_cast<EndScreen*>(&MenuManager::get().top())
+            || dynamic_cast<ShopMenuAbstract*>(&MenuManager::get().top()))
         {
             // Update
             Map::get().update();
@@ -245,6 +269,18 @@ void Game::run()
         // HUD
         HUDManager::get().draw();
 
+        // Wave Manager
+        if ((MenuManager::get().size() == 0
+            || dynamic_cast<PauseMenu*>(&MenuManager::get().top())
+            || dynamic_cast<EndScreen*>(&MenuManager::get().top())
+            || dynamic_cast<ShopMenuAbstract*>(&MenuManager::get().top()))
+            && gameMode == GameMode::Survival)
+        {
+            WaveManager::get().update();
+            WaveManager::get().draw();
+        }
+
+        // Menu manager
         if (gameStatus == GameStatus::InMenu)
         {
             // Main Menu
@@ -255,15 +291,23 @@ void Game::run()
             catch (noMenuOpened& err) {}
         }
 
-        // Wave Manager
-        if (MenuManager::get().size() == 0)
+        if (Client::get().getShouldDisconnect())
         {
-            WaveManager::get().update();
-            WaveManager::get().draw();
-        }
+            Game::get().stopConnection();
 
-        // Update/Tick
-        GlobalClock::get().updateTime();
+            Game::get().clear();
+            Game::get().setIsInMatch(false);
+            Game::get().setHasGameMode(false);
+
+            WaveManager::deleteInstance();
+            Player::deleteInstance();
+            Map::deleteInstance();
+
+            MenuManager::get().clear();
+
+            MenuManager::get().push(MainMenu::get());
+            InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
+        }
 
         // Swap the screen buffers
         glfwSwapBuffers(WindowManager::get().getWindow());
@@ -272,8 +316,8 @@ void Game::run()
         glfwPollEvents();
     }
 
-    // Save player file
-    Player::get().save();
+    // Stop Multiplayer
+    Game::stopConnection();
 }
 
 void Game::updateEntities()
@@ -360,13 +404,22 @@ void Game::spawnRemotePlayer(const std::string& clientKey)
         // TODO: throw error
         return;
     }
-
     addRemotePlayer(clientKey, std::make_shared<RemotePlayer>(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5));
+}
+
+void Game::removeRemotePlayer(const std::string& clientKey)
+{
+    remotePlayers.erase(clientKey);
 }
 
 void Game::updateRemotePlayerClientName(const std::string& clientKey, const std::string& name)
 {
     remotePlayers[clientKey]->setClientName(name);
+}
+
+void Game::updateRemotePlayerTeam(const std::string& clientKey, int newTeam)
+{
+    remotePlayers[clientKey]->setTeam(newTeam);
 }
 
 void Game::updateRemotePlayerOutfitColor(const std::string& clientKey, const glm::vec3& color)
@@ -436,8 +489,95 @@ void Game::applyRemotePlayerCloseRangeDamage(const std::string& clientKey, doubl
         shortRangeAttackRadius
     );
 
-    if (enemyInRange)
+    if (enemyInRange 
+        && (gameMode == GameMode::Survival 
+            || Player::get().getTeam() != getRemotePlayerTeam(clientKey)))
     {
-        Player::get().setHealth(std::max(0.0, Player::get().getHealth() - damage));
+        bool notDeadBefore = !Player::get().isDead();
+
+        Player::get().applyDamage(damage);
+
+        if (Player::get().isDead() && notDeadBefore)
+        {
+            Client::get().sendConfirmedKill(clientKey);
+        }
     }
+}
+
+int Game::getRemotePlayerTeam(const std::string& clientKey)
+{
+    if (remotePlayers.find(clientKey) == remotePlayers.end())
+    {
+        std::cout << "Could not find the remote player - " << clientKey << std::endl;
+        return -1;
+    }
+
+    return remotePlayers[clientKey]->getTeam();
+}
+
+void Game::establishConnection()
+{
+    // Load JSON
+    std::ifstream saveFile("config/save.json");
+    nlohmann::json saveJSON;
+    saveFile >> saveJSON;
+    saveFile.close();
+
+    // Start server
+    isServer = saveJSON["clientHasServer"].get<bool>();
+    if (isServer)
+    {
+        std::string serverPort = saveJSON["createServerPort"].get<std::string>();
+
+        //Server::get().start(serverPort);
+
+		// Game::stopConnection(); // nu ar trebui sa fie necesar
+
+		this->isServerRunning = true;
+		this->serverThread = std::make_shared<std::thread>([this, serverPort]()
+		{
+			Server::get().start(serverPort);
+
+			this->isServerRunningMutex.lock();
+			while (this->isServerRunning)
+			{
+				this->isServerRunningMutex.unlock();
+
+				Server::get().update();
+
+				this->isServerRunningMutex.lock();
+			}
+			this->isServerRunningMutex.unlock();
+
+			Server::get().stop();
+		});
+    }
+
+    // Start Client
+    if (isServer)
+    {
+        Client::get().start("localhost", std::atoi(saveJSON["createServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
+    }
+    else
+    {
+        Client::get().start(saveJSON["joinServerAddress"].get<std::string>(), std::atoi(saveJSON["joinServerPort"].get<std::string>().c_str()), saveJSON["clientName"].get<std::string>());
+    }
+}
+
+void Game::stopConnection()
+{
+    Client::get().sendDisconnect();
+	Client::get().stop();
+
+	if (this->serverThread)
+	{
+		this->isServerRunningMutex.lock();
+		this->isServerRunning = false;
+		this->isServerRunningMutex.unlock();
+
+		this->serverThread->join();
+		this->serverThread = nullptr;
+
+        Server::get().stop();
+	}
 }

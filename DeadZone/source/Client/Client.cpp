@@ -24,6 +24,7 @@ Client::Client()
 	, lastTimeSentPing(0.0f)
 	, clientName("")
 	, workingServerConnection(false)
+	, shouldDisconnect(false)
 	, lastRemotePlayerData(10.5, 10.5, 1.0, 1.0, 0.0, 5.0, 0.4, 0.4, Player::ANIMATIONS_NAME_2D, Player::STATUSES, 7.5)
 {
 
@@ -178,6 +179,9 @@ void Client::handleReceivedPacket()
 			// clientName
 			Game::get().updateRemotePlayerClientName(clientKey, playerData["clientName"].get<std::string>());
 
+			// team
+			Game::get().updateRemotePlayerTeam(clientKey, playerData["team"].get<int>());
+
 			// outfitColor
 			glm::vec3 outfitColor = glm::vec3(
 				playerData["outfitColor"]["x"].get<double>(),
@@ -218,6 +222,7 @@ void Client::handleReceivedPacket()
 					0.3, 0.3,
 					bulletData["textureName2D"].get<std::string>(),
 					0.0,
+					clientKey,
 					1.0,
 					bulletData["damage"].get<double>(),
 					15.0,
@@ -233,7 +238,8 @@ void Client::handleReceivedPacket()
 					bulletData["speed"].get<double>(),
 					0.3, 0.3,
 					bulletData["textureName2D"].get<std::string>(),
-					bulletData["damage"].get<double>()
+					bulletData["damage"].get<double>(),
+					clientKey
 				));
 			}
 		}
@@ -302,10 +308,42 @@ void Client::handleReceivedPacket()
 		Map::get().readMapFromBuffer(jsonData["map"].get<std::vector<std::vector<std::string>>>());
 	}
 
+	// game mode
+	if (jsonData.contains("gameMode") && !Game::get().getHasGameMode())
+	{
+		Game::get().setGameMode(static_cast<Game::GameMode>(jsonData["gameMode"].get<unsigned int>()));
+		Game::get().setHasGameMode(true);
+	}
+
 	// waveNumber
 	if (jsonData.contains("waveNumber"))
 	{
 		WaveManager::get().setNumFinishedWaves(jsonData["waveNumber"].get<int>());
+	}
+
+	// disconnectClient
+	if (jsonData.contains("disconnectClient"))
+	{
+		std::cout << "CLIENT: disconnect " << jsonData["disconnectClient"].get<std::string>() << std::endl;
+		Game::get().removeRemotePlayer(jsonData["disconnectClient"].get<std::string>());
+	}
+
+	// self
+	if (jsonData.contains("player"))
+	{
+		Player::get().setTeam(jsonData["player"]["team"].get<int>());
+
+		Player::get().setOutfitColor(glm::vec3(
+			jsonData["player"]["outfitColor"]["x"].get<double>(),
+			jsonData["player"]["outfitColor"]["y"].get<double>(),
+			jsonData["player"]["outfitColor"]["z"].get<double>()
+		));
+	}
+
+	// goldRewarded
+	if (jsonData.contains("goldRewarded"))
+	{
+		Player::get().addGold(jsonData["goldRewarded"].get<int>());
 	}
 
 	enet_packet_destroy(this->eNetEvent.packet);
@@ -336,8 +374,16 @@ void Client::update()
 	if (!Map::get().getHasBeenLoaded())
 	{
 		nlohmann::json jsonData;
-
 		jsonData["map"] = true;
+
+		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+	}
+
+	// game mode
+	if (!Game::get().getHasGameMode())
+	{
+		nlohmann::json jsonData;
+		jsonData["gameMode"] = true;
 
 		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 	}
@@ -377,6 +423,12 @@ void Client::update()
 			case ENET_EVENT_TYPE_RECEIVE:
 				this->handleReceivedPacket();
 				break;
+
+			case ENET_EVENT_TYPE_DISCONNECT:
+				std::cout << "LOST SERVER CONNECTION" << std::endl;
+				shouldDisconnect = true;
+				break;
+
 			default:
 				std::cout << "Warning: Client received unrecognized event type" << std::endl;
 				break;
@@ -416,8 +468,6 @@ void Client::stop()
 {
 	if (this->serverPeer != nullptr)
 		enet_peer_disconnect(this->serverPeer, 0);
-	//if (this->client != nullptr)
-	//	enet_host_flush(this->client);
 	if (this->client != nullptr)
 		enet_host_destroy(this->client);
 
@@ -437,6 +487,8 @@ void Client::stop()
 	this->clientName = "";
 
 	this->workingServerConnection = false;
+
+	shouldDisconnect = false;
 }
 
 void Client::sendBullet(const std::shared_ptr<Bullet>& const entity)
@@ -448,14 +500,13 @@ void Client::sendBullet(const std::shared_ptr<Bullet>& const entity)
 	}
 
 	nlohmann::json jsonData;
-
 	jsonData["bullet"]["isThrownGrenade"] = isThrownGrenade;
 	jsonData["bullet"]["x"] = entity->getX();
 	jsonData["bullet"]["y"] = entity->getY();
 	jsonData["bullet"]["rotateAngle"] = entity->getRotateAngle();
 	jsonData["bullet"]["speed"] = entity->getSpeed();
-	jsonData["bullet"]["textureName2D"] = entity->getTextureName2D();
-	jsonData["bullet"]["damage"] = entity->getDamage();
+	jsonData["bullet"]["textureName2D"] = entity->getTextureName2D();	
+	jsonData["bullet"]["damage"] = isThrownGrenade ? std::dynamic_pointer_cast<ThrownGrenade>(entity)->getExplosionDamage() : entity->getDamage();
 
 	// TODO: trimite si ceilalti parametrii daca vrem sa avem mai multi modificatori
 
@@ -487,6 +538,26 @@ void Client::sendCloseRangeDamage(const double damage, const double shortRangeAt
 
 	jsonData["closeRangeDamage"]["damage"] = damage;
 	jsonData["closeRangeDamage"]["shortRangeAttackRadius"] = shortRangeAttackRadius;
+
+	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+}
+
+void Client::sendDisconnect()
+{
+	if (succesfullyConnected)
+	{
+		nlohmann::json jsonData;
+		jsonData["disconnect"] = true;
+
+		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
+		enet_host_flush(this->client);
+	}
+}
+
+void Client::sendConfirmedKill(const std::string& clientKey)
+{
+	nlohmann::json jsonData;
+	jsonData["confirmedKill"] = clientKey;
 
 	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 }

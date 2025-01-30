@@ -13,12 +13,28 @@ std::map<Button::Status, std::string> ButtonBuilder::buttonTextures0()
 	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, { Button::Status::HOVERED, "button0Hovered" }, { Button::Status::CLICKED, "button0Hovered" }};
 }
 
+std::map<Button::Status, std::string> ButtonBuilder::OneTextureForAllStates()
+{
+	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "button0Normal"}, { Button::Status::HOVERED, "button0Normal" }, { Button::Status::CLICKED, "button0Normal" }};
+}
+
+std::map<Button::Status, std::string> ButtonBuilder::OneTextureForAllStatesThinMargins()
+{
+	return std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "textBoxThinMargins"}, { Button::Status::HOVERED, "textBoxThinMargins" }, { Button::Status::CLICKED, "textBoxThinMargins" }};
+}
+
+std::map<Button::InputStatus, std::string> ButtonBuilder::inputFieldTextures0()
+{
+	return std::map<Button::InputStatus, std::string>{{Button::InputStatus::DEFAULT, "inputFieldDefault"}, { Button::InputStatus::FOCUSED, "inputFieldFocused" }, { Button::InputStatus::INVALID_INPUT, "inputFieldInvalidInput" }};
+}
+
 Button ButtonBuilder::backButton(double x, double y)
 {
 	return Button(x, y, 40, 40, 0, 0, 40, 40, std::map<Button::Status, std::string>{{Button::Status::DEFAULT, "back"}, { Button::Status::HOVERED, "backHovered" }, { Button::Status::CLICKED, "backHovered" }}, "");
 }
 
-void ButtonBuilder::backButtonClickFunction(Button& button) {
+void ButtonBuilder::backButtonClickFunction(Button& button)
+{
 	MenuManager::get().top().setIsInMenu(false);
 	MenuManager::get().pop();
 }

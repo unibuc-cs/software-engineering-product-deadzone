@@ -41,6 +41,8 @@ void MenuManager::push(MenuBase& m) {
 	menuStack[menuStack.size() - 1]->setIsInMenu(true);
 	menuStack[menuStack.size() - 1]->setupInputComponent();
 
+	menuStack[menuStack.size() - 1]->init();
+
 	Game::get().setGameStatus(Game::GameStatus::InMenu);
 }
 

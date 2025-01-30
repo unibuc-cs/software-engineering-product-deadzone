@@ -26,10 +26,10 @@ private:
 	// EndScreen& operator=(const EndScreen&& other) = default;
 
 protected:
-
+	static void RespawnFunction(Button& button);
 
 public:
-	static EndScreen& getCenteredEndScreen(const std::string& msg = "", const std::string& buttonLabel_ = "Ok", const std::function<void(Button&)>& funcForButton_ = PauseMenu::quit);
+	static EndScreen& getCenteredEndScreen(const std::string& msg = "", const std::string& buttonLabel_ = "Quit Game", const std::function<void(Button&)>& funcForButton_ = PauseMenu::quit);
 
 	void draw() override;
 

@@ -112,6 +112,17 @@ Player::Player(double x, double y, double drawWidth, double drawHeight, double r
 	bulletPrices[Weapon::WeaponType::M4] = 75;
 	bulletPrices[Weapon::WeaponType::MINIGUN] = 50;
 	bulletPrices[Weapon::WeaponType::GRENADE] = 200;
+
+	// Load player save.json
+	load();
+
+	// TODO: repara
+	//if (Map::get().getHasBeenLoaded())
+	//{
+	//	const std::pair<int, int> pos = Map::getRandomAccesiblePosition();
+	//	this->y = pos.first + 0.5f;
+	//	this->x = pos.second + 0.5f;
+	//}
 }
 
 Player& Player::get()
@@ -634,7 +645,7 @@ void Player::draw()
 		};
 		std::vector<AnimatedEntity::EntityStatus> v0 = { AnimatedEntity::EntityStatus::DEAD_HUMAN };
 
-		Game::get().addDeadBody(std::make_shared<DeadBody>(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0, outfitColor));
+		// Game::get().addDeadBody(std::make_shared<DeadBody>(this->x, this->y, deadResize * this->drawWidth, deadResize * this->drawHeight, deadRotateAngle, 0.0, m0, v0, outfitColor));
 
 		// this->setDeleteEntity(true);
 		
@@ -644,6 +655,7 @@ void Player::draw()
 			InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
 		}
 
+		updateStatus(AnimatedEntity::EntityStatus::DEAD_HUMAN, 0);
 		this->hasDied = true;
 	}
 	else if (this->isWalking)
@@ -672,14 +684,17 @@ void Player::modifyBullets(Weapon::WeaponType weaponType, int amount)
 
 void Player::save()
 {
-	std::ofstream saveFile("config/save.json");
+	std::ifstream readFile("config/save.json");
 	nlohmann::json saveJSON;
+	readFile >> saveJSON;
+	readFile.close();
 
 	saveJSON["outfitColor"]["r"] = outfitColor.x;
 	saveJSON["outfitColor"]["g"] = outfitColor.y;
 	saveJSON["outfitColor"]["b"] = outfitColor.z;
 
-	saveFile << std::setw(4) << saveJSON << std::endl;
+	std::ofstream saveFile("config/save.json");
+	saveFile << saveJSON.dump(4) << std::endl;
 	saveFile.close();
 }
 
@@ -696,11 +711,14 @@ void Player::load()
 	saveFile >> saveJSON;
 	saveFile.close();
 
-	setOutfitColor(glm::vec3(
-		saveJSON["outfitColor"]["r"].get<double>(),
-		saveJSON["outfitColor"]["g"].get<double>(),
-		saveJSON["outfitColor"]["b"].get<double>()
-	));
+	if (saveJSON.contains("outfitColor") && Game::get().getGameMode() != Game::GameMode::TeamDeathMatch)
+	{
+		setOutfitColor(glm::vec3(
+			saveJSON["outfitColor"]["r"].get<double>(),
+			saveJSON["outfitColor"]["g"].get<double>(),
+			saveJSON["outfitColor"]["b"].get<double>()
+		));
+	}
 }
 
 void Player::enterShopButton()

@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <nlohmann/json.hpp>
+
 #include "../../Input/InputHandler.h"
 #include "../../Map/Map.h"
 #include "../../Entity/Player/Player.h"
@@ -13,65 +14,43 @@
 #include "../../ButtonBuilder/ButtonBuilder.h"
 #include "../ChangeSkinMenu/ChangeSkinMenu.h"
 #include "../../SoundManager/SoundManager.h"
-
-
+#include "../JoinGameMenu/JoinGameMenu.h"
+#include "../../Game/Game.h"
+#include "../CreateGameMenu/CreateGameMenu.h"
 
 MainMenu::MainMenu(double x, double y, double drawWidth, double drawHeight, double rotateAngle, double speed, const std::string& textureName2D) :
 	Entity(x, y, drawWidth, drawHeight, rotateAngle, speed),
 	TexturableEntity(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D),
 	MenuBase(x, y, drawWidth, drawHeight, rotateAngle, speed, textureName2D, drawWidth * 0.3, drawHeight * 0.1),
 	buttons(std::map<std::string, Button>{
-		{ "quit", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
-		{ "play", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Play", 0, 1.0, "Antonio", true) },
-		{ "Change skin", Button(getButtonPosX(), getButtonPosY(1), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Change skin", 0, 1.0, "Antonio", true) }
+		{ "quit", Button(getButtonPosX(), getButtonPosY(3), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Quit", 0, 1.0, "Antonio", true) },
+		{ "createGame", Button(getButtonPosX(), getButtonPosY(0), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Create Game", 0, 1.0, "Antonio", true) },
+		{ "Change skin", Button(getButtonPosX(), getButtonPosY(2), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Change skin", 0, 1.0, "Antonio", true) },
+		{ "joinGame", Button(getButtonPosX(), getButtonPosY(1), buttonWidth, buttonHeight, 0, 0, buttonWidth, buttonHeight, ButtonBuilder::buttonTextures0(), "Join Game", 0, 1.0, "Antonio", true) }
 })
-{	
+{
 	buttons.setFunctions(
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), MainMenu::hoverAnyButton }},
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), MainMenu::hoverLostAnyButton }},
 		std::map<std::string, std::function<void(Button&)>>{{ButtonGroup::getAny(), [](Button&) {} },
 		{
-			"quit", [](Button&){glfwSetWindowShouldClose(WindowManager::get().getWindow(), true);}
+			"quit", [](Button&) {glfwSetWindowShouldClose(WindowManager::get().getWindow(), true);}
 		},
-		{ "play", [](Button&) {
-			// MainMenu::get().isInMenu = false;
-			MenuManager::get().pop();
-			InputHandler::setInputComponent(InputHandler::getPlayerInputComponent());
-
-			if (Map::get().getHasBeenLoaded() == false)
-				try
-				{
-					// TODO: map primim direct de la server acum
-					// TODO: delete
-					//std::ifstream gameFile("config/game.json");
-					//nlohmann::json gameJSON;
-					//gameFile >> gameJSON;
-					//gameFile.close();
-
-					//std::string file = gameJSON["map"].get<std::string>();
-
-					//Map::get().readMapFromFile(file);
-				}
-				catch (const std::runtime_error& err)
-				{
-					std::cout << "ERROR::MAP: " << err.what() << std::endl;
-				}
-				catch (...)
-				{
-					std::cout << "ERROR::MAP: other error" << std::endl;
-				}
-
-
-			Player::get().setupPlayerInputComponent();
-
+		{ "createGame", [](Button&) {
+			MenuManager::get().push(CreateGameMenu::get());
 		}
+		},
+		{
+			"joinGame", [](Button&) {
+				MenuManager::get().push(JoinGameMenu::get());
+			}
 		},
 		{
 			"Change skin", [](Button&) {
 				MenuManager::get().push(ChangeSkinMenu::get());
 			}
 		}
-	
+
 	}
 	);
 
@@ -95,7 +74,6 @@ void MainMenu::draw()
 	SpriteRenderer::get().draw(ResourceManager::getShader("sprite"), ResourceManager::getTexture(this->textureName2D), glm::vec2(x, y), glm::vec2(drawWidth, drawHeight), 0);
 
 	buttons.draw();
-
 }
 
 double MainMenu::getButtonPosX() {

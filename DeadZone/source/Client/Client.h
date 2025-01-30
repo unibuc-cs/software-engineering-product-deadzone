@@ -35,6 +35,7 @@ private:
 	const float MAXIMUM_TIME_BEFORE_DECLARING_CONNECTION_LOST;
 	float lastTimeReceivedPing;
 	float lastTimeSentPing;
+	bool shouldDisconnect;
 
 	std::string clientName;
 	bool workingServerConnection;
@@ -57,8 +58,11 @@ public:
 	void sendSound(const std::string& name, bool paused);
 	void sendOpenedDoor(int id);
 	void sendCloseRangeDamage(const double damage, const double shortRangeAttackRadius);
+	void sendDisconnect();
+	void sendConfirmedKill(const std::string& clientKey);
 
 	// Getters
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }
+	inline bool getShouldDisconnect() const { return shouldDisconnect; }
 };
 

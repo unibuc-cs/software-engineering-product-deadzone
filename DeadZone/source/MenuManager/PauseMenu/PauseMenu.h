@@ -31,7 +31,7 @@ private:
 	PauseMenu& operator=(const PauseMenu&& other) = delete;
 
 protected:
-	
+	void setGameInfoInMenu();
 
 public:
 	static PauseMenu& get();
