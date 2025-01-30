@@ -22,6 +22,7 @@
 #include "../MenuManager/MainMenu/MainMenu.h"
 #include "../MenuManager/PauseMenu/PauseMenu.h"
 #include "../MenuManager/EndScreen/EndScreen.h"
+#include "../MenuManager/ShopMenu/ShopMenu.h"
 #include "../SoundManager/SoundManager.h"
 #include "../MenuManager/MenuManager.h"
 #include "../WaveManager/WaveManager.h"
@@ -231,7 +232,8 @@ void Game::run()
         
         if (gameStatus == GameStatus::InGame 
             || dynamic_cast<PauseMenu*>(&MenuManager::get().top())
-            || dynamic_cast<EndScreen*>(&MenuManager::get().top()))
+            || dynamic_cast<EndScreen*>(&MenuManager::get().top())
+            || dynamic_cast<ShopMenuAbstract*>(&MenuManager::get().top()))
         {
             // Update
             Map::get().update();
@@ -270,7 +272,8 @@ void Game::run()
         // Wave Manager
         if ((MenuManager::get().size() == 0
             || dynamic_cast<PauseMenu*>(&MenuManager::get().top())
-            || dynamic_cast<EndScreen*>(&MenuManager::get().top())) 
+            || dynamic_cast<EndScreen*>(&MenuManager::get().top())
+            || dynamic_cast<ShopMenuAbstract*>(&MenuManager::get().top()))
             && gameMode == GameMode::Survival)
         {
             WaveManager::get().update();
