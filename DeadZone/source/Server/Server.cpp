@@ -14,6 +14,7 @@
 
 const glm::vec3 Server::COLOR_TEAM_1 = glm::vec3(0.0f, 0.0f, 1.0f);
 const glm::vec3 Server::COLOR_TEAM_2 = glm::vec3(1.0f, 0.0f, 0.0f);
+const int Server::GOLD_PER_KILL = 100;
 
 ReplicatedSound::ReplicatedSound(const std::string& name, bool paused)
 	: name(name)
@@ -272,6 +273,19 @@ void Server::handleReceivedPacket()
 	if (jsonData.contains("disconnect"))
 	{
 		disconnectPlayer(clientKey);
+	}
+
+	if (jsonData.contains("confirmedKill"))
+	{
+		std::string clientKeyKiller = jsonData["confirmedKill"].get<std::string>();
+
+		if (connectedClients.find(clientKeyKiller) != connectedClients.end())
+		{
+			nlohmann::json killJsonData;
+			killJsonData["goldRewarded"] = GOLD_PER_KILL;
+
+			connectedClients[clientKeyKiller].sendMessageUnsafe(killJsonData.dump());
+		}
 	}
 
 	// TODO: de pus in if-uri? excluzand "ping"

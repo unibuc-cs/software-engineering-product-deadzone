@@ -339,6 +339,12 @@ void Client::handleReceivedPacket()
 		));
 	}
 
+	// goldRewarded
+	if (jsonData.contains("goldRewarded"))
+	{
+		Player::get().addGold(jsonData["goldRewarded"].get<int>());
+	}
+
 	enet_packet_destroy(this->eNetEvent.packet);
 }
 
@@ -537,4 +543,12 @@ void Client::sendDisconnect()
 		this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 		enet_host_flush(this->client);
 	}
+}
+
+void Client::sendConfirmedKill(const std::string& clientKey)
+{
+	nlohmann::json jsonData;
+	jsonData["confirmedKill"] = clientKey;
+
+	this->sendMessageUnsafe(jsonData.dump(), this->lastTimeSentPing);
 }

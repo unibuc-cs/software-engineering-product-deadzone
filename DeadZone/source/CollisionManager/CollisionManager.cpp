@@ -9,6 +9,7 @@
 #include "../Entity/Enemy/Enemy.h"
 #include "../Entity/Bullet/ThrownGrenade.h"
 #include "../Entity/Explosion/Explosion.h"
+#include "../Client/Client.h"
 
 #include <iostream>
 #include <memory>
@@ -128,8 +129,15 @@ void CollisionManager::handleCollisions(std::vector<std::shared_ptr<Entity>>& en
 					{
 						if (Player::get().getTeam() != bulletTeam)
 						{
+							bool notDeadBefore = !Player::get().isDead();
+
 							Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
 							std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+
+							if (Player::get().isDead() && notDeadBefore)
+							{
+								Client::get().sendConfirmedKill(bulletOwner);
+							}
 						}
 						else
 						{
@@ -169,8 +177,15 @@ void CollisionManager::handleCollisions(std::vector<std::shared_ptr<Entity>>& en
 				{
 					if (Player::get().getTeam() != explosionTeam)
 					{
+						bool notDeadBefore = !Player::get().isDead();
+
 						Player::get().onCollide(*std::dynamic_pointer_cast<CollidableEntity>(entities[i]), overlap);
 						std::dynamic_pointer_cast<CollidableEntity>(entities[i])->onCollide(Player::get(), overlap);
+
+						if (Player::get().isDead() && notDeadBefore)
+						{
+							Client::get().sendConfirmedKill(explosionOwner);
+						}
 					}
 					else
 					{

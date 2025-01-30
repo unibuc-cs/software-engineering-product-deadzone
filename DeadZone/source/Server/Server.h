@@ -99,6 +99,7 @@ private:
 	int sizeTeam2;
 	static const glm::vec3 COLOR_TEAM_1;
 	static const glm::vec3 COLOR_TEAM_2;
+	static const int GOLD_PER_KILL;
 
 	// Atentie aici la unicitatea cheii
 	inline std::string getClientKey(const ENetAddress& address) const { return std::to_string(address.host) + ":" + std::to_string(address.port); }

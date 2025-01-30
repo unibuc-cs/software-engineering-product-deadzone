@@ -58,6 +58,7 @@ public:
 	void sendOpenedDoor(int id);
 	void sendCloseRangeDamage(const double damage, const double shortRangeAttackRadius);
 	void sendDisconnect();
+	void sendConfirmedKill(const std::string& clientKey);
 
 	// Getters
 	inline bool getWorkingServerConnection() const { return this->workingServerConnection; }
