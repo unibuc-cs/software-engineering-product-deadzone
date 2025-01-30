@@ -156,15 +156,6 @@ void Map::readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer)
 
 	this->createEnclosedAreas();
 
-	for (int i = 0; i < mapString.size(); i++)
-	{
-		for (int j = 0; j < mapString[i].size(); j++)
-		{
-			std::cout << mapString[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-
 	this->mapLoaded = true;
 }
 
