@@ -82,14 +82,13 @@ void Server::ClientData::sendMessage(const std::string& messageToSend, bool& fai
 		failedToSendMessage = false;
 		// TODO: uncomment
 		// std::cout << "SERVER send: " << messageToSend << std::endl;
+		// enet_host_flush(this->peer->host);
 	}
 	else
 	{
 		failedToSendMessage = true;
 		std::cout << "Error: Server failed to send message" << std::endl;
 	}
-
-	enet_host_flush(this->peer->host);
 }
 
 void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
@@ -102,13 +101,12 @@ void Server::ClientData::sendMessageUnsafe(const std::string& messageToSend)
 		this->lastTimeSentPing = GlobalClock::get().getCurrentTime();
 		// TODO: uncomment
 		// std::cout << "SERVER send: " << messageToSend << std::endl;
+		// enet_host_flush(this->peer->host);
 	}
 	else
 	{
 		std::cout << "Error: Server failed to send message" << std::endl;
 	}
-
-	enet_host_flush(this->peer->host);
 }
 
 void Server::handleReceivedPacket()
@@ -436,7 +434,7 @@ void Server::update()
 	// Update self
 	for (auto& connectedClient : this->connectedClients)
 	{
-		if (connectedClient.second.updateSelf)
+		if (connectedClient.second.updateSelf && gameMode == 1)
 		{
 			nlohmann::json jsonData;
 			jsonData["player"]["team"] = connectedClient.second.remotePlayerData.getTeam();
