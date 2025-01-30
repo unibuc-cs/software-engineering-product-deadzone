@@ -40,6 +40,12 @@ void Map::deleteInstance()
 
 void Map::readMapFromFile(const std::string& path)
 {
+	this->mapString.clear();
+	this->map.clear();
+	this->doors.clear();
+	this->shops.clear();
+	this->enclosed.clear();
+
 	std::ios_base::sync_with_stdio(false);
 
 	std::ifstream in(path);
@@ -52,6 +58,7 @@ void Map::readMapFromFile(const std::string& path)
 	while (!in.eof())
 	{
 		this->map.emplace_back();
+		this->mapString.emplace_back();
 
 		std::string line;
 		std::getline(in, line);
@@ -83,19 +90,33 @@ void Map::readMapFromFile(const std::string& path)
 				this->map.back().emplace_back(std::make_shared<Shop>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code, 10.0, 10.0));
 				this->shops.emplace_back(std::dynamic_pointer_cast<Shop>(this->map.back().back()));
 			}
+			this->mapString.back().emplace_back(code);
 		}
 	}
 
 	in.close();
+
+	this->createEnclosedAreas();
 
 	this->mapLoaded = true;
 }
 
 void Map::readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer)
 {
+	
+	this->mapString.clear();
+	this->map.clear();
+	this->doors.clear();
+	this->shops.clear();
+	this->enclosed.clear();
+
+	height = buffer.size();
+	width = buffer[0].size();
+
 	for (const std::vector<std::string> &line : buffer)
 	{
 		this->map.emplace_back();
+		this->mapString.emplace_back();
 
 		for (const std::string& code : line)
 		{
@@ -129,10 +150,93 @@ void Map::readMapFromBuffer(const std::vector<std::vector<std::string>>& buffer)
 				this->map.back().emplace_back(std::make_shared<Floor>((double)this->map.back().size() + 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, ".0"));
 				this->shops.emplace_back(std::make_shared<Shop>((double)this->map.back().size() - 0.5, (double)this->map.size() - 0.5, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, code, 10.0, 10.0));
 			}
+			this->mapString.back().emplace_back(code);
 		}
 	}
 
+	this->createEnclosedAreas();
+
+	for (int i = 0; i < mapString.size(); i++)
+	{
+		for (int j = 0; j < mapString[i].size(); j++)
+		{
+			std::cout << mapString[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+
 	this->mapLoaded = true;
+}
+
+void Map::createEnclosedAreas() {
+	std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, 0));
+	std::vector<std::vector<bool>> visited2(height, std::vector<bool>(width, 0));
+	const int di[8] = { -1, 0, 1, 0, 1, 1, -1, -1 };
+	const int dj[8] = { 0, 1, 0, -1, 1, -1, 1, -1 };
+
+	auto inside = [&](std::pair<int, int> cell) {
+		if (cell.first < height && cell.first >= 0 && cell.second < width && cell.second >= 0)
+			return 1;
+		return 0;
+		};
+
+	auto inside2 = [&](std::pair<int, int> cell) {
+		if (cell.first < height - 1 && cell.first >= 1 && cell.second < width - 1 && cell.second >= 1)
+			return 1;
+		return 0;
+		};
+
+	std::queue<std::pair<int, int>> cellsInQueue;
+	std::vector<std::pair<int, int>> visitedCells;
+	enclosed.assign(height, std::vector<bool>(width, 0));
+	for (int i = 0; i < height; i++)
+		for (int j = 0; j < width; j++)
+			if (mapString[i][j][0] == '.' && !visited[i][j]) {
+				visitedCells.clear();
+				int cnt = 0;
+				cellsInQueue.push({ i, j });
+				visited[i][j] = 1;
+				visitedCells.push_back({ i, j });
+				while (cellsInQueue.size() > 0) {
+					cnt++;
+					std::pair<int, int> cell = cellsInQueue.front();
+					cellsInQueue.pop();
+					for (int k = 0; k < 4; k++) {
+						std::pair<int, int> new_cell = { cell.first + di[k], cell.second + dj[k] };
+						if (inside(new_cell) && !visited[new_cell.first][new_cell.second]) {
+							if (mapString[new_cell.first][new_cell.second][0] == '.') {
+								cellsInQueue.push({ new_cell.first, new_cell.second });
+								visited[new_cell.first][new_cell.second] = 1;
+								visitedCells.push_back({ new_cell.first, new_cell.second });
+							}
+							else if (mapString[new_cell.first][new_cell.second][0] == 'M') {
+								std::queue<std::pair<int, int>> queueForDoor;
+								queueForDoor.push(new_cell);
+								visited2[new_cell.first][new_cell.second] = 1;
+								while (queueForDoor.size() > 0) {
+									std::pair<int, int> cell_for_door = queueForDoor.front();
+									queueForDoor.pop();
+									for (int k2 = 0; k2 < 8; k2++) {
+										std::pair<int, int> new_cell_for_door = cell_for_door;
+										new_cell_for_door.first += di[k2];
+										new_cell_for_door.second += dj[k2];
+										if (inside2(new_cell_for_door) && !visited2[new_cell_for_door.first][new_cell_for_door.second] && mapString[new_cell_for_door.first][new_cell_for_door.second] == mapString[new_cell.first][new_cell.second]) {
+											visited2[new_cell_for_door.first][new_cell_for_door.second] = 1;
+											queueForDoor.push(new_cell_for_door);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				if (cnt < 100) {
+					for (int k = 0; k < visitedCells.size(); k++) {
+						std::pair<int, int> cell = visitedCells[k];
+						enclosed[cell.first][cell.second] = 1;
+					}
+				}
+			}
 }
 
 void Map::draw()

@@ -61,6 +61,7 @@ public:
 	static void putShopInGoodArea();
 	static std::string generateProceduralMap(const int& width, const int& height);
 	static void clearSpawnArea();
+	static void createEnclosedAreas();
 
 	// Getters
 	std::vector<std::vector<std::shared_ptr<Entity>>>& getMap() { return this->map; }
