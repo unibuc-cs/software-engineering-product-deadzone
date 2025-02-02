@@ -651,11 +651,6 @@ void Player::draw()
 		if (this->hasDied == false)
 		{
 			std::string message = "You have been killed";
-			if (Game::get().getGameMode() == Game::GameMode::Survival)
-				message = "You have been killed by zombies";
-			else
-				if(Game::get().getGameMode() == Game::GameMode::TeamDeathMatch)
-					message = "You have been killed by the enemy team";
 
 			MenuManager::get().push(EndScreen::getCenteredEndScreen(message));
 			InputHandler::setInputComponent(InputHandler::getMenuInputComponent());
